@@ -100,7 +100,7 @@ public class ArActivity extends BaseActivity implements View.OnClickListener {
     public void initView() {
         scanView = (ScanView) findViewById(R.id.scanview);
         scanView.play();
-        txt_action = (TextView) findViewById(R.id.txt_action);
+        txt_action = (TextView) findViewById(R.id.btn_event_list);
     }
 
     @Override
@@ -176,12 +176,13 @@ public class ArActivity extends BaseActivity implements View.OnClickListener {
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.txt_action://动作
-                startActivity(new Intent(this, WebViewActivity.class));
+            case R.id.btn_event_list://动作
+                Intent intent = new Intent(this, WebViewActivity.class);
+                intent.putExtra("URL", "https://www.youbohudong.com/biz/vip/kfc/calendar-2018/tasks");
+                startActivity(intent);
                 break;
         }
     }
-
 
     public void onEventMainThread(MyEvent event) {
         String name = (String) event.what;

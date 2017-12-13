@@ -27,6 +27,7 @@ public class GLView extends GLSurfaceView {
         setEGLConfigChooser(new ConfigChooser());
 
         arCore = new ArCore();
+        arCore.initialize();
 
         this.setRenderer(new Renderer() {
             @Override
@@ -73,10 +74,8 @@ public class GLView extends GLSurfaceView {
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         synchronized (arCore) {
-            if (arCore.initialize()) {
-                arCore.startCamera();
-                arCore.startTracker();
-            }
+            arCore.startCamera();
+            arCore.startTracker();
         }
     }
 
@@ -85,7 +84,6 @@ public class GLView extends GLSurfaceView {
         synchronized (arCore) {
             arCore.stopTracker();
             arCore.stopCamera();
-            arCore.dispose();
         }
         super.onDetachedFromWindow();
     }
@@ -93,15 +91,11 @@ public class GLView extends GLSurfaceView {
     @Override
     public void onResume() {
         super.onResume();
-        arCore.startCamera();
-        arCore.startTracker();
         Engine.onResume();
     }
 
     @Override
     public void onPause() {
-        arCore.stopTracker();
-        arCore.stopCamera();
         Engine.onPause();
         super.onPause();
     }

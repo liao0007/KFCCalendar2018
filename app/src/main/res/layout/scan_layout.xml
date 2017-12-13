@@ -11,8 +11,8 @@
         android:gravity="center">
     <com.youbohudong.kfccalendar2018.view.ScanView
         android:id="@+id/scanview"
-        android:layout_width="220dp"
-        android:layout_height="220dp"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
         android:layout_gravity="center"
         app:scanFrameDrawable="@drawable/icon_frame"
         app:scanLineDrawable="@drawable/icon_line"
@@ -26,6 +26,7 @@
         android:text="将识别图放入框内，开始扫描"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="15dp"
+        android:textSize="12sp"
         android:textColor="@color/white"
         android:gravity="center"/>
 

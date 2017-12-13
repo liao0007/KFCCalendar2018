@@ -38,7 +38,7 @@ public class ArCore {
                 @Override
                 public void invoke(Target target, boolean status) {
                     try {
-                        Log.i("ArCore", String.format("load target (%b): %s (%d)", status, target.name(), target.runtimeID()));
+                        Log.i("HelloAR", String.format("load target (%b): %s (%d)", status, target.name(), target.runtimeID()));
                     } catch (Throwable ex) {
                     }
                 }
@@ -88,7 +88,6 @@ public class ArCore {
         }
     }
 
-
     public boolean startCamera() {
         boolean status = true;
         status &= (camera != null) && camera.start();
@@ -105,18 +104,18 @@ public class ArCore {
         return status;
     }
 
-    public boolean stopCamera() {
-        boolean status = true;
-        status &= (streamer != null) && streamer.stop();
-        status &= (camera != null) && camera.stop();
-        return status;
-    }
-
     public boolean stopTracker() {
         boolean status = true;
         for (ImageTracker tracker : trackers) {
             status &= tracker.stop();
         }
+        return status;
+    }
+
+    public boolean stopCamera() {
+        boolean status = true;
+        status &= (streamer != null) && streamer.stop();
+        status &= (camera != null) && camera.stop();
         return status;
     }
 
@@ -128,6 +127,7 @@ public class ArCore {
         if (videobg_renderer != null) {
             videobg_renderer.dispose();
         }
+        videobg_renderer = new Renderer();
     }
 
     public void resizeGL(int width, int height) {
@@ -190,6 +190,10 @@ public class ArCore {
                 int status = targetInstance.status();
                 if (status == TargetStatus.Tracked) {
                     EventBus.getDefault().post(new CalendarEvent(target.name()));
+                }
+            } else {
+                if (tracked_target != 0) {
+                    tracked_target = 0;
                 }
             }
         } finally {

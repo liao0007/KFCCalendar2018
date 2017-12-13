@@ -162,12 +162,16 @@ public class ArActivity extends BaseActivity implements View.OnClickListener {
         super.onResume();
         if (glView != null) {
             glView.onResume();
+            glView.startTracker();
+            glView.startCamera();
         }
     }
 
     @Override
     protected void onPause() {
         if (glView != null) {
+            glView.stopCamera();
+            glView.stopTracker();
             glView.onPause();
         }
         super.onPause();

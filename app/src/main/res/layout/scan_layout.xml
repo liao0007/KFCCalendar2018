@@ -14,9 +14,9 @@
         android:layout_width="300dp"
         android:layout_height="300dp"
         android:layout_gravity="center"
-        app:scanFrameDrawable="@drawable/icon_frame"
-        app:scanLineDrawable="@drawable/icon_line"
-        app:lineHeight="0.25"
+        app:scanFrameDrawable="@mipmap/icon_frame"
+        app:scanLineDrawable="@mipmap/icon_line"
+        app:lineHeight="0.03"
         app:duration="2500"
         app:linePadding="1dp"/>
 

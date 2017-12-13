@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.*;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import cn.easyar.Engine;
 import com.bumptech.glide.Glide;
@@ -47,6 +48,8 @@ public class ArActivity extends BaseActivity implements View.OnClickListener {
     private LinearLayout ll_root;
     private TaskCompletionBean taskCompletionBean;
     My_Dialog dialog;
+    private  RelativeLayout rl_scan_success;
+    private ImageView img_back;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +68,15 @@ public class ArActivity extends BaseActivity implements View.OnClickListener {
         ll_root = (LinearLayout) v.findViewById(R.id.ll_root);
         txt_des = (TextView) v.findViewById(R.id.txt_des);
         txt_gosee = (TextView) v.findViewById(R.id.txt_gosee);
+        rl_scan_success=(RelativeLayout) v.findViewById(R.id.rl_scan_success);
+        img_back=(ImageView) v.findViewById(R.id.img_back);
 
+        img_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
         txt_gosee.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -101,6 +112,8 @@ public class ArActivity extends BaseActivity implements View.OnClickListener {
         scanView = (ScanView) findViewById(R.id.scanview);
         scanView.play();
         txt_action = (TextView) findViewById(R.id.btn_event_list);
+
+
     }
 
     @Override
@@ -160,6 +173,8 @@ public class ArActivity extends BaseActivity implements View.OnClickListener {
     @Override
     protected void onResume() {
         super.onResume();
+        scanView.setVisibility(View.VISIBLE);
+        scanView.play();
         if (glView != null) {
             glView.onResume();
             glView.startTracker();
@@ -189,6 +204,7 @@ public class ArActivity extends BaseActivity implements View.OnClickListener {
     }
 
     public void onEventMainThread(CalendarEvent event) {
+        scanView.stop();
         String taskKey = (String) event.what;
         glView.stopTracker();
         UUID uuid = new DeviceUuidFactory(this).getDeviceUuid();
@@ -234,18 +250,21 @@ public class ArActivity extends BaseActivity implements View.OnClickListener {
             taskCompletionBean = gson.fromJson(response, TaskCompletionBean.class);
             if (!TextUtils.isEmpty(taskCompletionBean.getCompletionResource())) {
                 img_scan.setVisibility(View.VISIBLE);
+                scanView.setVisibility(View.GONE);
+                rl_scan_success.setVisibility(View.VISIBLE);
+                rl_scan_success.getBackground().setAlpha(70);
                 Glide.with(ArActivity.this).load(taskCompletionBean.getCompletionResource()).into(img_scan);
             } else {
                 img_scan.setVisibility(View.GONE);
             }
             if (!TextUtils.isEmpty(taskCompletionBean.getCompletionUrl())) {
-                ll_root.setVisibility(View.VISIBLE);
                 txt_des.setText(taskCompletionBean.getCompletionDescription());
                 txt_gosee.setText("去看看");
             } else {
                 ll_root.setVisibility(View.VISIBLE);
                 txt_gosee.setText("知道了");
             }
+            dialog.DismissDialog();
         }
 
         @Override

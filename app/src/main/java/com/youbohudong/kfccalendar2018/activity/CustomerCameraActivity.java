@@ -2,7 +2,10 @@ package com.youbohudong.kfccalendar2018.activity;
 
 import android.content.ContentResolver;
 import android.content.Intent;
-import android.graphics.*;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,11 +14,22 @@ import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
 import android.support.v4.widget.DrawerLayout;
-import android.text.Layout;
-import android.text.StaticLayout;
-import android.text.TextPaint;
-import android.view.*;
-import android.widget.*;
+import android.view.Display;
+import android.view.Gravity;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.tencent.mm.opensdk.modelmsg.SendMessageToWX;
@@ -30,20 +44,30 @@ import com.youbohudong.kfccalendar2018.base.BaseActivity;
 import com.youbohudong.kfccalendar2018.bean.LeftBean;
 import com.youbohudong.kfccalendar2018.bean.RightBean;
 import com.youbohudong.kfccalendar2018.utils.SharedPreferencesUtils;
+import com.youbohudong.kfccalendar2018.utils.ToastUtils;
+import com.youbohudong.kfccalendar2018.view.CustomProgress;
 import com.youbohudong.kfccalendar2018.view.SingleTouchView;
 import com.youbohudong.kfccalendar2018.view.SlefProgress;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.FileCallBack;
 import com.zhy.http.okhttp.callback.StringCallback;
+
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+
 import de.greenrobot.event.EventBus;
 import okhttp3.Call;
 import okhttp3.Request;
 
-import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-
-public class CustomerCameraActivity extends BaseActivity implements SurfaceHolder.Callback, View.OnClickListener, RightAdapter.UpdateItemListening, SingleTouchView.DeleteUIListening, LeftAdapter.OnLeftClickListening {
+public class CustomerCameraActivity extends BaseActivity implements SurfaceHolder.Callback, View.OnClickListener, RightAdapter.UpdateItemListening, SingleTouchView.DeleteUIListening {
     private static final int THUMB_SIZE = 150;
     //声明一个camera对象
     private Camera camera;
@@ -62,7 +86,7 @@ public class CustomerCameraActivity extends BaseActivity implements SurfaceHolde
     private List<LeftBean> leftList;
     private List<LeftBean.StampsBean> rightList;
     private ListView lv_left, lv_right;
-    private LinearLayout ll_share, ll_close;
+    private LinearLayout ll_share, ll_close, ll_save_pic;
     private TextView txt_frends, txt_cancel, txt_frendsquare;
     ;
     private static final int REQUEST_XC_CODE = 101;
@@ -71,21 +95,19 @@ public class CustomerCameraActivity extends BaseActivity implements SurfaceHolde
     private static final int DOWNLOAD_FAILED = 104;
     private static final int SAVE_PIC = 105;
     private ContentResolver resolver;
-    private ImageView img_restart, img_save, img_paster, img_share, img_save_pic, img_ar;
+    private ImageView img_restart, img_save, img_paster, img_share, img_save_pic,img_ar;
     private ImageView img_again, img_savetip;
     private LeftAdapter leftAdapter;
     private RightAdapter rightAdapter;
 
     Display display;
     IWXAPI api;
+
+    int bmpHeight,bmpWidth;
+
     private String isCheck = "0";
     private static String filePath = "";
     private SharedPreferencesUtils spUtils;
-    //    private Integer[] fArr = {R.mipmap.art_01, R.mipmap.art_02, R.mipmap.art_03, R.mipmap.art_04, R.mipmap.art_05, R.mipmap.art_06,
-//            R.mipmap.art_07, R.mipmap.art_08, R.mipmap.art_09, R.mipmap.art_10, R.mipmap.art_11, R.mipmap.art_12};
-//
-//    private Integer[] sArr = {R.mipmap.cal_01, R.mipmap.cal_02, R.mipmap.cal_03, R.mipmap.cal_04, R.mipmap.cal_05, R.mipmap.cal_06,
-//            R.mipmap.cal_07, R.mipmap.cal_08, R.mipmap.cal_09, R.mipmap.cal_10, R.mipmap.cal_11, R.mipmap.cal_12,};
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -110,8 +132,8 @@ public class CustomerCameraActivity extends BaseActivity implements SurfaceHolde
         super.onCreate(savedInstanceState);
         api = WXAPIFactory.createWXAPI(this, "wx9b7b3c02f132a518");
         setContentView(R.layout.activity_customer_camera);
-        spUtils = new SharedPreferencesUtils(this);
-        spUtils.putBln("is_frist", false);
+        spUtils=new SharedPreferencesUtils(this);
+        spUtils.putBln("is_frist",false);
         EventBus.getDefault().register(this);
         initView();
         initListening();
@@ -131,7 +153,7 @@ public class CustomerCameraActivity extends BaseActivity implements SurfaceHolde
         suf_camera = (SurfaceView) findViewById(R.id.suf_camera);
         rl_finish = (RelativeLayout) findViewById(R.id.rl_finish);
         rl_root = (RelativeLayout) findViewById(R.id.rl_root);
-        fl_root = (FrameLayout) findViewById(R.id.fl_root);
+        fl_root=(FrameLayout) findViewById(R.id.fl_root);
         img_pic = (ImageView) findViewById(R.id.img_pic);
         lv_left = (ListView) findViewById(R.id.lv_left);
         lv_right = (ListView) findViewById(R.id.lv_right);
@@ -150,6 +172,8 @@ public class CustomerCameraActivity extends BaseActivity implements SurfaceHolde
         txt_frends = (TextView) findViewById(R.id.txt_frends);
         txt_frendsquare = (TextView) findViewById(R.id.txt_frendsquare);
         txt_cancel = (TextView) findViewById(R.id.txt_cancel);
+
+        ll_save_pic=(LinearLayout) findViewById(R.id.ll_save_pic);
 
 
         surfaceHolder = suf_camera.getHolder();
@@ -171,6 +195,21 @@ public class CustomerCameraActivity extends BaseActivity implements SurfaceHolde
         txt_cancel.setOnClickListener(this);
         ll_close.setOnClickListener(this);
         img_ar.setOnClickListener(this);
+        lv_left.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                new ToastUtils(CustomerCameraActivity.this).show(CustomerCameraActivity.this,leftList.get(i).getNote());
+                if (leftList.get(i).getStamps() != null) {
+                    rightAdapter = new RightAdapter(CustomerCameraActivity.this, leftList.get(i).getStamps(),i,leftList.get(i).isIsAvailable());
+                    rightAdapter.setmUpdateItemListening(CustomerCameraActivity.this);
+                    lv_right.setAdapter(rightAdapter);
+                    leftAdapter.setPos(i);
+                    leftAdapter.notifyDataSetChanged();
+
+
+                }
+            }
+        });
 
     }
 
@@ -179,14 +218,14 @@ public class CustomerCameraActivity extends BaseActivity implements SurfaceHolde
         leftList = new ArrayList<>();
         rightList = new ArrayList<>();
         leftAdapter = new LeftAdapter(CustomerCameraActivity.this, leftList);
-        leftAdapter.setmOnLeftClickListening(this);
+//        leftAdapter.setmOnLeftClickListening(this);
         lv_left.setAdapter(leftAdapter);
         getData();
 
     }
 
     /**
-     * 从服务器获取数据
+     *从服务器获取数据
      */
     private void getData() {
         String url = "https://www.youbohudong.com/api/biz/vip/kfc/calendar-2018/stamps";
@@ -228,7 +267,7 @@ public class CustomerCameraActivity extends BaseActivity implements SurfaceHolde
             bean.setName("敬请期待");
             leftList.add(bean);
             leftAdapter.notifyDataSetChanged();
-            rightAdapter = new RightAdapter(CustomerCameraActivity.this, leftList.get(0).getStamps(), 0, leftList.get(0).isIsAvailable());
+            rightAdapter = new RightAdapter(CustomerCameraActivity.this, leftList.get(0).getStamps(),0,leftList.get(0).isIsAvailable());
             rightAdapter.setmUpdateItemListening(CustomerCameraActivity.this);
             lv_right.setAdapter(rightAdapter);
 
@@ -256,7 +295,9 @@ public class CustomerCameraActivity extends BaseActivity implements SurfaceHolde
                 startActivityForResult(intent, REQUEST_XC_CODE);
                 break;
             case R.id.img_restart://重拍
-                updateView();
+                bmpWidth=0;
+                bmpHeight=0;
+               fl_root.removeAllViews();
                 rl_finish.setVisibility(View.GONE);
                 rl_root.setVisibility(View.GONE);
                 getCamera();
@@ -269,7 +310,6 @@ public class CustomerCameraActivity extends BaseActivity implements SurfaceHolde
                 updateView();
                 img_save.setVisibility(View.GONE);
                 img_restart.setVisibility(View.GONE);
-                img_again.setVisibility(View.VISIBLE);
                 img_paster.setVisibility(View.GONE);
                 takeScreenShot();
 
@@ -282,13 +322,23 @@ public class CustomerCameraActivity extends BaseActivity implements SurfaceHolde
                 drawer_layout.openDrawer(Gravity.RIGHT);
                 break;
             case R.id.img_again://再来一张
+                bmpWidth=0;
+                bmpHeight=0;
+                fl_root.removeAllViews();
                 rl_finish.setVisibility(View.GONE);
+                img_paster.setVisibility(View.VISIBLE);
+                img_share.setVisibility(View.GONE);
+                img_restart.setVisibility(View.VISIBLE);
+                img_save.setVisibility(View.VISIBLE);
+                img_again.setVisibility(View.GONE);
+
                 rl_root.setVisibility(View.GONE);
-                rl_root.removeAllViews();
                 getCamera();
                 if (surfaceHolder != null) {
                     setPrive(camera, surfaceHolder);
                 }
+
+
                 break;
             case R.id.txt_frends://回话
                 wxShare(filePath, SendMessageToWX.Req.WXSceneSession);
@@ -305,7 +355,7 @@ public class CustomerCameraActivity extends BaseActivity implements SurfaceHolde
                 drawer_layout.closeDrawer(Gravity.RIGHT);
                 break;
             case R.id.img_ar://ar扫描
-                startActivity(new Intent(this, ArActivity.class));
+                startActivity(new Intent(this,ArActivity.class));
                 break;
 
         }
@@ -371,7 +421,7 @@ public class CustomerCameraActivity extends BaseActivity implements SurfaceHolde
 
 
                             bMap = BitmapFactory.decodeByteArray(data, 0, data.length);
-                            bMap = compressImage(bMap);
+                            bMap=compressImage(bMap);
                             Bitmap bMapRotate;
                             Matrix matrix = new Matrix();
                             matrix.reset();
@@ -394,8 +444,10 @@ public class CustomerCameraActivity extends BaseActivity implements SurfaceHolde
                             bos.flush();//输出
                             bos.close();//关闭
 
+                            ll_save_pic.setVisibility(View.GONE);
                             rl_finish.setVisibility(View.VISIBLE);
                             rl_root.setVisibility(View.VISIBLE);
+                            img_pic.setVisibility(View.VISIBLE);
                             Bitmap bitmap = BitmapFactory.decodeFile(Environment.getExternalStorageDirectory().getAbsolutePath() + "/temp.jpeg");
                             //获取水印图片，如果图片过大，应对图片采样
 //                            Bitmap waterBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.splash);
@@ -523,43 +575,6 @@ public class CustomerCameraActivity extends BaseActivity implements SurfaceHolde
         }
     }
 
-    // 加水印 也可以加文字
-    public Bitmap watermarkBitmap(Bitmap src, Bitmap watermark,
-                                  String title) {
-        if (src == null) {
-            return null;
-        }
-        int w = src.getWidth();
-        int h = src.getHeight();
-        //需要处理图片太大造成的内存超过的问题,这里我的图片很小所以不写相应代码了
-        Bitmap newb = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);// 创建一个新的和SRC长度宽度一样的位图
-        Canvas cv = new Canvas(newb);
-        cv.drawBitmap(src, 0, 0, null);// 在 0，0坐标开始画入src
-        Paint paint = new Paint();
-        //加入图片
-        if (watermark != null) {
-            int ww = watermark.getWidth();
-            int wh = watermark.getHeight();
-//            paint.setAlpha(80);
-            cv.drawBitmap(watermark, w - ww + 5, h - wh + 5, paint);// 在src的右下角画入水印
-        }
-        //加入文字
-        if (title != null) {
-            String familyName = "黑体";
-            Typeface font = Typeface.create(familyName, Typeface.NORMAL);
-            TextPaint textPaint = new TextPaint();
-            textPaint.setColor(Color.RED);
-            textPaint.setTypeface(font);
-            textPaint.setTextSize(8);
-            //这里是自动换行的
-            StaticLayout layout = new StaticLayout(title, textPaint, w, Layout.Alignment.ALIGN_NORMAL, 1.0F, 0.0F, true);
-            layout.draw(cv);
-        }
-        cv.save(Canvas.ALL_SAVE_FLAG);// 保存
-        cv.restore();// 存储
-        return newb;
-    }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -575,10 +590,12 @@ public class CustomerCameraActivity extends BaseActivity implements SurfaceHolde
                             photoBmp = MediaStore.Images.Media.getBitmap(resolver, uri);
                             rl_finish.setVisibility(View.VISIBLE);
                             rl_root.setVisibility(View.VISIBLE);
-                            int height = photoBmp.getHeight();
-                            int width = photoBmp.getWidth();
-                            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(width, height);
-                            img_pic.setLayoutParams(params);
+                            ll_save_pic.setVisibility(View.GONE);
+                            img_pic.setVisibility(View.VISIBLE);
+                             bmpHeight=photoBmp.getHeight();
+                             bmpWidth=photoBmp.getWidth();
+//                            RelativeLayout.LayoutParams params=new RelativeLayout.LayoutParams(width,height);
+//                            img_pic.setLayoutParams(params);
                             img_pic.setImageBitmap(photoBmp);
                             drawer_layout.openDrawer(Gravity.RIGHT);
                         } catch (Exception e) {
@@ -604,30 +621,35 @@ public class CustomerCameraActivity extends BaseActivity implements SurfaceHolde
     int progress;
 
     public void downloadImg(final String imgUrl, final String fileName, int parentIndex, int pos, final SlefProgress v, final TextView view) {
-        OkHttpUtils.get().url(imgUrl).build().execute(new FileCallBack(savePath, fileName) {
+        OkHttpUtils.get().url(imgUrl).build().execute(new FileCallBack(savePath, fileName)
+                {
 
-            @Override
-            public void onBefore(Request request, int id) {
-                view.setVisibility(View.VISIBLE);
-            }
+                    @Override
+                    public void onBefore(Request request, int id)
+                    {
+                        view.setVisibility(View.VISIBLE);
+                    }
 
-            @Override
-            public void inProgress(float progress, long total, int id) {
-                v.setProgress((int) progress * 100);
-            }
+                    @Override
+                    public void inProgress(float progress, long total, int id)
+                    {
+                        v.setProgress((int)progress*100);
+                    }
 
-            @Override
-            public void onError(Call call, Exception e, int id) {
-            }
+                    @Override
+                    public void onError(Call call, Exception e, int id)
+                    {
+                    }
 
-            @Override
-            public void onResponse(File file, int id) {
-                spUtils.putBln(imgUrl, true);
-                view.setVisibility(View.GONE);
-                rightAdapter.notifyDataSetChanged();
+                    @Override
+                    public void onResponse(File file, int id)
+                    {
+                        spUtils.putBln(imgUrl,true);
+                        view.setVisibility(View.GONE);
+                        rightAdapter.notifyDataSetChanged();
 //                        Toast.makeText(CustomerCameraActivity.this, "onResponse :" + file.getAbsolutePath(),Toast.LENGTH_LONG).show();
-            }
-        });
+                    }
+                });
     }
 
     @Override
@@ -636,24 +658,24 @@ public class CustomerCameraActivity extends BaseActivity implements SurfaceHolde
     }
 
     @Override
-    public void onItemClick(int parentIndex, int pos, String fileName) {
+    public void onItemClick(int parentIndex,int pos,String fileName) {
 
         SingleTouchView singleTouchView = new SingleTouchView(CustomerCameraActivity.this);
-        singleTouchView.setmDeleteUIListening(CustomerCameraActivity.this);
-        singleTouchView.setImageScale(1);
-        singleTouchView.setControlLocation(SingleTouchView.RIGHT_BOTTOM);
-        singleTouchView.setControlDelLocation(SingleTouchView.LEFT_TOP);
-        Bitmap bmp = BitmapFactory.decodeFile(savePath + fileName);
-        singleTouchView.setImageResource(bmp);
-        singleTouchView.bringToFront();
-        fl_root.addView(singleTouchView);
-        drawer_layout.closeDrawer(Gravity.RIGHT);
-    }
+                        singleTouchView.setmDeleteUIListening(CustomerCameraActivity.this);
+                        singleTouchView.setImageScale(1);
+                        singleTouchView.setControlLocation(SingleTouchView.RIGHT_BOTTOM);
+                        singleTouchView.setControlDelLocation(SingleTouchView.LEFT_TOP);
+                         Bitmap bmp= BitmapFactory.decodeFile(savePath+fileName);
+                        singleTouchView.setImageResource(bmp);
+                        singleTouchView.bringToFront();
+                        fl_root.addView(singleTouchView);
+                        drawer_layout.closeDrawer(Gravity.RIGHT);
+        }
 
     @Override
-    public void onDownloadItem(int parentIndex, int pos, SlefProgress v, TextView view) {
-        String url = leftList.get(parentIndex).getStamps().get(pos).getImage();
-        downloadImg(url, url.substring(url.lastIndexOf("/")), parentIndex, pos, v, view);
+    public void onDownloadItem(int parentIndex, int pos, SlefProgress v,TextView view) {
+       String url= leftList.get(parentIndex).getStamps().get(pos).getImage();
+        downloadImg(url,url.substring(url.lastIndexOf("/")),parentIndex,pos,v,view);
     }
 
     /**
@@ -662,12 +684,32 @@ public class CustomerCameraActivity extends BaseActivity implements SurfaceHolde
     Bitmap screenBitmap;
 
     public void takeScreenShot() {
+       WindowManager wm=(WindowManager) getSystemService(WINDOW_SERVICE);
+      Display dy=  wm.getDefaultDisplay();
+       int sHight= dy.getHeight();
+        int sWidth=dy.getWidth();
         View dView = getWindow().getDecorView();
         dView.setDrawingCacheEnabled(true);
         dView.buildDrawingCache();
-        screenBitmap = Bitmap.createBitmap(dView.getDrawingCache());
-        rl_root.setVisibility(View.GONE);
-        img_save_pic.setImageBitmap(screenBitmap);
+        Bitmap bitmapScreen = dView.getDrawingCache();
+        img_pic.setVisibility(View.GONE);
+        ll_save_pic.setVisibility(View.VISIBLE);
+        if(bmpWidth>0&&bmpHeight>0&&bmpHeight<sHight*2/3){
+            screenBitmap = Bitmap.createBitmap(bitmapScreen, 0,(sHight-bmpHeight)/2, sWidth, bmpHeight+50);
+            dView.destroyDrawingCache();
+            LinearLayout.LayoutParams params=new LinearLayout.LayoutParams(sWidth,bmpHeight);
+            fl_root.removeAllViews();
+            img_save_pic.setLayoutParams(params);
+            img_save_pic.setImageBitmap(screenBitmap);
+        }else{
+            screenBitmap = Bitmap.createBitmap(bitmapScreen);
+            dView.destroyDrawingCache();
+            fl_root.removeAllViews();
+            LinearLayout.LayoutParams params=new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            img_save_pic.setLayoutParams(params);
+            img_save_pic.setImageBitmap(screenBitmap);
+        }
+        img_again.setVisibility(View.VISIBLE);
         if (screenBitmap != null) {
             try {
                 // 获取内置SD卡路径
@@ -688,6 +730,8 @@ public class CustomerCameraActivity extends BaseActivity implements SurfaceHolde
             } catch (Exception e) {
             }
         }
+
+
     }
 
     /**
@@ -776,16 +820,63 @@ public class CustomerCameraActivity extends BaseActivity implements SurfaceHolde
     }
 
 
-    @Override
-    public void onLeftItem(int pos) {
-        if (leftList.get(pos).getStamps() != null) {
-            rightAdapter = new RightAdapter(CustomerCameraActivity.this, leftList.get(pos).getStamps(), pos, leftList.get(pos).isIsAvailable());
-            rightAdapter.setmUpdateItemListening(CustomerCameraActivity.this);
-            lv_right.setAdapter(rightAdapter);
-            leftAdapter.setPos(pos);
-            leftAdapter.notifyDataSetChanged();
+//    @Override
+//    public void onLeftItem(int pos) {
+//        if (leftList.get(pos).getStamps() != null) {
+//            rightAdapter = new RightAdapter(CustomerCameraActivity.this, leftList.get(pos).getStamps(),pos,leftList.get(pos).isIsAvailable());
+//            rightAdapter.setmUpdateItemListening(CustomerCameraActivity.this);
+//            lv_right.setAdapter(rightAdapter);
+//            leftAdapter.setPos(pos);
+//            leftAdapter.notifyDataSetChanged();
+//
+//
+//        }
+//    }
 
+    public void screenBmp(View layout){
+        int width = layout.getWidth();
+        int height = layout.getHeight();
 
-        }
+        //打开图像缓存
+        layout.setDrawingCacheEnabled(true);
+        //测量Linearlayout的大小
+        layout.measure(0, 0);
+        width = layout.getMeasuredWidth();
+        height = layout.getMeasuredHeight();
+        //发送位置和尺寸到LienarLayout及其所有的子View
+        //简单地说，就是我们截取的屏幕区域，注意是以Linearlayout左上角为基准的，而不是屏幕左上角
+        layout.layout(0, 0, width, height);
+        //拿到截取图像的bitmap
+        Bitmap bitmap = layout.getDrawingCache();
+        rl_root.setVisibility(View.GONE);
+        img_save_pic.setImageBitmap(bitmap);
+//        FileOutputStream fos = null;
+//        //获得sd卡路径
+//        String rootPath = Environment.getExternalStorageState().equals(
+//                Environment.MEDIA_MOUNTED) ? Environment
+//                .getExternalStorageDirectory().getAbsolutePath() : null;
+//        //不存在文件夹就新建一个
+//        try {
+//            File file = new File(rootPath + "/screenShot/");
+//            if (!file.exists()) {
+//                file.mkdirs();
+//            }
+//
+//            fos = new FileOutputStream(rootPath + "/screenShot/"
+//                    + System.currentTimeMillis() + ".png");
+//            //把bitmap压缩成png格式，并通过fos写入到目标文件
+//            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        } finally {
+//            if (fos != null) {
+//                try {
+//                    fos.close();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }
     }
+
 }

@@ -84,12 +84,18 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="gone">
-            <ImageView
-                android:id="@+id/img_save_pic"
+            <LinearLayout
+                android:id="@+id/ll_save_pic"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:scaleType="fitXY"
-                />
+                android:gravity="center">
+                <ImageView
+                    android:id="@+id/img_save_pic"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="fitXY"
+                    />
+            </LinearLayout>
 
             <ImageView
                 android:id="@+id/img_paster"
@@ -192,7 +198,7 @@
     <!--这是侧边栏滑动时出现的右边布局内容-->
     <LinearLayout
         android:id="@+id/drawer_content"
-        android:layout_width="155dp"
+        android:layout_width="168dp"
         android:layout_height="match_parent"
         android:layout_gravity="end"
         android:orientation="horizontal">

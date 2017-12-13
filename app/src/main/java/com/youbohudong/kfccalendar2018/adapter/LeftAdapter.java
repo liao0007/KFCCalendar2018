@@ -93,29 +93,29 @@ public class LeftAdapter extends BaseAdapter {
         }
 
 
-        view.setOnTouchListener(new View.OnTouchListener() {
-            final PupWinUtils popWin = new PupWinUtils(ctx);
-
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                switch (motionEvent.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        if (!TextUtils.isEmpty(bean.getNote())) {
-                            popWin.show(holder.txt_title, bean.getNote());
-                        } else if (bean.getName().equals("敬请期待")) {
-                            popWin.show(holder.txt_title, "不定期推出新贴纸和限量版贴纸，请关注App通知，收集贴纸，手慢则无哦！");
-                        }
-                        break;
-                    case MotionEvent.ACTION_MOVE:
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        popWin.close();
-                        mOnLeftClickListening.onLeftItem(i);
-                        break;
-                }
-                return true;
-            }
-        });
+//        view.setOnTouchListener(new View.OnTouchListener() {
+//            final PupWinUtils popWin = new PupWinUtils(ctx);
+//
+//            @Override
+//            public boolean onTouch(View view, MotionEvent motionEvent) {
+//                switch (motionEvent.getAction()) {
+//                    case MotionEvent.ACTION_DOWN:
+//                        if (!TextUtils.isEmpty(bean.getNote())) {
+//                            popWin.show(holder.txt_title, bean.getNote());
+//                        } else if (bean.getName().equals("敬请期待")) {
+//                            popWin.show(holder.txt_title, "不定期推出新贴纸和限量版贴纸，请关注App通知，收集贴纸，手慢则无哦！");
+//                        }
+//                        break;
+//                    case MotionEvent.ACTION_MOVE:
+//                        break;
+//                    case MotionEvent.ACTION_UP:
+//                        popWin.close();
+//                        mOnLeftClickListening.onLeftItem(i);
+//                        break;
+//                }
+//                return true;
+//            }
+//        });
         return view;
     }
 
@@ -124,18 +124,18 @@ public class LeftAdapter extends BaseAdapter {
         ImageView img_newtag;
     }
 
-    OnLeftClickListening mOnLeftClickListening;
-
-    public OnLeftClickListening getmOnLeftClickListening() {
-        return mOnLeftClickListening;
-    }
-
-    public void setmOnLeftClickListening(OnLeftClickListening mOnLeftClickListening) {
-        this.mOnLeftClickListening = mOnLeftClickListening;
-    }
-
-    public interface OnLeftClickListening {
-        void onLeftItem(int pos);
-    }
+//    OnLeftClickListening mOnLeftClickListening;
+//
+//    public OnLeftClickListening getmOnLeftClickListening() {
+//        return mOnLeftClickListening;
+//    }
+//
+//    public void setmOnLeftClickListening(OnLeftClickListening mOnLeftClickListening) {
+//        this.mOnLeftClickListening = mOnLeftClickListening;
+//    }
+//
+//    public interface OnLeftClickListening {
+//        void onLeftItem(int pos);
+//    }
 
 }

@@ -12,7 +12,8 @@
             android:id="@+id/img_back"
             android:layout_width="51dp"
             android:layout_height="24dp"
-            android:layout_marginLeft="10dp"
+            android:padding="10dp"
+            android:layout_marginLeft="15dp"
             android:background="@mipmap/back"/>
     </LinearLayout>
     <WebView

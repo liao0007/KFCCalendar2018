@@ -3,8 +3,13 @@ package com.youbohudong.kfccalendar2018.activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
+import android.webkit.JavascriptInterface;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ImageView;
+import android.widget.Toast;
+
 import com.youbohudong.kfccalendar2018.R;
 import com.youbohudong.kfccalendar2018.base.BaseActivity;
 import com.youbohudong.kfccalendar2018.utils.DeviceUuidFactory;
@@ -39,9 +44,14 @@ public class WebViewActivity extends BaseActivity {
     @Override
     public void initData() {
         UUID uuid = new DeviceUuidFactory(this).getDeviceUuid();
-        webView.getSettings().setJavaScriptEnabled(true);
+        WebSettings webSettings=webView.getSettings();
+        webSettings.setJavaScriptEnabled(true);
+        webSettings.setPluginState(WebSettings.PluginState.ON);
+        webView.addJavascriptInterface(new JsInteration(),"android");
         String urlWithUdid = url.contains("?") ? url + "&" + "udid=" + uuid : url + "?" + "udid=" + uuid;
-        webView.loadUrl(urlWithUdid);
+        String url="https://www.youbohudong.com/biz/vip/kfc/belgium-ice-cream-20171218/share";
+//        webView.loadUrl(urlWithUdid);
+        webView.loadUrl(url);
     }
 
     @Override
@@ -52,7 +62,23 @@ public class WebViewActivity extends BaseActivity {
                 finish();
             }
         });
+        webView.setWebViewClient(new WebViewClient(){
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url)
+            {
+                    return true;
+
+            }
+        });
     }
 
+    public class JsInteration {
+
+        @JavascriptInterface
+        public void postMessage(String location) {
+            Toast.makeText(WebViewActivity.this,location,Toast.LENGTH_LONG).show();
+//            return "我是一个兵";
+        }
+    }
 
 }

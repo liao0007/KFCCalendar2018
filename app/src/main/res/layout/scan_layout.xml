@@ -5,9 +5,24 @@
               android:layout_height="match_parent"
    >
     <LinearLayout
+        android:id="@+id/ll_title"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:gravity="center_vertical"
+        android:background="@color/black">
+        <ImageView
+            android:id="@+id/img_back"
+            android:layout_width="51dp"
+            android:layout_height="24dp"
+            android:layout_marginLeft="15dp"
+            android:padding="10dp"
+            android:background="@mipmap/back"/>
+    </LinearLayout>
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
+        android:layout_below="@+id/ll_title"
         android:gravity="center">
     <com.youbohudong.kfccalendar2018.view.ScanView
         android:id="@+id/scanview"
@@ -16,7 +31,7 @@
         android:layout_gravity="center"
         app:scanFrameDrawable="@drawable/icon_frame"
         app:scanLineDrawable="@drawable/icon_line"
-        app:lineHeight="0.25"
+        app:lineHeight="0.1"
         app:duration="2500"
         app:linePadding="1dp"/>
 
@@ -41,13 +56,22 @@
         android:background="@drawable/action_bg"
         android:gravity="center"/>
     </LinearLayout>
+    <RelativeLayout
+        android:id="@+id/rl_scan_success"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/black"
+        android:layout_below="@+id/ll_title"
+        android:visibility="gone">
+
+
     <ImageView
         android:id="@+id/img_scan"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
        android:layout_marginLeft="30dp"
         android:layout_marginRight="30dp"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="40dp"
         android:layout_marginBottom="60dp"
         android:visibility="gone"
        />
@@ -59,15 +83,15 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="40dp"
-        android:visibility="gone"
         android:background="@drawable/bg_white">
         <TextView
             android:id="@+id/txt_des"
             android:layout_width="match_parent"
             android:layout_height="70dp"
+            android:padding="5dp"
             android:textSize="14sp"
             android:textColor="#000000"
-            android:text="已经成功收集肯德基比利时巧克力冰激凌限量版贴纸，立即拍照炫耀一下！"/>
+            android:text=""/>
         <TextView
             android:id="@+id/txt_gosee"
             android:layout_width="match_parent"
@@ -78,4 +102,5 @@
             android:textSize="14sp"
             android:text="知道了"/>
     </LinearLayout>
+    </RelativeLayout>
 </RelativeLayout>

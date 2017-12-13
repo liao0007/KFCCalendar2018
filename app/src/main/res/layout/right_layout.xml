@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+    android:gravity="center">
+
+    <RelativeLayout
+        android:id="@+id/rl_bg"
+        android:layout_width="65dp"
+        android:layout_height="85dp"
+        android:gravity="center"
+        android:padding="3dp"
+        android:background="@color/app_white"
+      >
+
+    <ImageView
+        android:id="@+id/img_pic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scaleType="fitXY"
+        android:src="@mipmap/cal_01"
+        android:background="@color/app_white"
+        />
+
+
+
+    </RelativeLayout>
+    <RelativeLayout
+        android:id="@+id/fl_shade"
+        android:layout_width="62dp"
+        android:layout_height="82dp"
+        android:gravity="center"
+        android:background="@color/app_white">
+        <com.youbohudong.kfc2018cal.view.SlefProgress
+            android:id="@+id/sprogrss"
+            style="@android:style/Widget.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:layout_centerInParent="true"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:background="@color/lightgray"
+            android:max="100"
+            android:progress="0"
+            android:visibility="gone"
+            ></com.youbohudong.kfc2018cal.view.SlefProgress>
+        <TextView
+            android:id="@+id/txt_down"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/sprogrss"
+            android:text="下载中..."
+            android:textColor="@color/app_white"
+            android:textSize="10sp"
+            android:visibility="gone"/>
+
+    </RelativeLayout>
+</RelativeLayout>

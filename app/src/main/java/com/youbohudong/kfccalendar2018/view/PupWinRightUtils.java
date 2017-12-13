@@ -20,26 +20,28 @@ public class PupWinRightUtils {
 
     public PupWinRightUtils(Context ctx) {
         this.ctx = ctx;
-        mInflater=LayoutInflater.from(ctx);
+        mInflater = LayoutInflater.from(ctx);
         initView(ctx);
     }
 
     private void initView(Context ctx) {
-       View v= mInflater.inflate(R.layout.pop_win,null);
-        txt_content=(TextView)v.findViewById(R.id.txt_content);
-        popWin=new PopupWindow(v, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
+        View v = mInflater.inflate(R.layout.pop_win, null);
+        txt_content = (TextView) v.findViewById(R.id.txt_content);
+        popWin = new PopupWindow(v, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
         popWin.setContentView(v);
     }
-    public void show(View view,String str){
-        if(popWin!=null){
+
+    public void show(View view, String str) {
+        if (popWin != null) {
             txt_content.setText(str);
 //            popWin.showAsDropDown(view);
-            popWin.showAsDropDown(view,-500, (int)(view.getY()/2));
+            popWin.showAsDropDown(view, -500, (int) (view.getY() / 2));
 //            popWin.showAtLocation(view, Gravity.LEFT,350,(int)(view.getY()/2));
         }
     }
-    public void close(){
-        if(popWin!=null&&popWin.isShowing()){
+
+    public void close() {
+        if (popWin != null && popWin.isShowing()) {
             popWin.dismiss();
         }
     }

@@ -12,10 +12,11 @@ import java.util.UUID;
  * Created by ${bcq} on 2017/12/11.
  */
 
-public class DeviceUuidFactory  {
+public class DeviceUuidFactory {
     protected static final String PREFS_FILE = "device_id.xml";
     protected static final String PREFS_DEVICE_ID = "device_id";
     protected static UUID uuid;
+
     public DeviceUuidFactory(Context context) {
         if (uuid == null) {
             synchronized (DeviceUuidFactory.class) {

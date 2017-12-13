@@ -44,18 +44,16 @@ public class RightBean implements Serializable {
         this.progress = progress;
     }
 
-    public boolean equals(Object obj){
-        if(this == obj) return true;    //若指向同一个对象，直接返回true
+    public boolean equals(Object obj) {
+        if (this == obj) return true;    //若指向同一个对象，直接返回true
         boolean flag = obj instanceof RightBean;    //判断obj是否属于RightBean这个类
-        if(flag){
+        if (flag) {
             RightBean one = (RightBean) obj;
 
-            if(this.id == one.id && this.imgUrl.equals(one.imgUrl)&&this.progress==one.progress&&this.isDownload.equals(one.isDownload)) {       //基本数据类型直接用==，string为引用数据类型，调用String类本身重写的equals方法
+            if (this.id == one.id && this.imgUrl.equals(one.imgUrl) && this.progress == one.progress && this.isDownload.equals(one.isDownload)) {       //基本数据类型直接用==，string为引用数据类型，调用String类本身重写的equals方法
                 return true;
-            }
-            else return false;
-        }
-        else return false;
+            } else return false;
+        } else return false;
     }
 
 }

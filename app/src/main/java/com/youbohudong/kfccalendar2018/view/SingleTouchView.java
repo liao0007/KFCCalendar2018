@@ -24,7 +24,7 @@ import java.util.List;
  * Created by ${bcq} on 2017/11/8.
  */
 
-public class SingleTouchView extends View{
+public class SingleTouchView extends View {
     /**
      * 图片的最大缩放比例
      */
@@ -56,7 +56,6 @@ public class SingleTouchView extends View{
     public static final boolean DEFAULT_EDITABLE = true;
     public static final int DEFAULT_OTHER_DRAWABLE_WIDTH = 50;
     public static final int DEFAULT_OTHER_DRAWABLE_HEIGHT = 50;
-
 
 
     /**
@@ -119,7 +118,7 @@ public class SingleTouchView extends View{
     /**
      * 用于缩放，旋转的图标
      */
-    private Drawable controlDrawable,controlDelete;
+    private Drawable controlDrawable, controlDelete;
 
     /**
      * 缩放，旋转图标的宽和高
@@ -135,7 +134,7 @@ public class SingleTouchView extends View{
     /**
      * 画外围框的画笔
      */
-    private Paint mPaint ;
+    private Paint mPaint;
 
     /**
      * 初始状态
@@ -223,9 +222,10 @@ public class SingleTouchView extends View{
 
     /**
      * 获取自定义属性
+     *
      * @param attrs
      */
-    private void obtainStyledAttributes(AttributeSet attrs){
+    private void obtainStyledAttributes(AttributeSet attrs) {
         metrics = getContext().getResources().getDisplayMetrics();
         framePadding = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, DEFAULT_FRAME_PADDING, metrics);
         frameWidth = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, DEFAULT_FRAME_WIDTH, metrics);
@@ -252,21 +252,21 @@ public class SingleTouchView extends View{
     }
 
 
-    private void init(){
+    private void init() {
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
         mPaint.setColor(frameColor);
         mPaint.setStrokeWidth(frameWidth);
         mPaint.setStyle(Style.STROKE);
 
-        if(controlDrawable == null){
+        if (controlDrawable == null) {
             controlDrawable = getContext().getResources().getDrawable(R.mipmap.scale);
         }
-        if(controlDelete==null){
-            controlDelete=getContext().getResources().getDrawable(R.mipmap.delete);
+        if (controlDelete == null) {
+            controlDelete = getContext().getResources().getDrawable(R.mipmap.delete);
         }
-        mDrawableDelWidth=controlDelete.getIntrinsicWidth();
-        mDrawableDelHeight= controlDelete.getIntrinsicHeight();
+        mDrawableDelWidth = controlDelete.getIntrinsicWidth();
+        mDrawableDelHeight = controlDelete.getIntrinsicHeight();
 
         mDrawableWidth = controlDrawable.getIntrinsicWidth();
         mDrawableHeight = controlDrawable.getIntrinsicHeight();
@@ -281,10 +281,10 @@ public class SingleTouchView extends View{
 
         //获取SingleTouchView所在父布局的中心点
         ViewGroup mViewGroup = (ViewGroup) getParent();
-        if(null != mViewGroup){
+        if (null != mViewGroup) {
             int parentWidth = mViewGroup.getWidth();
             int parentHeight = mViewGroup.getHeight();
-            mCenterPoint.set(parentWidth/2, parentHeight/2);
+            mCenterPoint.set(parentWidth / 2, parentHeight / 2);
         }
     }
 
@@ -292,18 +292,18 @@ public class SingleTouchView extends View{
     /**
      * 调整View的大小，位置
      */
-    private void adjustLayout(){
+    private void adjustLayout() {
         int actualWidth = mViewWidth + mDrawableWidth;
         int actualHeight = mViewHeight + mDrawableHeight;
 
-        int newPaddingLeft = (int) (mCenterPoint.x - actualWidth /2);
-        int newPaddingTop = (int) (mCenterPoint.y - actualHeight/2);
+        int newPaddingLeft = (int) (mCenterPoint.x - actualWidth / 2);
+        int newPaddingTop = (int) (mCenterPoint.y - actualHeight / 2);
 
-        if(mViewPaddingLeft != newPaddingLeft || mViewPaddingTop != newPaddingTop){
+        if (mViewPaddingLeft != newPaddingLeft || mViewPaddingTop != newPaddingTop) {
             mViewPaddingLeft = newPaddingLeft;
             mViewPaddingTop = newPaddingTop;
 
-          layout(newPaddingLeft, newPaddingTop, newPaddingLeft + actualWidth, newPaddingTop + actualHeight);
+            layout(newPaddingLeft, newPaddingTop, newPaddingLeft + actualWidth, newPaddingTop + actualHeight);
         }
 
         layout(newPaddingLeft, newPaddingTop, newPaddingLeft + actualWidth, newPaddingTop + actualHeight);
@@ -312,9 +312,10 @@ public class SingleTouchView extends View{
 
     /**
      * 设置旋转图
+     *
      * @param bitmap
      */
-    public void setImageBitamp(Bitmap bitmap){
+    public void setImageBitamp(Bitmap bitmap) {
         this.mBitmap = bitmap;
         transformDraw();
     }
@@ -322,15 +323,17 @@ public class SingleTouchView extends View{
 
     /**
      * 设置旋转图
+     *
      * @param bmp
      */
-    public void setImageDrawable(Bitmap bmp){
+    public void setImageDrawable(Bitmap bmp) {
         this.mBitmap = bmp;
         transformDraw();
     }
 
     /**
      * 从Drawable中获取Bitmap对象
+     *
      * @param drawable
      * @return
      */
@@ -364,9 +367,10 @@ public class SingleTouchView extends View{
 
     /**
      * 根据id设置旋转图
+     *
      * @param bmp
      */
-    public void setImageResource(Bitmap bmp){
+    public void setImageResource(Bitmap bmp) {
 //        Drawable drawable = getContext().getResources().getDrawable(resId);
         setImageDrawable(bmp);
     }
@@ -376,22 +380,22 @@ public class SingleTouchView extends View{
         //每次draw之前调整View的位置和大小
         super.onDraw(canvas);
 
-        if(mBitmap == null) return;
+        if (mBitmap == null) return;
         canvas.drawBitmap(mBitmap, matrix, mPaint);
 
 
         //处于可编辑状态才画边框和控制图标
-        if(isEditable){
+        if (isEditable) {
             mPath.reset();
-                //画删除图标
-                controlDelete.setBounds(mLTPoint.x - mDrawableDelWidth / 2+10, mLTPoint.y - mDrawableDelHeight / 2+10,
-                        mLTPoint.x + mDrawableDelWidth, mLTPoint.y + mDrawableDelHeight / 2);
-                controlDelete.draw(canvas);
-                //画旋转, 缩放图标
+            //画删除图标
+            controlDelete.setBounds(mLTPoint.x - mDrawableDelWidth / 2 + 10, mLTPoint.y - mDrawableDelHeight / 2 + 10,
+                    mLTPoint.x + mDrawableDelWidth, mLTPoint.y + mDrawableDelHeight / 2);
+            controlDelete.draw(canvas);
+            //画旋转, 缩放图标
 
-                controlDrawable.setBounds(mControlPoint.x - mDrawableWidth / 2, mControlPoint.y - mDrawableHeight / 2,
-                        mControlPoint.x + mDrawableWidth / 2, mControlPoint.y + mDrawableHeight / 2);
-                controlDrawable.draw(canvas);
+            controlDrawable.setBounds(mControlPoint.x - mDrawableWidth / 2, mControlPoint.y - mDrawableHeight / 2,
+                    mControlPoint.x + mDrawableWidth / 2, mControlPoint.y + mDrawableHeight / 2);
+            controlDrawable.draw(canvas);
         }
 
         adjustLayout();
@@ -400,22 +404,21 @@ public class SingleTouchView extends View{
     }
 
 
-
     /**
      * 设置Matrix, 强制刷新
      */
-    private void transformDraw(){
-        if(mBitmap == null) return;
-        int bitmapWidth = (int)(mBitmap.getWidth() * mScale/2);
-        int bitmapHeight = (int)(mBitmap.getHeight()* mScale/2);
+    private void transformDraw() {
+        if (mBitmap == null) return;
+        int bitmapWidth = (int) (mBitmap.getWidth() * mScale / 2);
+        int bitmapHeight = (int) (mBitmap.getHeight() * mScale / 2);
         computeRect(-framePadding, -framePadding, bitmapWidth + framePadding, bitmapHeight + framePadding, mDegree);
 
         //设置缩放比例
-        matrix.setScale(mScale/2, mScale/2);
+        matrix.setScale(mScale / 2, mScale / 2);
         //绕着图片中心进行旋转
-        matrix.postRotate(mDegree % 360, bitmapWidth/2, bitmapHeight/2);
+        matrix.postRotate(mDegree % 360, bitmapWidth / 2, bitmapHeight / 2);
         //设置画该图片的起始点
-        matrix.postTranslate(offsetX + mDrawableWidth/2, offsetY + mDrawableHeight/2);
+        matrix.postTranslate(offsetX + mDrawableWidth / 2, offsetY + mDrawableHeight / 2);
 
         adjustLayout();
     }
@@ -429,10 +432,10 @@ public class SingleTouchView extends View{
 
 
     public boolean onTouchEvent(MotionEvent event) {
-        if(!isEditable){
+        if (!isEditable) {
             return super.onTouchEvent(event);
         }
-        switch (event.getAction() ) {
+        switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 bringToFront();
                 mPreMovePointF.set(event.getX() + mViewPaddingLeft, event.getY() + mViewPaddingTop);
@@ -501,10 +504,9 @@ public class SingleTouchView extends View{
                     mScale = scale;
 
                     transformDraw();
-                }else if(mStatus ==STATUS_DELETE){
+                } else if (mStatus == STATUS_DELETE) {
                     mDeleteUIListening.onDeleteUI(this);
-                }
-                else if (mStatus == STATUS_DRAG) {
+                } else if (mStatus == STATUS_DRAG) {
                     // 修改中心点
                     mCenterPoint.x += mCurMovePointF.x - mPreMovePointF.x;
                     mCenterPoint.y += mCurMovePointF.y - mPreMovePointF.y;
@@ -521,16 +523,16 @@ public class SingleTouchView extends View{
     }
 
 
-
     /**
      * 获取四个点和View的大小
+     *
      * @param left
      * @param top
      * @param right
      * @param bottom
      * @param degree
      */
-    private void computeRect(int left, int top, int right, int bottom, float degree){
+    private void computeRect(int left, int top, int right, int bottom, float degree) {
         Point lt = new Point(left, top);
         Point rt = new Point(right, top);
         Point rb = new Point(right, bottom);
@@ -543,16 +545,17 @@ public class SingleTouchView extends View{
 
         //计算X坐标最大的值和最小的值
         int maxCoordinateX = getMaxValue(mLTPoint.x, mRTPoint.x, mRBPoint.x, mLBPoint.x);
-        int minCoordinateX = getMinValue(mLTPoint.x, mRTPoint.x, mRBPoint.x, mLBPoint.x);;
+        int minCoordinateX = getMinValue(mLTPoint.x, mRTPoint.x, mRBPoint.x, mLBPoint.x);
+        ;
 
-        mViewWidth = maxCoordinateX - minCoordinateX ;
+        mViewWidth = maxCoordinateX - minCoordinateX;
 
 
         //计算Y坐标最大的值和最小的值
         int maxCoordinateY = getMaxValue(mLTPoint.y, mRTPoint.y, mRBPoint.y, mLBPoint.y);
         int minCoordinateY = getMinValue(mLTPoint.y, mRTPoint.y, mRBPoint.y, mLBPoint.y);
 
-        mViewHeight = maxCoordinateY - minCoordinateY ;
+        mViewHeight = maxCoordinateY - minCoordinateY;
 
 
         //View中心点的坐标
@@ -562,9 +565,8 @@ public class SingleTouchView extends View{
         offsetY = mViewHeight / 2 - viewCenterPoint.y;
 
 
-
         int halfDrawableWidth = mDrawableWidth / 2;
-        int halfDrawableHeight = mDrawableHeight /2;
+        int halfDrawableHeight = mDrawableHeight / 2;
 
         //将Bitmap的四个点的X的坐标移动offsetX + halfDrawableWidth
         mLTPoint.x += (offsetX + halfDrawableWidth);
@@ -579,16 +581,17 @@ public class SingleTouchView extends View{
         mLBPoint.y += (offsetY + halfDrawableHeight);
 
         mControlPoint = LocationToPoint(controlLocation);
-        mControlDelPoint=LocationToPoint(controlDelLocation);
+        mControlDelPoint = LocationToPoint(controlDelLocation);
     }
 
 
     /**
      * 根据位置判断控制图标处于那个点
+     *
      * @return
      */
-    private Point LocationToPoint(int location){
-        switch(location){
+    private Point LocationToPoint(int location) {
+        switch (location) {
             case LEFT_TOP:
                 return mLTPoint;
             case RIGHT_TOP:
@@ -604,31 +607,33 @@ public class SingleTouchView extends View{
 
     /**
      * 获取变长参数最大的值
+     *
      * @param array
      * @return
      */
-    public int getMaxValue(Integer...array){
+    public int getMaxValue(Integer... array) {
         List<Integer> list = Arrays.asList(array);
         Collections.sort(list);
-        return list.get(list.size() -1);
+        return list.get(list.size() - 1);
     }
 
 
     /**
      * 获取变长参数最大的值
+     *
      * @param array
      * @return
      */
-    public int getMinValue(Integer...array){
+    public int getMinValue(Integer... array) {
         List<Integer> list = Arrays.asList(array);
         Collections.sort(list);
         return list.get(0);
     }
 
 
-
     /**
      * 获取旋转某个角度之后的点
+     *
      * @param source
      * @param degree
      * @return
@@ -706,6 +711,7 @@ public class SingleTouchView extends View{
 
     /**
      * 角度换算成弧度
+     *
      * @param degree
      * @return
      */
@@ -715,11 +721,12 @@ public class SingleTouchView extends View{
 
     /**
      * 根据点击的位置判断是否点中控制旋转，缩放的图片， 初略的计算
+     *
      * @param x
      * @param y
      * @return
      */
-    private int JudgeStatus(float x, float y){
+    private int JudgeStatus(float x, float y) {
         PointF touchPoint = new PointF(x, y);
         PointF controlPointF = new PointF(mControlPoint);
         PointF controlDelPointF = new PointF(mControlDelPoint);
@@ -728,11 +735,11 @@ public class SingleTouchView extends View{
         float distanceToDelControl = distance4PointF(touchPoint, controlDelPointF);
 
         //如果两者之间的距离小于 控制图标的宽度，高度的最小值，则认为点中了控制图标
-        if(distanceToControl < Math.min(mDrawableWidth/2, mDrawableHeight/2)){
+        if (distanceToControl < Math.min(mDrawableWidth / 2, mDrawableHeight / 2)) {
             return STATUS_ROTATE_ZOOM;
-        }else if(distanceToControl>distanceToDelControl&&distanceToDelControl < Math.min(mDrawableDelWidth/2, mDrawableDelHeight/2)){
+        } else if (distanceToControl > distanceToDelControl && distanceToDelControl < Math.min(mDrawableDelWidth / 2, mDrawableDelHeight / 2)) {
             return STATUS_DELETE;
-        }else{
+        } else {
             return STATUS_DRAG;
 
         }
@@ -747,10 +754,11 @@ public class SingleTouchView extends View{
 
     /**
      * 设置图片旋转角度
+     *
      * @param degree
      */
     public void setImageDegree(float degree) {
-        if(this.mDegree != degree){
+        if (this.mDegree != degree) {
             this.mDegree = degree;
             transformDraw();
         }
@@ -762,18 +770,21 @@ public class SingleTouchView extends View{
 
     /**
      * 设置图片缩放比例
+     *
      * @param scale
      */
     public void setImageScale(float scale) {
-        if(this.mScale != scale){
+        if (this.mScale != scale) {
             this.mScale = scale;
             transformDraw();
-        };
+        }
+        ;
     }
 
     public Drawable getControlDelete() {
         return controlDelete;
     }
+
     /**
      * 设置控制图标
      */
@@ -790,6 +801,7 @@ public class SingleTouchView extends View{
 
     /**
      * 设置控制图标
+     *
      * @param drawable
      */
     public void setControlDrawable(Drawable drawable) {
@@ -804,7 +816,7 @@ public class SingleTouchView extends View{
     }
 
     public void setFramePadding(int framePadding) {
-        if(this.framePadding == framePadding)
+        if (this.framePadding == framePadding)
             return;
         this.framePadding = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, framePadding, metrics);
         transformDraw();
@@ -815,7 +827,7 @@ public class SingleTouchView extends View{
     }
 
     public void setFrameColor(int frameColor) {
-        if(this.frameColor == frameColor)
+        if (this.frameColor == frameColor)
             return;
         this.frameColor = frameColor;
         mPaint.setColor(frameColor);
@@ -827,7 +839,7 @@ public class SingleTouchView extends View{
     }
 
     public void setFrameWidth(int frameWidth) {
-        if(this.frameWidth == frameWidth)
+        if (this.frameWidth == frameWidth)
             return;
         this.frameWidth = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, frameWidth, metrics);
         mPaint.setStrokeWidth(frameWidth);
@@ -838,7 +850,7 @@ public class SingleTouchView extends View{
      * 设置控制图标的位置, 设置的值只能选择LEFT_TOP ，RIGHT_TOP， RIGHT_BOTTOM，LEFT_BOTTOM
      */
     public void setControlLocation(int location) {
-        if(this.controlLocation == location)
+        if (this.controlLocation == location)
             return;
         this.controlLocation = location;
         transformDraw();
@@ -855,10 +867,10 @@ public class SingleTouchView extends View{
 
     public void setControlDelLocation(int controlDelLocation) {
         this.controlDelLocation = controlDelLocation;
-        if(this.controlDelLocation == controlDelLocation)
+        if (this.controlDelLocation == controlDelLocation)
             return;
         this.controlDelLocation = controlDelLocation;
-       delete();
+        delete();
     }
 
     public PointF getCenterPoint() {
@@ -867,6 +879,7 @@ public class SingleTouchView extends View{
 
     /**
      * 设置图片中心点位置，相对于父布局而言
+     *
      * @param mCenterPoint
      */
     public void setCenterPoint(PointF mCenterPoint) {
@@ -881,6 +894,7 @@ public class SingleTouchView extends View{
 
     /**
      * 设置是否处于可缩放，平移，旋转状态
+     *
      * @param isEditable
      */
     public void setEditable(boolean isEditable) {
@@ -890,6 +904,7 @@ public class SingleTouchView extends View{
 
     /**
      * 两个点之间的距离
+     *
      * @return
      */
     private float distance4PointF(PointF pf1, PointF pf2) {
@@ -909,7 +924,7 @@ public class SingleTouchView extends View{
         this.mDeleteUIListening = mDeleteUIListening;
     }
 
-    public interface DeleteUIListening{
+    public interface DeleteUIListening {
         void onDeleteUI(View v);
     }
 

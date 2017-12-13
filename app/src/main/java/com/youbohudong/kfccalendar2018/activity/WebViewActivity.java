@@ -19,6 +19,7 @@ public class WebViewActivity extends BaseActivity {
     private ImageView img_back;
     private WebView webView;
     private String url;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,20 +31,18 @@ public class WebViewActivity extends BaseActivity {
 
     @Override
     public void initView() {
-        url=getIntent().getStringExtra("URL");
-       img_back=(ImageView) findViewById(R.id.img_back);
-        webView=(WebView) findViewById(R.id.webview);
+        url = getIntent().getStringExtra("URL");
+        img_back = (ImageView) findViewById(R.id.img_back);
+        webView = (WebView) findViewById(R.id.webview);
     }
 
     @Override
     public void initData() {
-        UUID uuid= new DeviceUuidFactory(this).getDeviceUuid();
+        UUID uuid = new DeviceUuidFactory(this).getDeviceUuid();
         webView.getSettings().setJavaScriptEnabled(true);
-//        webView.loadUrl("https://www.youbohudong.com/biz/vip/kfc/calendar-2018/tasks"+"?udid="+uuid);
-        webView.loadUrl(url+"?udid="+uuid);
+        String urlWithUdid = url.contains("?") ? url + "&" + "udid=" + uuid : url + "?" + "udid=" + uuid;
+        webView.loadUrl(urlWithUdid);
     }
-
-
 
     @Override
     public void initListening() {

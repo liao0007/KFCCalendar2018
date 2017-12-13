@@ -11,15 +11,11 @@ import java.io.IOException;
  * Created by ${bcq} on 2017/12/9.
  */
 
-public abstract class LeftBeanCallback extends Callback<LeftBean>
-{
+public abstract class LeftBeanCallback extends Callback<LeftBean> {
     @Override
-    public LeftBean parseNetworkResponse(Response response, int id) throws IOException
-    {
+    public LeftBean parseNetworkResponse(Response response, int id) throws IOException {
         String string = response.body().string();
         LeftBean user = new Gson().fromJson(string, LeftBean.class);
         return user;
     }
-
-
 }

@@ -29,6 +29,7 @@ public class GuideActivity extends BaseActivity {
     private ViewPager viewPager;
     private List<GuideBean> list;
     private int currentItem;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,24 +41,24 @@ public class GuideActivity extends BaseActivity {
 
     @Override
     public void initView() {
-        videoView= (VideoView) findViewById(R.id.video_view);
-        viewPager= (ViewPager) findViewById(R.id.viewpager);
+        videoView = (VideoView) findViewById(R.id.video_view);
+        viewPager = (ViewPager) findViewById(R.id.viewpager);
     }
 
     @Override
     public void initData() {
 
-        list=new ArrayList<>();
-        GuideBean bean1=new GuideBean();
+        list = new ArrayList<>();
+        GuideBean bean1 = new GuideBean();
         bean1.setTitle("欢迎来到K记大玩家");
         bean1.setContent("带你在欢乐中走过2018，上校黑科技扫一扫赢优惠券。更有各种限量版活动贴纸等您来秀。");
-        GuideBean bean2=new GuideBean();
+        GuideBean bean2 = new GuideBean();
         bean2.setTitle("AR黑科技 扫扫有惊喜");
         bean2.setContent("带你在欢乐中走过2018，上校黑科技扫一扫赢优惠券。更有各种限量版活动贴纸等您来秀。带你在欢乐中走过2018，上校黑科技扫一扫赢优惠券。更有各种限量版活动贴纸等您来秀。");
-        GuideBean bean3=new GuideBean();
+        GuideBean bean3 = new GuideBean();
         bean3.setTitle("收集K记贴纸 秀翻朋友圈");
         bean3.setContent("带你在欢乐中走过2018，上校黑科技扫一扫赢优惠券。更有各种限量版活动贴纸等您来秀。");
-        GuideBean bean4=new GuideBean();
+        GuideBean bean4 = new GuideBean();
         bean4.setTitle("参加主题活动 赢惊喜礼物");
         bean4.setContent("带你在欢乐中走过2018，上校黑科技扫一扫赢优惠券。更有各种限量版活动贴纸等您来秀。");
         list.add(bean1);
@@ -65,9 +66,9 @@ public class GuideActivity extends BaseActivity {
         list.add(bean3);
         list.add(bean4);
 
-        ViewPagerAdapter viewPagerAdapter=new ViewPagerAdapter();
+        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter();
         viewPager.setAdapter(viewPagerAdapter);
-        String uri = "android.resource://" + getPackageName() + "/" +R.raw.guide;
+        String uri = "android.resource://" + getPackageName() + "/" + R.raw.guide;
         videoView.setVideoURI(Uri.parse(uri));
         videoView.start();
         videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
@@ -89,7 +90,7 @@ public class GuideActivity extends BaseActivity {
 
             @Override
             public void onPageSelected(int position) {
-                currentItem=position;
+                currentItem = position;
             }
 
             @Override
@@ -100,46 +101,46 @@ public class GuideActivity extends BaseActivity {
 
     }
 
-    public class ViewPagerAdapter extends PagerAdapter{
+    public class ViewPagerAdapter extends PagerAdapter {
 
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
-           View v= LayoutInflater.from(GuideActivity.this).inflate(R.layout.item_guide,null);
-            ImageView img_icon=(ImageView)v.findViewById(R.id.img_icon);
-            ImageView img_dot1=v.findViewById(R.id.img_dot1);
-            ImageView img_dot2=v.findViewById(R.id.img_dot2);
-            ImageView img_dot3=v.findViewById(R.id.img_dot3);
-            ImageView img_dot4=v.findViewById(R.id.img_dot4);
+            View v = LayoutInflater.from(GuideActivity.this).inflate(R.layout.item_guide, null);
+            ImageView img_icon = (ImageView) v.findViewById(R.id.img_icon);
+            ImageView img_dot1 = v.findViewById(R.id.img_dot1);
+            ImageView img_dot2 = v.findViewById(R.id.img_dot2);
+            ImageView img_dot3 = v.findViewById(R.id.img_dot3);
+            ImageView img_dot4 = v.findViewById(R.id.img_dot4);
 
-            TextView txt_title=(TextView) v.findViewById(R.id.txt_title);
-            TextView txt_content=(TextView) v.findViewById(R.id.txt_content);
-            ImageView img_next=(ImageView)v.findViewById(R.id.img_next);
-            TextView txt_skip=(TextView) v.findViewById(R.id.txt_skip);
+            TextView txt_title = (TextView) v.findViewById(R.id.txt_title);
+            TextView txt_content = (TextView) v.findViewById(R.id.txt_content);
+            ImageView img_next = (ImageView) v.findViewById(R.id.img_next);
+            TextView txt_skip = (TextView) v.findViewById(R.id.txt_skip);
 
-            if(position==0){
+            if (position == 0) {
                 img_icon.setVisibility(View.VISIBLE);
-            }else{
+            } else {
                 img_icon.setVisibility(View.INVISIBLE);
             }
-            if(position==0){
+            if (position == 0) {
                 img_dot1.setBackgroundResource(R.mipmap.dot_red);
                 img_dot2.setBackgroundResource(R.mipmap.dot_light);
                 img_dot3.setBackgroundResource(R.mipmap.dot_light);
                 img_dot4.setBackgroundResource(R.mipmap.dot_light);
                 img_next.setBackgroundResource(R.mipmap.next_page);
-            }else if(position==1){
+            } else if (position == 1) {
                 img_dot1.setBackgroundResource(R.mipmap.dot_light);
                 img_dot2.setBackgroundResource(R.mipmap.dot_red);
                 img_dot3.setBackgroundResource(R.mipmap.dot_light);
                 img_dot4.setBackgroundResource(R.mipmap.dot_light);
                 img_next.setBackgroundResource(R.mipmap.next_page);
-            }else if(position==2){
+            } else if (position == 2) {
                 img_dot1.setBackgroundResource(R.mipmap.dot_light);
                 img_dot2.setBackgroundResource(R.mipmap.dot_light);
                 img_dot3.setBackgroundResource(R.mipmap.dot_red);
                 img_dot4.setBackgroundResource(R.mipmap.dot_light);
                 img_next.setBackgroundResource(R.mipmap.next_page);
-            }else{
+            } else {
                 img_dot1.setBackgroundResource(R.mipmap.dot_light);
                 img_dot2.setBackgroundResource(R.mipmap.dot_light);
                 img_dot3.setBackgroundResource(R.mipmap.dot_light);
@@ -153,11 +154,11 @@ public class GuideActivity extends BaseActivity {
             img_next.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if(currentItem==(list.size()-1)){
-                        startActivity(new Intent(GuideActivity.this,CustomerCameraActivity.class));
+                    if (currentItem == (list.size() - 1)) {
+                        startActivity(new Intent(GuideActivity.this, CustomerCameraActivity.class));
                         finish();
-                    }else{
-                        viewPager.setCurrentItem(currentItem+1);
+                    } else {
+                        viewPager.setCurrentItem(currentItem + 1);
                     }
 
                 }
@@ -165,7 +166,7 @@ public class GuideActivity extends BaseActivity {
             txt_skip.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    startActivity(new Intent(GuideActivity.this,CustomerCameraActivity.class));
+                    startActivity(new Intent(GuideActivity.this, CustomerCameraActivity.class));
                     finish();
                 }
             });
@@ -184,7 +185,7 @@ public class GuideActivity extends BaseActivity {
 
         @Override
         public boolean isViewFromObject(View view, Object object) {
-            return view==object;
+            return view == object;
         }
     }
 

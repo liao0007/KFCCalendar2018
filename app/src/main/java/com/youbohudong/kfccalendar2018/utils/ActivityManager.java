@@ -17,8 +17,8 @@ public class ActivityManager {
     public ActivityManager() {
     }
 
-    public void startIntoAct(Class clazz){
-        Intent intent=new Intent(App.getInstance(),clazz);
+    public void startIntoAct(Class clazz) {
+        Intent intent = new Intent(App.getInstance(), clazz);
         App.getInstance().startActivity(intent);
 
     }

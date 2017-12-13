@@ -107,6 +107,7 @@ public class MyImageView extends ImageView {
      * 记录上次两指之间的距离
      */
     private double lastFingerDis;
+
     /**
      * ZoomImageView构造函数，将当前操作状态设为STATUS_INIT。
      *
@@ -116,6 +117,7 @@ public class MyImageView extends ImageView {
         super(context);
         currentStatus = STATUS_INIT;
     }
+
     /**
      * ZoomImageView构造函数，将当前操作状态设为STATUS_INIT。
      *
@@ -126,16 +128,17 @@ public class MyImageView extends ImageView {
         super(context, attrs);
         currentStatus = STATUS_INIT;
     }
+
     /**
      * 将待展示的图片设置进来。
      *
-     * @param bitmap
-     * 待展示的Bitmap对象
+     * @param bitmap 待展示的Bitmap对象
      */
     public void setImageBitmap(Bitmap bitmap) {
         sourceBitmap = bitmap;
         invalidate();
     }
+
     @Override
     protected void onLayout(boolean changed, int left, int top, int right,
                             int bottom) {
@@ -146,7 +149,9 @@ public class MyImageView extends ImageView {
             height = getHeight();
         }
     }
-    @SuppressLint("NewApi") @Override
+
+    @SuppressLint("NewApi")
+    @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (initRatio == totalRatio) {
             getParent().requestDisallowInterceptTouchEvent(false);
@@ -230,6 +235,7 @@ public class MyImageView extends ImageView {
         }
         return true;
     }
+
     /**
      * 根据currentStatus的值来决定对图片进行什么样的绘制操作。
      */
@@ -253,6 +259,7 @@ public class MyImageView extends ImageView {
                 break;
         }
     }
+
     /**
      * 对图片进行缩放处理。
      *
@@ -300,6 +307,7 @@ public class MyImageView extends ImageView {
         currentBitmapHeight = scaledHeight;
         canvas.drawBitmap(sourceBitmap, matrix, null);
     }
+
     /**
      * 对图片进行平移处理
      *
@@ -318,6 +326,7 @@ public class MyImageView extends ImageView {
         totalTranslateY = translateY;
         canvas.drawBitmap(sourceBitmap, matrix, null);
     }
+
     /**
      * 对图片进行初始化操作，包括让图片居中，以及当图片大于屏幕宽高时对图片进行压缩。
      *
@@ -364,23 +373,27 @@ public class MyImageView extends ImageView {
             canvas.drawBitmap(sourceBitmap, matrix, null);
         }
     }
+
     /**
      * 计算两个手指之间的距离。
      *
      * @param event
      * @return 两个手指之间的距离
      */
-    @SuppressLint("NewApi") private double distanceBetweenFingers(MotionEvent event) {
+    @SuppressLint("NewApi")
+    private double distanceBetweenFingers(MotionEvent event) {
         float disX = Math.abs(event.getX(0) - event.getX(1));
         float disY = Math.abs(event.getY(0) - event.getY(1));
         return Math.sqrt(disX * disX + disY * disY);
     }
+
     /**
      * 计算两个手指之间中心点的坐标。
      *
      * @param event
      */
-    @SuppressLint("NewApi") private void centerPointBetweenFingers(MotionEvent event) {
+    @SuppressLint("NewApi")
+    private void centerPointBetweenFingers(MotionEvent event) {
         float xPoint0 = event.getX(0);
         float yPoint0 = event.getY(0);
         float xPoint1 = event.getX(1);

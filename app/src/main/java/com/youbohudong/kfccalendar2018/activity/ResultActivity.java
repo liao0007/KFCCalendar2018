@@ -22,10 +22,10 @@ public class ResultActivity extends AppCompatActivity {
 
     private void initView() {
         ImageView iv_show_pic = (ImageView) findViewById(R.id.iv_show_pic);
-        Bitmap bitmap = BitmapFactory.decodeFile(Environment.getExternalStorageDirectory().getAbsolutePath()+"/temp.jpeg");
+        Bitmap bitmap = BitmapFactory.decodeFile(Environment.getExternalStorageDirectory().getAbsolutePath() + "/temp.jpeg");
         //获取水印图片，如果图片过大，应对图片采样
-        Bitmap waterBitmap = BitmapFactory.decodeResource(getResources(),R.mipmap.splash);
-        Bitmap bitmap2 = watermarkBitmap(bitmap,waterBitmap,"ZHOUKAI");
+        Bitmap waterBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.splash);
+        Bitmap bitmap2 = watermarkBitmap(bitmap, waterBitmap, "ZHOUKAI");
         iv_show_pic.setImageBitmap(bitmap2);
     }
 
@@ -38,10 +38,10 @@ public class ResultActivity extends AppCompatActivity {
         int w = src.getWidth();
         int h = src.getHeight();
         //需要处理图片太大造成的内存超过的问题,这里我的图片很小所以不写相应代码了
-        Bitmap newb= Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);// 创建一个新的和SRC长度宽度一样的位图
+        Bitmap newb = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);// 创建一个新的和SRC长度宽度一样的位图
         Canvas cv = new Canvas(newb);
         cv.drawBitmap(src, 0, 0, null);// 在 0，0坐标开始画入src
-        Paint paint=new Paint();
+        Paint paint = new Paint();
         //加入图片
         if (watermark != null) {
             int ww = watermark.getWidth();
@@ -50,16 +50,15 @@ public class ResultActivity extends AppCompatActivity {
             cv.drawBitmap(watermark, w - ww + 5, h - wh + 5, paint);// 在src的右下角画入水印
         }
         //加入文字
-        if(title!=null)
-        {
-            String familyName ="黑体";
+        if (title != null) {
+            String familyName = "黑体";
             Typeface font = Typeface.create(familyName, Typeface.NORMAL);
-            TextPaint textPaint=new TextPaint();
+            TextPaint textPaint = new TextPaint();
             textPaint.setColor(Color.RED);
             textPaint.setTypeface(font);
             textPaint.setTextSize(8);
             //这里是自动换行的
-            StaticLayout layout = new StaticLayout(title,textPaint,w, Layout.Alignment.ALIGN_NORMAL,1.0F,0.0F,true);
+            StaticLayout layout = new StaticLayout(title, textPaint, w, Layout.Alignment.ALIGN_NORMAL, 1.0F, 0.0F, true);
             layout.draw(cv);
         }
         cv.save(Canvas.ALL_SAVE_FLAG);// 保存

@@ -9,7 +9,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:gravity="center">
-    <com.youbohudong.kfc2018cal.view.ScanView
+    <com.youbohudong.kfccalendar2018.view.ScanView
         android:id="@+id/scanview"
         android:layout_width="220dp"
         android:layout_height="220dp"

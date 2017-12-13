@@ -14,7 +14,7 @@ import com.youbohudong.kfccalendar2018.R;
  * 描    述：拍照或录制完成后弹出的确认和返回按钮
  * =====================================
  */
-public class TypeButton extends View{
+public class TypeButton extends View {
     public static final int TYPE_CANCEL = 0x001;
     public static final int TYPE_CONFIRM = 0x002;
     private int button_type;
@@ -61,23 +61,23 @@ public class TypeButton extends View{
         super.onDraw(canvas);
         //如果类型为取消，则绘制内部为返回箭头
         if (button_type == TYPE_CANCEL) {
-            Rect rect=new Rect(0,0,200,100);
-            RectF rectF=new RectF(0,0,200,100);
-            Bitmap bitmap= BitmapFactory.decodeResource(getResources(), R.mipmap.retake);
+            Rect rect = new Rect(0, 0, 200, 100);
+            RectF rectF = new RectF(0, 0, 200, 100);
+            Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.retake);
             BitmapShader bitmapShader = new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
             mPaint.setShader(bitmapShader);
-            canvas.drawBitmap(bitmap,rect,rectF,mPaint);
+            canvas.drawBitmap(bitmap, rect, rectF, mPaint);
 
 
         }
         //如果类型为确认，则绘制绿色勾
         if (button_type == TYPE_CONFIRM) {
-            Rect rect=new Rect(0,0,200,100);
-            RectF rectF=new RectF(0,0,200,100);
-            Bitmap bitmap= BitmapFactory.decodeResource(getResources(), R.mipmap.save);
+            Rect rect = new Rect(0, 0, 200, 100);
+            RectF rectF = new RectF(0, 0, 200, 100);
+            Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.save);
             BitmapShader bitmapShader = new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
             mPaint.setShader(bitmapShader);
-            canvas.drawBitmap(bitmap,rect,rectF,mPaint);
+            canvas.drawBitmap(bitmap, rect, rectF, mPaint);
 
         }
     }

@@ -314,7 +314,7 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                mslideListening.onDownPosition(event.getX(),event.getY());
+                mslideListening.onDownPosition(event.getX(), event.getY());
                 if (event.getPointerCount() == 1) {
                     //显示对焦指示器
                     setFocusViewWidthAnimation(event.getX(), event.getY());
@@ -324,7 +324,7 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
                 }
                 break;
             case MotionEvent.ACTION_MOVE:
-                mslideListening.onTouchMovePosition(event.getX(),event.getY());
+                mslideListening.onTouchMovePosition(event.getX(), event.getY());
                 if (event.getPointerCount() == 1) {
                     firstTouch = true;
                 }
@@ -595,9 +595,11 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
         this.mslideListening = mslideListening;
     }
 
-    public interface slideListening{
+    public interface slideListening {
         void onSlide();
+
         void onTouchMovePosition(float x, float y);
+
         void onDownPosition(float x, float y);
     }
 }

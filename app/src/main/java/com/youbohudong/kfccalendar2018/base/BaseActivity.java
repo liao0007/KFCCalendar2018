@@ -20,9 +20,10 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     public abstract void initView();
-    public abstract void initData();
-    public abstract void initListening();
 
+    public abstract void initData();
+
+    public abstract void initListening();
 
 
 }

@@ -20,10 +20,11 @@ import java.util.concurrent.TimeUnit;
 
 public class App extends Application {
     public static App instance;
+
     @Override
     public void onCreate() {
         super.onCreate();
-        this.instance = this;
+        instance = this;
 
         ClearableCookieJar cookieJar1 = new PersistentCookieJar(new SetCookieCache(), new SharedPrefsCookiePersistor(getApplicationContext()));
 
@@ -35,11 +36,9 @@ public class App extends Application {
                 .readTimeout(10000L, TimeUnit.MILLISECONDS)
                 .addInterceptor(new LoggerInterceptor("TAG"))
                 .cookieJar(cookieJar1)
-                .hostnameVerifier(new HostnameVerifier()
-                {
+                .hostnameVerifier(new HostnameVerifier() {
                     @Override
-                    public boolean verify(String hostname, SSLSession session)
-                    {
+                    public boolean verify(String hostname, SSLSession session) {
                         return true;
                     }
                 })
@@ -49,14 +48,12 @@ public class App extends Application {
     }
 
 
-    public static App getInstance(){
-        if(instance==null){
-            instance=new App();
+    public static App getInstance() {
+        if (instance == null) {
+            instance = new App();
         }
         return instance;
     }
-
-
 
 
 }

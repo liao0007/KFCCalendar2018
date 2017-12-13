@@ -16,8 +16,7 @@ import de.greenrobot.event.EventBus;
 
 import java.util.ArrayList;
 
-public class HelloAR
-{
+public class HelloAR {
     private CameraDevice camera;
     private CameraFrameStreamer streamer;
     private ArrayList<ImageTracker> trackers;
@@ -32,23 +31,21 @@ public class HelloAR
     private int rotation = 0;
     private Vec4I viewport = new Vec4I(0, 0, 1280, 720);
 
-    public HelloAR()
-    {
+    public HelloAR() {
         trackers = new ArrayList<ImageTracker>();
     }
 
-    private void loadFromImage(ImageTracker tracker, String path)
-    {
+    private void loadFromImage(ImageTracker tracker, String path) {
         ImageTarget target = new ImageTarget();
         String jstr = "{\n"
-            + "  \"images\" :\n"
-            + "  [\n"
-            + "    {\n"
-            + "      \"image\" : \"" + path + "\",\n"
-            + "      \"name\" : \"" + path.substring(0, path.indexOf(".")) + "\"\n"
-            + "    }\n"
-            + "  ]\n"
-            + "}";
+                + "  \"images\" :\n"
+                + "  [\n"
+                + "    {\n"
+                + "      \"image\" : \"" + path + "\",\n"
+                + "      \"name\" : \"" + path.substring(0, path.indexOf(".")) + "\"\n"
+                + "    }\n"
+                + "  ]\n"
+                + "}";
         target.setup(jstr, StorageType.Assets | StorageType.Json, "");
         tracker.loadTarget(target, new FunctorOfVoidFromPointerOfTargetAndBool() {
             @Override
@@ -58,8 +55,7 @@ public class HelloAR
         });
     }
 
-    private void loadAllFromJsonFile(ImageTracker tracker, String path)
-    {
+    private void loadAllFromJsonFile(ImageTracker tracker, String path) {
         for (ImageTarget target : ImageTarget.setupAll(path, StorageType.Assets)) {
             tracker.loadTarget(target, new FunctorOfVoidFromPointerOfTargetAndBool() {
                 @Override
@@ -73,8 +69,7 @@ public class HelloAR
         }
     }
 
-    public boolean initialize()
-    {
+    public boolean initialize() {
         camera = new CameraDevice();
         streamer = new CameraFrameStreamer();
         streamer.attachCamera(camera);
@@ -83,7 +78,9 @@ public class HelloAR
         status &= camera.open(CameraDeviceType.Default);
         camera.setSize(new Vec2I(1280, 720));
 
-        if (!status) { return status; }
+        if (!status) {
+            return status;
+        }
         ImageTracker tracker = new ImageTracker();
         tracker.attachStreamer(streamer);
         loadAllFromJsonFile(tracker, "targets.json");
@@ -96,8 +93,7 @@ public class HelloAR
         return status;
     }
 
-    public void dispose()
-    {
+    public void dispose() {
         if (video != null) {
             video.dispose();
             video = null;
@@ -125,8 +121,7 @@ public class HelloAR
         }
     }
 
-    public boolean start()
-    {
+    public boolean start() {
         boolean status = true;
         status &= (camera != null) && camera.start();
         status &= (streamer != null) && streamer.start();
@@ -137,8 +132,7 @@ public class HelloAR
         return status;
     }
 
-    public boolean stop()
-    {
+    public boolean stop() {
         boolean status = true;
         for (ImageTracker tracker : trackers) {
             status &= tracker.stop();
@@ -148,12 +142,11 @@ public class HelloAR
         return status;
     }
 
-    public void initGL()
-    {
+    public void initGL() {
         if (active_target != 0) {
             video.onLost();
             video.dispose();
-            video  = null;
+            video = null;
             tracked_target = 0;
             active_target = 0;
         }
@@ -170,14 +163,12 @@ public class HelloAR
         current_video_renderer = null;
     }
 
-    public void resizeGL(int width, int height)
-    {
+    public void resizeGL(int width, int height) {
         view_size = new Vec2I(width, height);
         viewport_changed = true;
     }
 
-    private void updateViewport()
-    {
+    private void updateViewport() {
         CameraCalibration calib = camera != null ? camera.cameraCalibration() : null;
         int rotation = calib != null ? calib.rotation() : 0;
         if (rotation != this.rotation) {
@@ -201,8 +192,7 @@ public class HelloAR
         }
     }
 
-    public void render()
-    {
+    public void render() {
         GLES20.glClearColor(1.f, 1.f, 1.f, 1.f);
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 
@@ -214,7 +204,9 @@ public class HelloAR
             }
         }
 
-        if (streamer == null) { return; }
+        if (streamer == null) {
+            return;
+        }
         Frame frame = streamer.peek();
         try {
             updateViewport();
@@ -234,7 +226,7 @@ public class HelloAR
                     if (active_target != 0 && active_target != id) {
                         video.onLost();
                         video.dispose();
-                        video  = null;
+                        video = null;
                         tracked_target = 0;
                         active_target = 0;
                     }
@@ -270,7 +262,7 @@ public class HelloAR
                             active_target = id;
                         }
                     }
-                    ImageTarget imagetarget = target instanceof ImageTarget ? (ImageTarget)(target) : null;
+                    ImageTarget imagetarget = target instanceof ImageTarget ? (ImageTarget) (target) : null;
                     if (imagetarget != null) {
                         if (current_video_renderer != null) {
                             video.update();
@@ -286,8 +278,7 @@ public class HelloAR
                     tracked_target = 0;
                 }
             }
-        }
-        finally {
+        } finally {
 //            frame.dispose();
         }
     }

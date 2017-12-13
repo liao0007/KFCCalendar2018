@@ -36,7 +36,7 @@ public class LeftAdapter extends BaseAdapter {
     public LeftAdapter(Context ctx, List<LeftBean> list) {
         this.ctx = ctx;
         this.list = list;
-        mInflater=LayoutInflater.from(ctx);
+        mInflater = LayoutInflater.from(ctx);
     }
 
     @Override
@@ -56,37 +56,37 @@ public class LeftAdapter extends BaseAdapter {
 
     @Override
     public View getView(final int i, View view, ViewGroup viewGroup) {
-       final ViewHolder holder;
-        if(view==null){
-            holder=new ViewHolder();
-            view=mInflater.inflate(R.layout.left_layout,null);
-            holder.txt_title=(TextView) view.findViewById(R.id.txt_title);
-            holder.img_newtag=(ImageView)view.findViewById(R.id.img_newtag);
+        final ViewHolder holder;
+        if (view == null) {
+            holder = new ViewHolder();
+            view = mInflater.inflate(R.layout.left_layout, null);
+            holder.txt_title = (TextView) view.findViewById(R.id.txt_title);
+            holder.img_newtag = (ImageView) view.findViewById(R.id.img_newtag);
             view.setTag(holder);
-        }else{
-            holder= (ViewHolder) view.getTag();
+        } else {
+            holder = (ViewHolder) view.getTag();
         }
-        if(i==pos){
+        if (i == pos) {
             holder.txt_title.setBackgroundDrawable(ctx.getResources().getDrawable(R.drawable.left_shape_click));
-        }else{
+        } else {
             holder.txt_title.setBackgroundDrawable(ctx.getResources().getDrawable(R.drawable.left_shape));
         }
 
-       final LeftBean bean= list.get(i);
-        if(bean!=null){
+        final LeftBean bean = list.get(i);
+        if (bean != null) {
             holder.txt_title.setText(bean.getName());
 //            holder.txt_title.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG); //下划线
-            if(bean.isIsNew()){
+            if (bean.isIsNew()) {
                 holder.img_newtag.setVisibility(View.VISIBLE);
-            }else{
+            } else {
                 holder.img_newtag.setVisibility(View.GONE);
             }
-            if(bean.isIsAvailable()){
+            if (bean.isIsAvailable()) {
                 holder.txt_title.setTextColor(ctx.getResources().getColor(R.color.red_txt));
-            }else{
+            } else {
                 holder.txt_title.setTextColor(ctx.getResources().getColor(R.color.light_red));
             }
-            if(bean.getName().equals("敬请期待")){
+            if (bean.getName().equals("敬请期待")) {
                 holder.txt_title.setTextColor(ctx.getResources().getColor(R.color.app_white));
                 holder.txt_title.setBackgroundDrawable(ctx.getResources().getDrawable(R.drawable.left_shape_qidai));
             }
@@ -94,14 +94,15 @@ public class LeftAdapter extends BaseAdapter {
 
 
         view.setOnTouchListener(new View.OnTouchListener() {
-            final PupWinUtils popWin=new PupWinUtils(ctx);
+            final PupWinUtils popWin = new PupWinUtils(ctx);
+
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                switch (motionEvent.getAction()){
+                switch (motionEvent.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        if(!TextUtils.isEmpty(bean.getNote())) {
+                        if (!TextUtils.isEmpty(bean.getNote())) {
                             popWin.show(holder.txt_title, bean.getNote());
-                        }else if(bean.getName().equals("敬请期待")){
+                        } else if (bean.getName().equals("敬请期待")) {
                             popWin.show(holder.txt_title, "不定期推出新贴纸和限量版贴纸，请关注App通知，收集贴纸，手慢则无哦！");
                         }
                         break;
@@ -118,7 +119,7 @@ public class LeftAdapter extends BaseAdapter {
         return view;
     }
 
-    class ViewHolder{
+    class ViewHolder {
         TextView txt_title;
         ImageView img_newtag;
     }
@@ -133,7 +134,7 @@ public class LeftAdapter extends BaseAdapter {
         this.mOnLeftClickListening = mOnLeftClickListening;
     }
 
-   public interface OnLeftClickListening{
+    public interface OnLeftClickListening {
         void onLeftItem(int pos);
     }
 

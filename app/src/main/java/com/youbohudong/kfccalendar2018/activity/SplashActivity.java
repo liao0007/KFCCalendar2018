@@ -14,22 +14,22 @@ import com.youbohudong.kfccalendar2018.utils.SharedPreferencesUtils;
  */
 
 public class SplashActivity extends BaseActivity {
-    private static final String ISFRIST="is_frist";
+    private static final String ISFRIST = "is_frist";
     private boolean isFrist;
     SharedPreferencesUtils spUtils;
-    private static final int INTOMAIN=101;
-    private static final int INTOGUIDE=102;
-    private Handler mHandler=new Handler(){
+    private static final int INTOMAIN = 101;
+    private static final int INTOGUIDE = 102;
+    private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            switch (msg.what){
+            switch (msg.what) {
                 case INTOMAIN://进入主页
-                    startActivity(new Intent(SplashActivity.this,CustomerCameraActivity.class));
+                    startActivity(new Intent(SplashActivity.this, CustomerCameraActivity.class));
                     finish();
                     break;
                 case INTOGUIDE://进入向导
-                    startActivity(new Intent(SplashActivity.this,GuideActivity.class));
+                    startActivity(new Intent(SplashActivity.this, GuideActivity.class));
                     finish();
                     break;
             }
@@ -40,8 +40,8 @@ public class SplashActivity extends BaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
-        spUtils=new SharedPreferencesUtils(this);
-        isFrist=spUtils.getBln(ISFRIST,true);
+        spUtils = new SharedPreferencesUtils(this);
+        isFrist = spUtils.getBln(ISFRIST, true);
         initView();
         initData();
         initListening();
@@ -54,11 +54,11 @@ public class SplashActivity extends BaseActivity {
 
     @Override
     public void initData() {
-        if(isFrist){
+        if (isFrist) {
             Message msg = new Message();
             msg.what = INTOGUIDE;
             mHandler.sendMessage(msg);
-        }else {
+        } else {
             Message msg = new Message();
             msg.what = INTOMAIN;
             mHandler.sendMessageDelayed(msg, 2000);

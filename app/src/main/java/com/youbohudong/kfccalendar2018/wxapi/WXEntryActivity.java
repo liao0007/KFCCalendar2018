@@ -27,7 +27,7 @@ import java.io.File;
 public class WXEntryActivity extends BaseActivity implements IWXAPIEventHandler {
 
     private IWXAPI api;
-    private ImageView img_bg,img_savetip,img_sharetip,img_againtip;
+    private ImageView img_bg, img_savetip, img_sharetip, img_againtip;
 
 
     @Override
@@ -38,27 +38,29 @@ public class WXEntryActivity extends BaseActivity implements IWXAPIEventHandler 
         initListening();
         initData();
     }
+
     @Override
     public void initView() {
-        img_bg= (ImageView) findViewById(R.id.img_bg);
-         img_savetip= (ImageView) findViewById(R.id.img_savetip);
-         img_sharetip= (ImageView) findViewById(R.id.img_sharetip);
-        img_againtip= (ImageView) findViewById(R.id.img_againtip);
+        img_bg = (ImageView) findViewById(R.id.img_bg);
+        img_savetip = (ImageView) findViewById(R.id.img_savetip);
+        img_sharetip = (ImageView) findViewById(R.id.img_sharetip);
+        img_againtip = (ImageView) findViewById(R.id.img_againtip);
     }
 
     @Override
     public void initListening() {
 
     }
+
     @Override
     public void initData() {
-        api =WXAPIFactory.createWXAPI(this, "wxb0c1974e2394893d");
+        api = WXAPIFactory.createWXAPI(this, "wxb0c1974e2394893d");
         api.handleIntent(getIntent(), this);
         // 获取内置SD卡路径
         String sdCardPath = Environment.getExternalStorageDirectory().getPath();
         // 图片文件路径
-       String filePath = sdCardPath + File.separator + "screenshot.png";
-       Bitmap bmp= getimage(filePath);
+        String filePath = sdCardPath + File.separator + "screenshot.png";
+        Bitmap bmp = getimage(filePath);
         img_bg.setImageBitmap(bmp);
     }
 
@@ -97,16 +99,18 @@ public class WXEntryActivity extends BaseActivity implements IWXAPIEventHandler 
                 break;
         }
 
-        Toast toast=new Toast(this);
-        View v= LayoutInflater.from(this).inflate(R.layout.share_layout,null);
+        Toast toast = new Toast(this);
+        View v = LayoutInflater.from(this).inflate(R.layout.share_layout, null);
         toast.setView(v);
-        toast.setGravity(Gravity.CENTER,0,0);
+        toast.setGravity(Gravity.CENTER, 0, 0);
         toast.setDuration(Toast.LENGTH_LONG);
         toast.show();
         this.finish();
     }
 
-    /**微信主动请求我们**/
+    /**
+     * 微信主动请求我们
+     **/
     @Override
     public void onReq(BaseReq baseResp) {
     }
@@ -143,7 +147,7 @@ public class WXEntryActivity extends BaseActivity implements IWXAPIEventHandler 
         newOpts.inSampleSize = be;// 设置缩放比例
         // 重新读入图片，注意此时已经把options.inJustDecodeBounds 设回false了
         bitmap = BitmapFactory.decodeFile(srcPath, newOpts);
-        return  bitmap;
+        return bitmap;
 //        return compressImage(bitmap);// 压缩好比例大小后再进行质量压缩
     }
 

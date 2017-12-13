@@ -12,12 +12,10 @@ import java.util.List;
  * Created by ${bcq} on 2017/12/9.
  */
 
-public abstract class ListLeftBeanCallback  extends Callback<List<LeftBean>>
-{
+public abstract class ListLeftBeanCallback extends Callback<List<LeftBean>> {
 
     @Override
-    public List<LeftBean> parseNetworkResponse(Response response, int id) throws IOException
-    {
+    public List<LeftBean> parseNetworkResponse(Response response, int id) throws IOException {
         String string = response.body().string();
         List<LeftBean> user = new Gson().fromJson(string, List.class);
         return user;

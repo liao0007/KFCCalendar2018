@@ -31,11 +31,12 @@ public class RightAdapter extends BaseAdapter {
     private List<View> viewList;                    //View对象集合
     private int parentIndex;
     private boolean isAvaliable;
-    public RightAdapter(Context ctx, List<LeftBean.StampsBean> list,int parentIndex,boolean isAvaliable) {
+
+    public RightAdapter(Context ctx, List<LeftBean.StampsBean> list, int parentIndex, boolean isAvaliable) {
         this.ctx = ctx;
         this.list = list;
-        this.isAvaliable=isAvaliable;
-        this.parentIndex=parentIndex;
+        this.isAvaliable = isAvaliable;
+        this.parentIndex = parentIndex;
         this.viewList = new ArrayList<>();
         mInflater = LayoutInflater.from(ctx);
     }
@@ -57,79 +58,79 @@ public class RightAdapter extends BaseAdapter {
 
     @Override
     public View getView(final int i, View view, ViewGroup viewGroup) {
-       final ViewHolder holder;
+        final ViewHolder holder;
         if (view == null) {
             holder = new ViewHolder();
             view = mInflater.inflate(R.layout.right_layout, null);
             holder.img_pic = (ImageView) view.findViewById(R.id.img_pic);
-            holder.rl_bg=(RelativeLayout) view.findViewById(R.id.rl_bg);
+            holder.rl_bg = (RelativeLayout) view.findViewById(R.id.rl_bg);
             holder.sprogrss = (SlefProgress) view.findViewById(R.id.sprogrss);
-            holder.fl_shade=(RelativeLayout) view.findViewById(R.id.fl_shade);
-            holder.txt_down=(TextView)view.findViewById(R.id.txt_down);
+            holder.fl_shade = (RelativeLayout) view.findViewById(R.id.fl_shade);
+            holder.txt_down = (TextView) view.findViewById(R.id.txt_down);
             view.setTag(holder);
         } else {
             holder = (ViewHolder) view.getTag();
         }
         final LeftBean.StampsBean bean = list.get(i);
-        if(bean!=null){
+        if (bean != null) {
             Glide.with(ctx).load(bean.getThumb()).into(holder.img_pic);
-            final boolean isDown=new SharedPreferencesUtils(ctx).getBln(bean.getImage(),false);
-            if(isDown){
+            final boolean isDown = new SharedPreferencesUtils(ctx).getBln(bean.getImage(), false);
+            if (isDown) {
                 holder.fl_shade.setVisibility(View.GONE);
                 holder.sprogrss.setVisibility(View.GONE);
-            }else{
+            } else {
                 holder.fl_shade.setVisibility(View.VISIBLE);
                 holder.fl_shade.getBackground().setAlpha(100);
             }
 
-            if(!TextUtils.isEmpty(bean.getTaskKey())){
-               holder.rl_bg.setBackgroundResource(R.drawable.rl_shape_bg);
-            }else{
+            if (!TextUtils.isEmpty(bean.getTaskKey())) {
+                holder.rl_bg.setBackgroundResource(R.drawable.rl_shape_bg);
+            } else {
                 holder.rl_bg.setBackgroundResource(R.drawable.rl_shape_normal);
             }
 
 
+            view.setOnTouchListener(new View.OnTouchListener() {
+                PupWinRightUtils popWin = new PupWinRightUtils(ctx);
+                float startx, nowx;
+                float starty, nowy;
 
-        view.setOnTouchListener(new View.OnTouchListener() {
-            PupWinRightUtils popWin=new PupWinRightUtils(ctx);
-            float startx,nowx;
-            float starty,nowy;
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                switch (motionEvent.getAction()){
-                    case MotionEvent.ACTION_DOWN:
-                        if(!TextUtils.isEmpty(bean.getNote())) {
-                            popWin.show(view.findViewById(R.id.img_pic), bean.getNote());
-                        }
-                        startx=motionEvent.getX();
-                        starty=motionEvent.getY();
-                        break;
-                    case MotionEvent.ACTION_MOVE:
+                @Override
+                public boolean onTouch(View view, MotionEvent motionEvent) {
+                    switch (motionEvent.getAction()) {
+                        case MotionEvent.ACTION_DOWN:
+                            if (!TextUtils.isEmpty(bean.getNote())) {
+                                popWin.show(view.findViewById(R.id.img_pic), bean.getNote());
+                            }
+                            startx = motionEvent.getX();
+                            starty = motionEvent.getY();
+                            break;
+                        case MotionEvent.ACTION_MOVE:
 //                        nowx=motionEvent.getX();
 //                        nowy=motionEvent.getY();
 //                        if(nowy-starty>=0) {
 //                            popWin.close();
 //                        }
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        popWin.close();
-                        if(isAvaliable){
-                            if(isDown){
+                            break;
+                        case MotionEvent.ACTION_UP:
+                            popWin.close();
+                            if (isAvaliable) {
+                                if (isDown) {
+                                    holder.sprogrss.setVisibility(View.GONE);
+                                    mUpdateItemListening.onItemClick(parentIndex, i, bean.getImage().substring(bean.getImage().lastIndexOf("/")));
+                                } else {
+                                    holder.sprogrss.setVisibility(View.VISIBLE);
+                                    mUpdateItemListening.onDownloadItem(parentIndex, i, holder.sprogrss, holder.txt_down);
+                                }
+                            } else {
                                 holder.sprogrss.setVisibility(View.GONE);
-                                mUpdateItemListening.onItemClick(parentIndex, i,bean.getImage().substring(bean.getImage().lastIndexOf("/")));
-                            }else {
-                                holder.sprogrss.setVisibility(View.VISIBLE);
-                                mUpdateItemListening.onDownloadItem(parentIndex, i, holder.sprogrss,holder.txt_down);
                             }
-                        }else{
-                            holder.sprogrss.setVisibility(View.GONE);
-                        }
 
-                        break;
+                            break;
+                    }
+                    return true;
                 }
-                return true;
-            }
-        });
+            });
         }
         return view;
     }
@@ -137,7 +138,7 @@ public class RightAdapter extends BaseAdapter {
     public class ViewHolder {
         public ImageView img_pic;
         RelativeLayout rl_bg;
-       public SlefProgress sprogrss;
+        public SlefProgress sprogrss;
         RelativeLayout fl_shade;
         TextView txt_down;
     }
@@ -153,11 +154,13 @@ public class RightAdapter extends BaseAdapter {
     }
 
 
-    public void Update(){
+    public void Update() {
         notifyDataSetChanged();
     }
+
     public interface UpdateItemListening {
         void onItemClick(int parentIndex, int pos, String fileName);
+
         void onDownloadItem(int parentIndex, int pos, SlefProgress v, TextView view);
 
     }

@@ -11,26 +11,23 @@ package com.youbohudong.kfccalendar2018.ar;
 import android.util.Log;
 import cn.easyar.*;
 
-public class ARVideo
-{
+public class ARVideo {
     private VideoPlayer player;
     private boolean prepared;
     private boolean found;
     private String path;
 
-    public ARVideo()
-    {
+    public ARVideo() {
         player = new VideoPlayer();
         prepared = false;
         found = false;
     }
-    public void dispose()
-    {
+
+    public void dispose() {
         player.close();
     }
 
-    public void openVideoFile(String path, int texid)
-    {
+    public void openVideoFile(String path, int texid) {
         this.path = path;
         player.setRenderTexture(texid);
         player.setVideoType(VideoType.Normal);
@@ -41,8 +38,8 @@ public class ARVideo
             }
         });
     }
-    public void openTransparentVideoFile(String path, int texid)
-    {
+
+    public void openTransparentVideoFile(String path, int texid) {
         this.path = path;
         player.setRenderTexture(texid);
         player.setVideoType(VideoType.TransparentSideBySide);
@@ -53,8 +50,8 @@ public class ARVideo
             }
         });
     }
-    public void openStreamingVideo(String url, int texid)
-    {
+
+    public void openStreamingVideo(String url, int texid) {
         this.path = url;
         player.setRenderTexture(texid);
         player.setVideoType(VideoType.Normal);
@@ -66,8 +63,7 @@ public class ARVideo
         });
     }
 
-    public void setVideoStatus(int status)
-    {
+    public void setVideoStatus(int status) {
         Log.i("HelloAR", "video: " + path + " (" + Integer.toString(status) + ")");
         if (status == VideoStatus.Ready) {
             prepared = true;
@@ -81,26 +77,25 @@ public class ARVideo
         }
     }
 
-    public void onFound()
-    {
+    public void onFound() {
         found = true;
         if (prepared) {
             player.play();
         }
     }
-    public void onLost()
-    {
+
+    public void onLost() {
         found = false;
         if (prepared) {
             player.pause();
         }
     }
-    public boolean isRenderTextureAvailable()
-    {
+
+    public boolean isRenderTextureAvailable() {
         return player.isRenderTextureAvailable();
     }
-    public void update()
-    {
+
+    public void update() {
         player.updateFrame();
     }
 }

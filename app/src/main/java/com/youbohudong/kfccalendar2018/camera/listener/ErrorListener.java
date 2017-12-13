@@ -10,5 +10,6 @@ package com.youbohudong.kfccalendar2018.camera.listener;
  */
 public interface ErrorListener {
     void onError();
+
     void AudioPermissionError();
 }

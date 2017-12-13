@@ -6,7 +6,7 @@
     <ImageView
         android:layout_width="180dp"
         android:layout_height="45dp"
-        android:background="@mipmap/shareimgtip"
+        android:background="@mipmap/shareimg"
         android:scaleType="fitXY"/>
 
 </RelativeLayout>

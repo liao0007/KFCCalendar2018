@@ -14,8 +14,8 @@ import com.youbohudong.kfccalendar2018.utils.SharedPreferencesUtils;
  */
 
 public class SplashActivity extends BaseActivity {
-    private static final String ISFRIST = "is_frist";
-    private boolean isFrist;
+    private static final String ISFIRST = "is_first";
+    private boolean isFirst;
     SharedPreferencesUtils spUtils;
     private static final int INTOMAIN = 101;
     private static final int INTOGUIDE = 102;
@@ -41,7 +41,7 @@ public class SplashActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
         spUtils = new SharedPreferencesUtils(this);
-        isFrist = spUtils.getBln(ISFRIST, true);
+        isFirst = spUtils.getBln(ISFIRST, true);
         initView();
         initData();
         initListening();
@@ -54,7 +54,7 @@ public class SplashActivity extends BaseActivity {
 
     @Override
     public void initData() {
-        if (isFrist) {
+        if (isFirst) {
             Message msg = new Message();
             msg.what = INTOGUIDE;
             mHandler.sendMessage(msg);

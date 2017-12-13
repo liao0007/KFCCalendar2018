@@ -17,7 +17,7 @@
         android:id="@+id/img_sharetip"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@mipmap/shareimgtip"
+        android:src="@mipmap/shareimg"
         android:visibility="gone"
         android:layout_centerInParent="true"/>
     <ImageView

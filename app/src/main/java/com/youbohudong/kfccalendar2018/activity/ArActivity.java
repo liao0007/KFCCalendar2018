@@ -20,7 +20,7 @@ import com.google.gson.Gson;
 import com.youbohudong.kfccalendar2018.R;
 import com.youbohudong.kfccalendar2018.ar.GLView;
 import com.youbohudong.kfccalendar2018.base.BaseActivity;
-import com.youbohudong.kfccalendar2018.bean.MyEvent;
+import com.youbohudong.kfccalendar2018.bean.CalendarEvent;
 import com.youbohudong.kfccalendar2018.bean.TaskCompletionBean;
 import com.youbohudong.kfccalendar2018.utils.DeviceUuidFactory;
 import com.youbohudong.kfccalendar2018.view.My_Dialog;
@@ -55,7 +55,7 @@ public class ArActivity extends BaseActivity implements View.OnClickListener {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON, WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         dialog = new My_Dialog(this);
         if (!Engine.initialize(this, key)) {
-            Log.e("HelloAR", "Initialization Failed.");
+            Log.e("ArCore", "Initialization Failed.");
         }
         EventBus.getDefault().register(this);
         glView = new GLView(this);
@@ -184,11 +184,11 @@ public class ArActivity extends BaseActivity implements View.OnClickListener {
         }
     }
 
-    public void onEventMainThread(MyEvent event) {
-        String name = (String) event.what;
+    public void onEventMainThread(CalendarEvent event) {
+        String taskKey = (String) event.what;
+        glView.stopTracker();
         UUID uuid = new DeviceUuidFactory(this).getDeviceUuid();
-        completeTask(uuid, name);
-//        Toast.makeText(this,name,Toast.LENGTH_LONG).show();
+        completeTask(uuid, taskKey);
     }
 
     /**

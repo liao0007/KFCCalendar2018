@@ -19,55 +19,73 @@ import javax.microedition.khronos.egl.EGLDisplay;
 import javax.microedition.khronos.opengles.GL10;
 
 public class GLView extends GLSurfaceView {
-    private HelloAR helloAR;
+    private ArCore arCore;
 
     public GLView(Context context) {
         super(context);
         setEGLContextFactory(new ContextFactory());
         setEGLConfigChooser(new ConfigChooser());
 
-        helloAR = new HelloAR();
+        arCore = new ArCore();
 
         this.setRenderer(new Renderer() {
             @Override
             public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-                synchronized (helloAR) {
-                    helloAR.initGL();
+                synchronized (arCore) {
+                    arCore.initGL();
                 }
             }
 
             @Override
             public void onSurfaceChanged(GL10 gl, int w, int h) {
-                synchronized (helloAR) {
-                    helloAR.resizeGL(w, h);
+                synchronized (arCore) {
+                    arCore.resizeGL(w, h);
                 }
             }
 
             @Override
             public void onDrawFrame(GL10 gl) {
-                synchronized (helloAR) {
-                    helloAR.render();
+                synchronized (arCore) {
+                    arCore.render();
                 }
             }
         });
         this.setZOrderMediaOverlay(true);
     }
 
+    public boolean startCamera() {
+        return arCore.startCamera();
+    }
+
+    public boolean stopCamera() {
+        return arCore.stopCamera();
+    }
+
+    public boolean startTracker() {
+        return arCore.startTracker();
+    }
+
+    public boolean stopTracker() {
+        return arCore.stopTracker();
+    }
+
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        synchronized (helloAR) {
-            if (helloAR.initialize()) {
-                helloAR.start();
+        synchronized (arCore) {
+            if (arCore.initialize()) {
+                arCore.startCamera();
+                arCore.startTracker();
             }
         }
     }
 
     @Override
     protected void onDetachedFromWindow() {
-        synchronized (helloAR) {
-            helloAR.stop();
-            helloAR.dispose();
+        synchronized (arCore) {
+            arCore.stopTracker();
+            arCore.stopCamera();
+            arCore.dispose();
         }
         super.onDetachedFromWindow();
     }
@@ -75,11 +93,15 @@ public class GLView extends GLSurfaceView {
     @Override
     public void onResume() {
         super.onResume();
+        arCore.startCamera();
+        arCore.startTracker();
         Engine.onResume();
     }
 
     @Override
     public void onPause() {
+        arCore.stopTracker();
+        arCore.stopCamera();
         Engine.onPause();
         super.onPause();
     }

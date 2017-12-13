@@ -11,48 +11,25 @@ package com.youbohudong.kfccalendar2018.ar;
 import android.opengl.GLES20;
 import android.util.Log;
 import cn.easyar.*;
-import com.youbohudong.kfccalendar2018.bean.MyEvent;
+import com.youbohudong.kfccalendar2018.bean.CalendarEvent;
 import de.greenrobot.event.EventBus;
 
 import java.util.ArrayList;
 
-public class HelloAR {
+public class ArCore {
     private CameraDevice camera;
     private CameraFrameStreamer streamer;
     private ArrayList<ImageTracker> trackers;
     private Renderer videobg_renderer;
-    private ArrayList<VideoRenderer> video_renderers;
-    private VideoRenderer current_video_renderer;
     private int tracked_target = 0;
     private int active_target = 0;
-    private ARVideo video = null;
     private boolean viewport_changed = false;
     private Vec2I view_size = new Vec2I(0, 0);
     private int rotation = 0;
     private Vec4I viewport = new Vec4I(0, 0, 1280, 720);
 
-    public HelloAR() {
+    public ArCore() {
         trackers = new ArrayList<ImageTracker>();
-    }
-
-    private void loadFromImage(ImageTracker tracker, String path) {
-        ImageTarget target = new ImageTarget();
-        String jstr = "{\n"
-                + "  \"images\" :\n"
-                + "  [\n"
-                + "    {\n"
-                + "      \"image\" : \"" + path + "\",\n"
-                + "      \"name\" : \"" + path.substring(0, path.indexOf(".")) + "\"\n"
-                + "    }\n"
-                + "  ]\n"
-                + "}";
-        target.setup(jstr, StorageType.Assets | StorageType.Json, "");
-        tracker.loadTarget(target, new FunctorOfVoidFromPointerOfTargetAndBool() {
-            @Override
-            public void invoke(Target target, boolean status) {
-                Log.i("HelloAR", String.format("load target (%b): %s (%d)", status, target.name(), target.runtimeID()));
-            }
-        });
     }
 
     private void loadAllFromJsonFile(ImageTracker tracker, String path) {
@@ -61,7 +38,7 @@ public class HelloAR {
                 @Override
                 public void invoke(Target target, boolean status) {
                     try {
-                        Log.i("HelloAR", String.format("load target (%b): %s (%d)", status, target.name(), target.runtimeID()));
+                        Log.i("ArCore", String.format("load target (%b): %s (%d)", status, target.name(), target.runtimeID()));
                     } catch (Throwable ex) {
                     }
                 }
@@ -84,20 +61,12 @@ public class HelloAR {
         ImageTracker tracker = new ImageTracker();
         tracker.attachStreamer(streamer);
         loadAllFromJsonFile(tracker, "targets.json");
-        loadFromImage(tracker, "belgium_ice_cream_20171218.jpg");
-        loadFromImage(tracker, "christmas_20171218_blanket_1.jpg");
-        loadFromImage(tracker, "christmas_20171218_blanket_2.jpg");
-        loadFromImage(tracker, "christmas_20171218_compass_1.jpg");
         trackers.add(tracker);
 
         return status;
     }
 
     public void dispose() {
-        if (video != null) {
-            video.dispose();
-            video = null;
-        }
         tracked_target = 0;
         active_target = 0;
 
@@ -105,8 +74,6 @@ public class HelloAR {
             tracker.dispose();
         }
         trackers.clear();
-        video_renderers.clear();
-        current_video_renderer = null;
         if (videobg_renderer != null) {
             videobg_renderer.dispose();
             videobg_renderer = null;
@@ -121,46 +88,46 @@ public class HelloAR {
         }
     }
 
-    public boolean start() {
+
+    public boolean startCamera() {
         boolean status = true;
         status &= (camera != null) && camera.start();
         status &= (streamer != null) && streamer.start();
         camera.setFocusMode(CameraDeviceFocusMode.Continousauto);
+        return status;
+    }
+
+    public boolean startTracker() {
+        boolean status = true;
         for (ImageTracker tracker : trackers) {
             status &= tracker.start();
         }
         return status;
     }
 
-    public boolean stop() {
+    public boolean stopCamera() {
         boolean status = true;
-        for (ImageTracker tracker : trackers) {
-            status &= tracker.stop();
-        }
         status &= (streamer != null) && streamer.stop();
         status &= (camera != null) && camera.stop();
         return status;
     }
 
+    public boolean stopTracker() {
+        boolean status = true;
+        for (ImageTracker tracker : trackers) {
+            status &= tracker.stop();
+        }
+        return status;
+    }
+
     public void initGL() {
         if (active_target != 0) {
-            video.onLost();
-            video.dispose();
-            video = null;
             tracked_target = 0;
             active_target = 0;
         }
         if (videobg_renderer != null) {
             videobg_renderer.dispose();
         }
-        videobg_renderer = new Renderer();
-        video_renderers = new ArrayList<VideoRenderer>();
-        for (int k = 0; k < 3; k += 1) {
-            VideoRenderer video_renderer = new VideoRenderer();
-            video_renderer.init();
-            video_renderers.add(video_renderer);
-        }
-        current_video_renderer = null;
     }
 
     public void resizeGL(int width, int height) {
@@ -222,60 +189,7 @@ public class HelloAR {
                 Target target = targetInstance.target();
                 int status = targetInstance.status();
                 if (status == TargetStatus.Tracked) {
-                    int id = target.runtimeID();
-                    if (active_target != 0 && active_target != id) {
-                        video.onLost();
-                        video.dispose();
-                        video = null;
-                        tracked_target = 0;
-                        active_target = 0;
-                    }
-                    if (tracked_target == 0) {
-//                        String target_name = target.name();
-//                        if (target_name.equals("belgium_ice_cream_20171218")) {
-//                            Toast.makeText(App.instance,"开始请求网络"+target_name,Toast.LENGTH_LONG).show();
-//                        }  else if (target_name.equals("christmas_20171218_blanket")) {
-////                            Toast.makeText(App.getInstance(),"开始请求网络"+target_name,Toast.LENGTH_LONG).show();
-//                        }else if (target_name.equals("christmas_20171218_compass")) {
-////                            Toast.makeText(App.getInstance(),"开始请求网络"+target_name,Toast.LENGTH_LONG).show();
-//                        }else if (target_name.equals("christmas_20171218_lamp")) {
-////                            Toast.makeText(App.getInstance(),"开始请求网络"+target_name,Toast.LENGTH_LONG).show();
-//                        }
-                        if (video == null && video_renderers.size() > 0) {
-                            String target_name = target.name();
-                            if (target_name.equals("belgium_ice_cream_20171218") && video_renderers.get(0).texId() != 0) {
-//                                video = new ARVideo();
-//                                video.openVideoFile("guide.mp4", video_renderers.get(0).texId());
-//                                current_video_renderer = video_renderers.get(0);
-                                EventBus.getDefault().post(new MyEvent(target_name));
-                            } else if (target_name.equals("christmas_20171218_blanket") && video_renderers.get(1).texId() != 0) {
-                                EventBus.getDefault().post(new MyEvent(target_name));
-                            } else if (target_name.equals("christmas_20171218_compass") && video_renderers.get(2).texId() != 0) {
-                                EventBus.getDefault().post(new MyEvent(target_name));
-                            } else if (target_name.equals("christmas_20171218_lamp")) {
-                                EventBus.getDefault().post(new MyEvent(target_name));
-                            }
-                        }
-                        if (video != null) {
-                            video.onFound();
-                            tracked_target = id;
-                            active_target = id;
-                        }
-                    }
-                    ImageTarget imagetarget = target instanceof ImageTarget ? (ImageTarget) (target) : null;
-                    if (imagetarget != null) {
-                        if (current_video_renderer != null) {
-                            video.update();
-                            if (video.isRenderTextureAvailable()) {
-                                current_video_renderer.render(camera.projectionGL(0.2f, 500.f), targetInstance.poseGL(), imagetarget.size());
-                            }
-                        }
-                    }
-                }
-            } else {
-                if (tracked_target != 0) {
-                    video.onLost();
-                    tracked_target = 0;
+                    EventBus.getDefault().post(new CalendarEvent(target.name()));
                 }
             }
         } finally {

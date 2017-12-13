@@ -71,7 +71,7 @@ public class CustomerCameraActivity extends BaseActivity implements SurfaceHolde
     private static final int DOWNLOAD_FAILED = 104;
     private static final int SAVE_PIC = 105;
     private ContentResolver resolver;
-    private ImageView img_restart, img_save, img_paster, img_share, second_paster, img_save_pic, img_ar;
+    private ImageView img_restart, img_save, img_paster, img_share, img_save_pic, img_ar;
     private ImageView img_again, img_savetip;
     private LeftAdapter leftAdapter;
     private RightAdapter rightAdapter;
@@ -138,7 +138,6 @@ public class CustomerCameraActivity extends BaseActivity implements SurfaceHolde
         img_restart = (ImageView) findViewById(R.id.img_restart);
         img_save = (ImageView) findViewById(R.id.img_save);
         img_paster = (ImageView) findViewById(R.id.img_paster);
-        second_paster = (ImageView) findViewById(R.id.second_paster);
         img_share = (ImageView) findViewById(R.id.img_share);
         img_again = (ImageView) findViewById(R.id.img_again);
         img_savetip = (ImageView) findViewById(R.id.img_savetip);
@@ -272,7 +271,6 @@ public class CustomerCameraActivity extends BaseActivity implements SurfaceHolde
                 img_restart.setVisibility(View.GONE);
                 img_again.setVisibility(View.VISIBLE);
                 img_paster.setVisibility(View.GONE);
-                second_paster.setVisibility(View.GONE);
                 takeScreenShot();
 
                 break;

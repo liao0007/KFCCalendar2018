@@ -110,16 +110,6 @@
                 android:background="@mipmap/share"
                 android:visibility="gone"
                 />
-            <ImageView
-                android:id="@+id/second_paster"
-                android:layout_below="@+id/img_paster"
-                android:layout_alignParentRight="true"
-                android:layout_marginRight="35dp"
-                android:layout_marginTop="5dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@mipmap/secondstep"
-                />
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -131,19 +121,19 @@
                 >
                 <ImageView
                     android:id="@+id/img_restart"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="100dp"
+                    android:layout_height="44dp"
                     android:background="@mipmap/retakeimg"/>
                 <ImageView
                     android:id="@+id/img_save"
-                    android:layout_marginLeft="35dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_width="100dp"
+                    android:layout_height="44dp"
                     android:background="@mipmap/saveimg"/>
                 <ImageView
                     android:id="@+id/img_again"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="210dp"
+                    android:layout_height="44dp"
                     android:background="@mipmap/again"
                     android:visibility="gone"/>
             </LinearLayout>

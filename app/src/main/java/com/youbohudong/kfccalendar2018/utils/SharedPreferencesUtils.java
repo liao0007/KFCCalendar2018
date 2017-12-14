@@ -9,36 +9,34 @@ import android.preference.PreferenceManager;
  */
 
 public class SharedPreferencesUtils {
-    private SharedPreferences sp;
-    private Context ctx;
+    private SharedPreferences sharedPreferences;
 
-    public SharedPreferencesUtils(Context ctx) {
-        this.ctx = ctx;
-        sp = PreferenceManager.getDefaultSharedPreferences(ctx);
+    public SharedPreferencesUtils(Context context) {
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
     }
 
-    public void putStr(String key, String value) {
-        sp.edit().putString(key, value).commit();
+    public void setString(String key, String value) {
+        sharedPreferences.edit().putString(key, value).apply();
     }
 
-    public void putBln(String key, boolean value) {
-        sp.edit().putBoolean(key, value).commit();
+    public void setBoolean(String key, boolean value) {
+        sharedPreferences.edit().putBoolean(key, value).apply();
     }
 
-    public void putInt(String key, int value) {
-        sp.edit().putInt(key, value).commit();
+    public void setInt(String key, int value) {
+        sharedPreferences.edit().putInt(key, value).apply();
     }
 
-    public String getString(String key, String defaultStr) {
-        return sp.getString(key, defaultStr);
+    public String getString(String key, String defaultValue) {
+        return sharedPreferences.getString(key, defaultValue);
     }
 
-    public Boolean getBln(String key, boolean defaultbln) {
-        return sp.getBoolean(key, defaultbln);
+    public Boolean getBoolean(String key, boolean defaultValue) {
+        return sharedPreferences.getBoolean(key, defaultValue);
     }
 
-    public Integer getInt(String key, int i) {
-        return sp.getInt(key, i);
+    public Integer getInt(String key, int defaultValue) {
+        return sharedPreferences.getInt(key, defaultValue);
     }
 
 }

@@ -74,7 +74,7 @@ public class RightAdapter extends BaseAdapter {
         final LeftBean.StampsBean bean = list.get(i);
         if (bean != null) {
             Glide.with(ctx).load(bean.getThumb()).into(holder.img_pic);
-            final boolean isDown = new SharedPreferencesUtils(ctx).getBln(bean.getImage(), false);
+            final boolean isDown = new SharedPreferencesUtils(ctx).getBoolean(bean.getImage(), false);
             if (isDown) {
                 holder.fl_shade.setVisibility(View.GONE);
                 holder.sprogrss.setVisibility(View.GONE);

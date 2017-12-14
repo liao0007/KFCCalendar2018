@@ -14,15 +14,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
 import android.support.v4.widget.DrawerLayout;
-import android.view.Display;
-import android.view.Gravity;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.WindowManager;
+import android.view.*;
 import android.widget.*;
-
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.tencent.mm.opensdk.modelmsg.SendMessageToWX;
@@ -40,21 +33,13 @@ import com.youbohudong.kfccalendar2018.view.SlefProgress;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.FileCallBack;
 import com.zhy.http.okhttp.callback.StringCallback;
-
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-
 import de.greenrobot.event.EventBus;
 import okhttp3.Call;
 import okhttp3.Request;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CustomerCameraActivity extends BaseActivity implements SurfaceHolder.Callback, View.OnClickListener, RightAdapter.UpdateItemListening, SingleTouchView.DeleteUIListening {
     private static List<LeftBean> stampGroupListData;
@@ -123,7 +108,7 @@ public class CustomerCameraActivity extends BaseActivity implements SurfaceHolde
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_customer_camera);
         spUtils = new SharedPreferencesUtils(this);
-        spUtils.putBln("is_first", false);
+        spUtils.setBoolean("is_first", false);
         EventBus.getDefault().register(this);
         initView();
         initListening();
@@ -627,7 +612,7 @@ public class CustomerCameraActivity extends BaseActivity implements SurfaceHolde
 
             @Override
             public void onResponse(File file, int id) {
-                spUtils.putBln(imgUrl, true);
+                spUtils.setBoolean(imgUrl, true);
                 view.setVisibility(View.GONE);
                 rightAdapter.notifyDataSetChanged();
 //                        Toast.makeText(CustomerCameraActivity.this, "onResponse :" + file.getAbsolutePath(),Toast.LENGTH_LONG).show();

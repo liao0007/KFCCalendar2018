@@ -9,9 +9,8 @@ import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.ImageView;
+import android.widget.ImageButton;
 import android.widget.Toast;
-
 import com.tencent.mm.opensdk.modelmsg.SendMessageToWX;
 import com.youbohudong.kfccalendar2018.R;
 import com.youbohudong.kfccalendar2018.base.BaseActivity;
@@ -33,15 +32,40 @@ public class WebViewActivity extends BaseActivity {
     private static final String SchemaShareAction = "share";
     private static final String SchemaScanAction = "scan";
 
-    private ImageView img_back;
-    private WebView webView;
-    private String url;
     private String callingActivity;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_webview);
+
+        ImageButton navigationBackImageButton = findViewById(R.id.navigationBackImageButton);
+        navigationBackImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
+        WebView webView = findViewById(R.id.webview);
+        webView.setWebViewClient(new WebViewClient() {
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                return true;
+            }
+        });
+        UUID uuid = new DeviceUuidFactory(this).getDeviceUuid();
+        WebSettings webSettings = webView.getSettings();
+        webSettings.setJavaScriptEnabled(true);
+        webSettings.setPluginState(WebSettings.PluginState.ON);
+        webView.addJavascriptInterface(new JsInteration(this), "android");
+
+        String url = getIntent().getStringExtra("URL");
+        String urlWithUuid = url.contains("?") ? url + "&" + "udid=" + uuid : url + "?" + "udid=" + uuid;
+        webView.loadUrl(urlWithUuid);
+
+        callingActivity = getIntent().getStringExtra("calling-activity");
+
         initView();
         initData();
         initListening();
@@ -49,39 +73,14 @@ public class WebViewActivity extends BaseActivity {
 
     @Override
     public void initView() {
-        url = getIntent().getStringExtra("URL");
-        img_back = findViewById(R.id.navigationBackImageButton);
-        webView = findViewById(R.id.webview);
-
-        this.callingActivity = getIntent().getStringExtra("calling-activity");
     }
 
     @Override
     public void initData() {
-        UUID uuid = new DeviceUuidFactory(this).getDeviceUuid();
-        WebSettings webSettings = webView.getSettings();
-        webSettings.setJavaScriptEnabled(true);
-        webSettings.setPluginState(WebSettings.PluginState.ON);
-        webView.addJavascriptInterface(new JsInteration(this), "android");
-        String urlWithUdid = url.contains("?") ? url + "&" + "udid=" + uuid : url + "?" + "udid=" + uuid;
-        webView.loadUrl(urlWithUdid);
     }
 
     @Override
     public void initListening() {
-        img_back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
-        webView.setWebViewClient(new WebViewClient() {
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                return true;
-
-            }
-        });
     }
 
     public class JsInteration {
@@ -96,7 +95,9 @@ public class WebViewActivity extends BaseActivity {
             location = location.toLowerCase();
             if (location.startsWith(Schema)) {
                 String instruction = location.substring(Schema.length());
+
                 if (instruction.startsWith(SchemaScanAction)) {
+                    /* scan */
                     if (callingActivity.equals(ArActivity)) {
                         finish();
                     } else {
@@ -104,15 +105,12 @@ public class WebViewActivity extends BaseActivity {
                     }
 
                 } else if (instruction.startsWith(SchemaShareAction)) {
+                    /* share */
                     instruction = instruction.substring(SchemaShareAction.length());
                     Map<String, String> params = urlToParams(instruction);
                     WechatManager.shareUrl(context, params.get("url"), params.get("title"), params.get("thumb"), SendMessageToWX.Req.WXSceneSession);
 
-                } else {
-                    Toast.makeText(WebViewActivity.this, "解析错误", Toast.LENGTH_LONG).show();
                 }
-            } else {
-                Toast.makeText(WebViewActivity.this, "解析错误", Toast.LENGTH_LONG).show();
             }
         }
 

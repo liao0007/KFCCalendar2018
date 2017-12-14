@@ -32,25 +32,27 @@ public class GLView extends GLSurfaceView {
             arCore.initialize();
         }
 
+        final ArCore _arCore = arCore;
+
         this.setRenderer(new Renderer() {
             @Override
             public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-                synchronized (arCore) {
-                    arCore.initGL();
+                synchronized (_arCore) {
+                    _arCore.initGL();
                 }
             }
 
             @Override
             public void onSurfaceChanged(GL10 gl, int w, int h) {
-                synchronized (arCore) {
-                    arCore.resizeGL(w, h);
+                synchronized (_arCore) {
+                    _arCore.resizeGL(w, h);
                 }
             }
 
             @Override
             public void onDrawFrame(GL10 gl) {
-                synchronized (arCore) {
-                    arCore.render();
+                synchronized (_arCore) {
+                    _arCore.render();
                 }
             }
         });
@@ -75,18 +77,22 @@ public class GLView extends GLSurfaceView {
 
     @Override
     protected void onAttachedToWindow() {
+        final ArCore _arCore = arCore;
+
         super.onAttachedToWindow();
-        synchronized (arCore) {
-            arCore.startCamera();
-            arCore.startTracker();
+        synchronized (_arCore) {
+            _arCore.startCamera();
+            _arCore.startTracker();
         }
     }
 
     @Override
     protected void onDetachedFromWindow() {
-        synchronized (arCore) {
-            arCore.stopTracker();
-            arCore.stopCamera();
+        final ArCore _arCore = arCore;
+
+        synchronized (_arCore) {
+            _arCore.stopTracker();
+            _arCore.stopCamera();
         }
         super.onDetachedFromWindow();
     }

@@ -15,6 +15,9 @@ import android.view.*;
 import android.widget.*;
 import cn.easyar.Engine;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.target.ImageViewTarget;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.google.gson.Gson;
 import com.youbohudong.kfccalendar2018.R;
 import com.youbohudong.kfccalendar2018.ar.GLView;
@@ -229,6 +232,7 @@ public class ArActivity extends BaseActivity {
     }
 
     private void showScanLayout() {
+        isTrackEventFired = false;
         scanAnimationLinearLayout.setVisibility(View.VISIBLE);
         scanSuccessRelativeLayout.setVisibility(View.GONE);
     }
@@ -279,15 +283,24 @@ public class ArActivity extends BaseActivity {
 
         @Override
         public void onResponse(String response, int id) {
-            isTrackEventFired = false;
             Gson gson = new Gson();
             taskCompletionBean = gson.fromJson(response, TaskCompletionBean.class);
 
-            showScanSuccessLayout(false);
+
             if (!TextUtils.isEmpty(taskCompletionBean.getCompletionResource())) {
                 scanSuccessImageView.setVisibility(View.VISIBLE);
                 scanSuccessRelativeLayout.setVisibility(View.VISIBLE);
-                Glide.with(ArActivity.this).load(taskCompletionBean.getCompletionResource()).into(scanSuccessImageView);
+
+                Glide.with(ArActivity.this).load(taskCompletionBean.getCompletionResource())
+                        .into(new ImageViewTarget<GlideDrawable>(scanSuccessImageView) {
+                            @Override
+                            protected void setResource(GlideDrawable glideDrawable) {
+                                showScanSuccessLayout(false);
+                                scanSuccessImageView.setImageDrawable(glideDrawable);
+                            }
+                        });
+            } else {
+                showScanSuccessLayout(false);
             }
 
             if (!TextUtils.isEmpty(taskCompletionBean.getCompletionUrl())) {

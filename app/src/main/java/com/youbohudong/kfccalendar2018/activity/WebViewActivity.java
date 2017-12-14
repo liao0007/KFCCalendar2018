@@ -20,7 +20,6 @@ import com.youbohudong.kfccalendar2018.utils.WechatManager;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -51,7 +50,7 @@ public class WebViewActivity extends BaseActivity {
     @Override
     public void initView() {
         url = getIntent().getStringExtra("URL");
-        img_back = findViewById(R.id.img_back);
+        img_back = findViewById(R.id.navigationBackImageButton);
         webView = findViewById(R.id.webview);
 
         this.callingActivity = getIntent().getStringExtra("calling-activity");

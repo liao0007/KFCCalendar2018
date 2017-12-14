@@ -48,6 +48,7 @@ public class ScanView extends View implements ValueAnimator.AnimatorUpdateListen
     public ScanView(Context context) {
         super(context);
         init(context);
+        play();
     }
 
     public ScanView(Context context, AttributeSet attrs) {

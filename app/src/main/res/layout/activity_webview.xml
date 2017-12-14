@@ -10,8 +10,8 @@
         android:background="@color/share">
         <ImageButton
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" android:id="@+id/img_back"
-                style="@style/Widget.AppCompat.Button.Borderless" app:srcCompat="@mipmap/back"/>
+                android:layout_height="wrap_content" android:id="@+id/navigationBackImageButton"
+                style="@style/Widget.AppCompat.Button.Borderless" app:srcCompat="@mipmap/navigation_back"/>
     </LinearLayout>
     <WebView
         android:id="@+id/webview"

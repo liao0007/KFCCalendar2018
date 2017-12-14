@@ -16,4 +16,7 @@
     <color name="light_red">#EFA7A2</color>
     <color name="yellow">#DED100</color>
     <color name="scan_corner_color">#0effc2</color>
+
+    <color name="primaryRed">#DE0000</color>
+    <color name="secondaryRed">#D83035</color>
 </resources>

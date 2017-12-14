@@ -5,6 +5,7 @@ import android.Manifest;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -212,9 +213,17 @@ public class ArActivity extends BaseActivity {
         super.onPause();
     }
 
+    private static boolean isTrackEventFired = false;
     public void onEventMainThread(CalendarEvent event) {
-        String taskKey = (String) event.what;
         glView.stopTracker();
+
+        if (!isTrackEventFired) {
+            MediaPlayer mediaPlayer = MediaPlayer.create(this, R.raw.scan_success);
+            mediaPlayer.start();
+            isTrackEventFired = true;
+        }
+
+        String taskKey = (String) event.what;
         UUID uuid = new DeviceUuidFactory(this).getDeviceUuid();
         requestTaskCompletion(uuid, taskKey);
     }
@@ -270,6 +279,7 @@ public class ArActivity extends BaseActivity {
 
         @Override
         public void onResponse(String response, int id) {
+            isTrackEventFired = false;
             Gson gson = new Gson();
             taskCompletionBean = gson.fromJson(response, TaskCompletionBean.class);
 

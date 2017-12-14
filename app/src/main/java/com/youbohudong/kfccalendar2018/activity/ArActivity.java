@@ -7,8 +7,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.CountDownTimer;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
@@ -42,7 +40,7 @@ import java.util.UUID;
  */
 
 public class ArActivity extends BaseActivity implements View.OnClickListener {
-    private static String key = "amxBNPSXKbRBragBOjnJ0rV5tjSBwQZFk3SqTyd8qlTOv54A8CFjO4fP8RaVD9NDDKcvzXc4aPWHFj7cW5gtViFP1Q4j5nD23zodBz30agY29ai2ar7VQPcW7n41yxP8zv5ZlNhWy1vY4xujQpW8U34E9ZLyKT3byHamzdqWwUD1jnoGS82pRYqGQXiiQGn2pfpwC5BO";
+    private static final String EasyArKey = "amxBNPSXKbRBragBOjnJ0rV5tjSBwQZFk3SqTyd8qlTOv54A8CFjO4fP8RaVD9NDDKcvzXc4aPWHFj7cW5gtViFP1Q4j5nD23zodBz30agY29ai2ar7VQPcW7n41yxP8zv5ZlNhWy1vY4xujQpW8U34E9ZLyKT3byHamzdqWwUD1jnoGS82pRYqGQXiiQGn2pfpwC5BO";
     private GLView glView;
     private ScanView scanView;
     private TextView txt_action, txt_des, txt_gosee;
@@ -60,7 +58,7 @@ public class ArActivity extends BaseActivity implements View.OnClickListener {
         setContentView(R.layout.activity_ar);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON, WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         dialog = new My_Dialog(this);
-        if (!Engine.initialize(this, key)) {
+        if (!Engine.initialize(this, EasyArKey)) {
             Log.e("ArCore", "Initialization Failed.");
         }
         EventBus.getDefault().register(this);
@@ -90,6 +88,7 @@ public class ArActivity extends BaseActivity implements View.OnClickListener {
                 } else {
                     Intent intent = new Intent(ArActivity.this, WebViewActivity.class);
                     intent.putExtra("URL", taskCompletionBean.getCompletionUrl());
+                    intent.putExtra("calling-activity", ArActivity);
                     startActivity(intent);
                 }
             }

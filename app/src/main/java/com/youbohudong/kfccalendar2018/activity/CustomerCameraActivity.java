@@ -26,10 +26,6 @@ import android.widget.*;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.tencent.mm.opensdk.modelmsg.SendMessageToWX;
-import com.tencent.mm.opensdk.modelmsg.WXImageObject;
-import com.tencent.mm.opensdk.modelmsg.WXMediaMessage;
-import com.tencent.mm.opensdk.openapi.IWXAPI;
-import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 import com.youbohudong.kfccalendar2018.R;
 import com.youbohudong.kfccalendar2018.adapter.LeftAdapter;
 import com.youbohudong.kfccalendar2018.adapter.RightAdapter;
@@ -95,12 +91,11 @@ public class CustomerCameraActivity extends BaseActivity implements SurfaceHolde
     private RightAdapter rightAdapter;
 
     Display display;
-    IWXAPI api;
 
     int bmpHeight, bmpWidth;
 
     private String isCheck = "0";
-    private static String filePath = "";
+    private static String imagePath = "";
     private SharedPreferencesUtils spUtils;
     private Handler mHandler = new Handler() {
         @Override
@@ -124,7 +119,6 @@ public class CustomerCameraActivity extends BaseActivity implements SurfaceHolde
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        api = WXAPIFactory.createWXAPI(this, "wx9b7b3c02f132a518");
         setContentView(R.layout.activity_customer_camera);
         spUtils = new SharedPreferencesUtils(this);
         spUtils.putBln("is_first", false);
@@ -140,36 +134,36 @@ public class CustomerCameraActivity extends BaseActivity implements SurfaceHolde
         WindowManager wm = (WindowManager) getSystemService(WINDOW_SERVICE);
         display = wm.getDefaultDisplay();
         resolver = getContentResolver();
-        drawer_layout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        img_start = (ImageView) findViewById(R.id.img_start);
-        img_switch = (ImageView) findViewById(R.id.img_switch);
-        img_xz = (ImageView) findViewById(R.id.img_xz);
-        suf_camera = (SurfaceView) findViewById(R.id.suf_camera);
-        rl_finish = (RelativeLayout) findViewById(R.id.rl_finish);
-        rl_root = (RelativeLayout) findViewById(R.id.rl_root);
-        fl_root = (FrameLayout) findViewById(R.id.fl_root);
-        img_pic = (ImageView) findViewById(R.id.img_pic);
-        lv_left = (ListView) findViewById(R.id.lv_left);
-        lv_right = (ListView) findViewById(R.id.lv_right);
-        img_restart = (ImageView) findViewById(R.id.img_restart);
-        img_save = (ImageView) findViewById(R.id.img_save);
-        img_paster = (ImageView) findViewById(R.id.img_paster);
-        img_share = (ImageView) findViewById(R.id.img_share);
-        img_again = (ImageView) findViewById(R.id.img_again);
-        img_savetip = (ImageView) findViewById(R.id.img_savetip);
-        img_save_pic = (ImageView) findViewById(R.id.img_save_pic);
-        img_ar = (ImageView) findViewById(R.id.img_ar);
+        drawer_layout = findViewById(R.id.drawer_layout);
+        img_start = findViewById(R.id.img_start);
+        img_switch = findViewById(R.id.img_switch);
+        img_xz = findViewById(R.id.img_xz);
+        suf_camera = findViewById(R.id.suf_camera);
+        rl_finish = findViewById(R.id.rl_finish);
+        rl_root = findViewById(R.id.rl_root);
+        fl_root = findViewById(R.id.fl_root);
+        img_pic = findViewById(R.id.img_pic);
+        lv_left = findViewById(R.id.lv_left);
+        lv_right = findViewById(R.id.lv_right);
+        img_restart = findViewById(R.id.img_restart);
+        img_save = findViewById(R.id.img_save);
+        img_paster = findViewById(R.id.img_paster);
+        img_share = findViewById(R.id.img_share);
+        img_again = findViewById(R.id.img_again);
+        img_savetip = findViewById(R.id.img_savetip);
+        img_save_pic = findViewById(R.id.img_save_pic);
+        img_ar = findViewById(R.id.img_ar);
 
-        ll_close = (LinearLayout) findViewById(R.id.ll_close);
-        ll_share = (LinearLayout) findViewById(R.id.ll_share);
+        ll_close = findViewById(R.id.ll_close);
+        ll_share = findViewById(R.id.ll_share);
 
-        txt_frends = (TextView) findViewById(R.id.txt_frends);
-        txt_frendsquare = (TextView) findViewById(R.id.txt_friendsquare);
-        txt_cancel = (TextView) findViewById(R.id.txt_cancel);
+        txt_frends = findViewById(R.id.txt_frends);
+        txt_frendsquare = findViewById(R.id.txt_friendsquare);
+        txt_cancel = findViewById(R.id.txt_cancel);
 
-        ll_save_pic = (LinearLayout) findViewById(R.id.ll_save_pic);
+        ll_save_pic = findViewById(R.id.ll_save_pic);
 
-        helpButton = (ImageButton) findViewById(R.id.helpButton);
+        helpButton = findViewById(R.id.helpButton);
 
         surfaceHolder = suf_camera.getHolder();
         surfaceHolder.addCallback(this);
@@ -273,7 +267,6 @@ public class CustomerCameraActivity extends BaseActivity implements SurfaceHolde
             rightAdapter = new RightAdapter(CustomerCameraActivity.this, leftList.get(0).getStamps(), 0, leftList.get(0).isIsAvailable());
             rightAdapter.setmUpdateItemListening(CustomerCameraActivity.this);
             lv_right.setAdapter(rightAdapter);
-
         }
 
         @Override
@@ -342,15 +335,13 @@ public class CustomerCameraActivity extends BaseActivity implements SurfaceHolde
                 if (surfaceHolder != null) {
                     setPrive(camera, surfaceHolder);
                 }
-
-
                 break;
             case R.id.txt_frends://回话
-                wxShare(filePath, SendMessageToWX.Req.WXSceneSession);
+                WechatManager.shareImage(this, imagePath, SendMessageToWX.Req.WXSceneSession);
                 ll_share.setVisibility(View.GONE);
                 break;
             case R.id.txt_friendsquare://朋友圈
-                wxShare(filePath, SendMessageToWX.Req.WXSceneTimeline);
+                WechatManager.shareImage(this, imagePath, SendMessageToWX.Req.WXSceneTimeline);
                 ll_share.setVisibility(View.GONE);
                 break;
             case R.id.txt_cancel://取消
@@ -364,12 +355,8 @@ public class CustomerCameraActivity extends BaseActivity implements SurfaceHolde
                 break;
 
         }
-
     }
 
-    private String buildTransaction(final String type) {
-        return (type == null) ? String.valueOf(System.currentTimeMillis()) : type + System.currentTimeMillis();
-    }
 
     public void updateView() {
         int count = fl_root.getChildCount();
@@ -711,8 +698,8 @@ public class CustomerCameraActivity extends BaseActivity implements SurfaceHolde
                 // 获取内置SD卡路径
                 String sdCardPath = Environment.getExternalStorageDirectory().getPath();
                 // 图片文件路径
-                filePath = sdCardPath + File.separator + "screenshot.png";
-                File file = new File(filePath);
+                imagePath = sdCardPath + File.separator + "screenshot.png";
+                File file = new File(imagePath);
                 FileOutputStream os = new FileOutputStream(file);
                 screenBitmap.compress(Bitmap.CompressFormat.PNG, 100, os);
                 os.flush();
@@ -726,30 +713,6 @@ public class CustomerCameraActivity extends BaseActivity implements SurfaceHolde
             } catch (Exception e) {
             }
         }
-
-
-    }
-
-    /**
-     * 微信分享
-     */
-    public void wxShare(String path, int mTargetScene) {
-        Bitmap bmp = WechatManager.getimage(filePath);
-        WXImageObject imgObj = new WXImageObject(bmp);
-
-        WXMediaMessage msg = new WXMediaMessage();
-        msg.mediaObject = imgObj;
-
-        //设置缩略图
-//            Bitmap thumbBmp = Bitmap.createScaledBitmap(bmp, THUMB_SIZE, THUMB_SIZE, true);
-//            bmp.recycle();
-//            msg.thumbData = Util.bmpToByteArray(thumbBmp, true);  // ?????????
-
-        SendMessageToWX.Req req = new SendMessageToWX.Req();
-        req.transaction = buildTransaction("img");
-        req.message = msg;
-        req.scene = mTargetScene;
-        api.sendReq(req);
     }
 
 

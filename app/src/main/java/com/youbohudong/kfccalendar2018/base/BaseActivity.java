@@ -11,6 +11,9 @@ import android.view.WindowManager;
  */
 
 public abstract class BaseActivity extends AppCompatActivity {
+
+    public static final String ArActivity = "ArActivity";
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE);

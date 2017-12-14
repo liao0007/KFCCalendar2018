@@ -2,7 +2,6 @@ package com.youbohudong.kfccalendar2018.activity;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.Gravity;
@@ -12,9 +11,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 import com.tencent.mm.opensdk.modelbase.BaseReq;
 import com.tencent.mm.opensdk.modelbase.BaseResp;
-import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.IWXAPIEventHandler;
-import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 import com.youbohudong.kfccalendar2018.R;
 import com.youbohudong.kfccalendar2018.base.BaseActivity;
 import com.youbohudong.kfccalendar2018.utils.WechatManager;
@@ -27,9 +24,7 @@ import java.io.File;
 
 public class WXEntryActivity extends BaseActivity implements IWXAPIEventHandler {
 
-    private IWXAPI api;
     private ImageView img_bg, img_savetip, img_sharetip, img_againtip;
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -42,10 +37,10 @@ public class WXEntryActivity extends BaseActivity implements IWXAPIEventHandler 
 
     @Override
     public void initView() {
-        img_bg = (ImageView) findViewById(R.id.img_bg);
-        img_savetip = (ImageView) findViewById(R.id.img_savetip);
-        img_sharetip = (ImageView) findViewById(R.id.img_sharetip);
-        img_againtip = (ImageView) findViewById(R.id.img_againtip);
+        img_bg = findViewById(R.id.img_bg);
+        img_savetip = findViewById(R.id.img_savetip);
+        img_sharetip = findViewById(R.id.img_sharetip);
+        img_againtip = findViewById(R.id.img_againtip);
     }
 
     @Override
@@ -55,13 +50,13 @@ public class WXEntryActivity extends BaseActivity implements IWXAPIEventHandler 
 
     @Override
     public void initData() {
-        api = WXAPIFactory.createWXAPI(this, "wxb0c1974e2394893d");
-        api.handleIntent(getIntent(), this);
+        WechatManager.createWXAPI(this).handleIntent(getIntent(), this);
+
         // 获取内置SD卡路径
         String sdCardPath = Environment.getExternalStorageDirectory().getPath();
         // 图片文件路径
         String filePath = sdCardPath + File.separator + "screenshot.png";
-        Bitmap bmp = WechatManager.getimage(filePath);
+        Bitmap bmp = WechatManager.createThumbnailFromFile(filePath);
         img_bg.setImageBitmap(bmp);
     }
 

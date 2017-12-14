@@ -18,13 +18,13 @@
             android:id="@+id/suf_camera"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
-        <ImageView
-            android:id="@+id/img_ar"
-            android:layout_width="40dp"
-            android:layout_height="50dp"
-            android:layout_marginLeft="30dp"
-            android:layout_marginTop="40dp"
-            android:background="@mipmap/ar_icon"/>
+        <ImageButton
+                android:id="@+id/img_ar"
+                android:layout_width="40dp"
+                android:layout_height="50dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginTop="40dp"
+                app:srcCompat="@mipmap/ar_icon" style="@style/Widget.AppCompat.Button.Borderless"/>
 
         <LinearLayout
                 android:layout_width="wrap_content"
@@ -34,27 +34,27 @@
                 android:layout_marginRight="30dp"
                 android:orientation="vertical"
                 android:visibility="visible" android:id="@+id/linearLayout">
-            <ImageView
-                android:id="@+id/img_switch"
-                android:layout_width="40dp"
-                android:layout_height="50dp"
-                android:background="@mipmap/chagecamera"/>
-            <ImageView
-                android:id="@+id/img_xz"
-                android:layout_width="40dp"
-                android:layout_height="50dp"
-                android:background="@mipmap/album"
-                android:layout_marginTop="15dp"/>
+            <ImageButton
+                    android:id="@+id/img_switch"
+                    android:layout_width="40dp"
+                    android:layout_height="50dp"
+                    app:srcCompat="@mipmap/chagecamera" style="@style/Widget.AppCompat.Button.Borderless"/>
+            <ImageButton
+                    android:id="@+id/img_xz"
+                    android:layout_width="40dp"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="15dp" app:srcCompat="@mipmap/album"
+                    style="@style/Widget.AppCompat.Button.Borderless"/>
         </LinearLayout>
 
-        <ImageView
-            android:id="@+id/img_start"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_marginBottom="30dp"
-            android:gravity="center"
-            android:background="@mipmap/takephoto"
-            android:layout_alignParentBottom="true" android:layout_centerHorizontal="true"/>
+        <ImageButton
+                android:id="@+id/img_start"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_marginBottom="30dp"
+                android:gravity="center"
+                android:layout_alignParentBottom="true" android:layout_centerHorizontal="true"
+                app:srcCompat="@mipmap/takephoto" style="@style/Widget.AppCompat.Button.Borderless"/>
 
         <RelativeLayout
             android:id="@+id/rl_root"
@@ -95,7 +95,7 @@
                     />
             </LinearLayout>
 
-            <ImageView
+            <ImageButton
                 android:id="@+id/img_paster"
                 android:layout_alignParentRight="true"
                 android:layout_marginTop="40dp"
@@ -103,8 +103,9 @@
                 android:layout_width="40dp"
                 android:layout_height="50dp"
                 android:background="@mipmap/paster"
+                style="@style/Widget.AppCompat.Button.Borderless"
                 />
-            <ImageView
+            <ImageButton
                 android:id="@+id/img_share"
                 android:layout_alignParentRight="true"
                 android:layout_marginTop="30dp"
@@ -113,6 +114,7 @@
                 android:layout_height="50dp"
                 android:background="@mipmap/share"
                 android:visibility="gone"
+                style="@style/Widget.AppCompat.Button.Borderless"
                 />
             <LinearLayout
                 android:layout_width="match_parent"
@@ -123,23 +125,29 @@
                 android:layout_marginBottom="30dp"
                 android:gravity="center"
                 >
-                <ImageView
+                <ImageButton
                     android:id="@+id/img_restart"
                     android:layout_width="100dp"
                     android:layout_height="44dp"
-                    android:background="@mipmap/retakeimg"/>
-                <ImageView
+                    android:background="@mipmap/retakeimg"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                />
+                <ImageButton
                     android:id="@+id/img_save"
                     android:layout_marginLeft="10dp"
                     android:layout_width="100dp"
                     android:layout_height="44dp"
-                    android:background="@mipmap/saveimg"/>
-                <ImageView
+                    android:background="@mipmap/saveimg"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                />
+                <ImageButton
                     android:id="@+id/img_again"
                     android:layout_width="210dp"
                     android:layout_height="44dp"
                     android:background="@mipmap/again"
-                    android:visibility="gone"/>
+                    android:visibility="gone"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                />
             </LinearLayout>
             <ImageView
                 android:id="@+id/img_savetip"

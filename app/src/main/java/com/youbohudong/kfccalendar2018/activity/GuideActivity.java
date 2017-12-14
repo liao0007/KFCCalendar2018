@@ -156,6 +156,7 @@ public class GuideActivity extends BaseActivity {
                 public void onClick(View view) {
                     if (currentItem == (list.size() - 1)) {
                         startActivity(new Intent(GuideActivity.this, CustomerCameraActivity.class));
+                        GuideActivity.this.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                         finish();
                     } else {
                         viewPager.setCurrentItem(currentItem + 1);
@@ -167,6 +168,7 @@ public class GuideActivity extends BaseActivity {
                 @Override
                 public void onClick(View view) {
                     startActivity(new Intent(GuideActivity.this, CustomerCameraActivity.class));
+                    GuideActivity.this.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                     finish();
                 }
             });

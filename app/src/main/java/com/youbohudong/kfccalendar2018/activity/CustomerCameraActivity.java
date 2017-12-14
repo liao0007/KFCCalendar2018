@@ -21,14 +21,7 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.AdapterView;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -88,7 +81,8 @@ public class CustomerCameraActivity extends BaseActivity implements SurfaceHolde
     private ListView lv_left, lv_right;
     private LinearLayout ll_share, ll_close, ll_save_pic;
     private TextView txt_frends, txt_cancel, txt_frendsquare;
-    ;
+    private ImageButton helpButton;
+
     private static final int REQUEST_XC_CODE = 101;
     private static final int DOWNLOADING = 102;
     private static final int DOWNLOADED = 103;
@@ -175,6 +169,7 @@ public class CustomerCameraActivity extends BaseActivity implements SurfaceHolde
 
         ll_save_pic=(LinearLayout) findViewById(R.id.ll_save_pic);
 
+        helpButton = (ImageButton) findViewById(R.id.helpButton);
 
         surfaceHolder = suf_camera.getHolder();
         surfaceHolder.addCallback(this);
@@ -208,6 +203,14 @@ public class CustomerCameraActivity extends BaseActivity implements SurfaceHolde
 
 
                 }
+            }
+        });
+
+        helpButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(CustomerCameraActivity.this, GuideActivity.class));
+                CustomerCameraActivity.this.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
             }
         });
 

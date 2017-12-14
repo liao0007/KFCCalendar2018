@@ -26,10 +26,12 @@ public class SplashActivity extends BaseActivity {
             switch (msg.what) {
                 case INTOMAIN://进入主页
                     startActivity(new Intent(SplashActivity.this, CustomerCameraActivity.class));
+                    SplashActivity.this.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                     finish();
                     break;
                 case INTOGUIDE://进入向导
                     startActivity(new Intent(SplashActivity.this, GuideActivity.class));
+                    SplashActivity.this.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                     finish();
                     break;
             }

@@ -22,7 +22,7 @@ import java.io.File;
  * Created by ${bcq} on 2017/11/21.
  */
 
-public class WXEntryActivity extends BaseActivity implements IWXAPIEventHandler {
+public class WeChatEntryActivity extends BaseActivity implements IWXAPIEventHandler {
 
     private ImageView img_bg, img_savetip, img_sharetip, img_againtip;
 
@@ -30,6 +30,12 @@ public class WXEntryActivity extends BaseActivity implements IWXAPIEventHandler 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.wx_layout);
+
+        img_bg = findViewById(R.id.img_bg);
+        img_savetip = findViewById(R.id.img_savetip);
+        img_sharetip = findViewById(R.id.img_sharetip);
+        img_againtip = findViewById(R.id.img_againtip);
+
         initView();
         initListening();
         initData();
@@ -37,15 +43,10 @@ public class WXEntryActivity extends BaseActivity implements IWXAPIEventHandler 
 
     @Override
     public void initView() {
-        img_bg = findViewById(R.id.img_bg);
-        img_savetip = findViewById(R.id.img_savetip);
-        img_sharetip = findViewById(R.id.img_sharetip);
-        img_againtip = findViewById(R.id.img_againtip);
     }
 
     @Override
     public void initListening() {
-
     }
 
     @Override

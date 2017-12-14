@@ -35,6 +35,7 @@ import java.util.UUID;
  */
 
 public class ArActivity extends BaseActivity {
+
     private static final String EasyArKey = "amxBNPSXKbRBragBOjnJ0rV5tjSBwQZFk3SqTyd8qlTOv54A8CFjO4fP8RaVD9NDDKcvzXc4aPWHFj7cW5gtViFP1Q4j5nD23zodBz30agY29ai2ar7VQPcW7n41yxP8zv5ZlNhWy1vY4xujQpW8U34E9ZLyKT3byHamzdqWwUD1jnoGS82pRYqGQXiiQGn2pfpwC5BO";
 
     private RelativeLayout glViewRelativeLayout;
@@ -58,7 +59,6 @@ public class ArActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         initView();
         initListening();
         initData();
@@ -198,10 +198,12 @@ public class ArActivity extends BaseActivity {
             glView.startCamera();
             showScanLayout();
         }
+        overlayRelativeLayout.setBackgroundResource(android.R.color.transparent);
     }
 
     @Override
     protected void onPause() {
+        overlayRelativeLayout.setBackgroundResource(android.R.color.black);
         if (glView != null) {
             glView.stopCamera();
             glView.stopTracker();

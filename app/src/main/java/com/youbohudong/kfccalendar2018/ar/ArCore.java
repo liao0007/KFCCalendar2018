@@ -197,7 +197,7 @@ public class ArCore {
                 }
             }
         } finally {
-//            frame.dispose();
+            frame.dispose();
         }
     }
 

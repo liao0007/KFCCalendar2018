@@ -19,15 +19,18 @@ import javax.microedition.khronos.egl.EGLDisplay;
 import javax.microedition.khronos.opengles.GL10;
 
 public class GLView extends GLSurfaceView {
-    private ArCore arCore;
+
+    private static ArCore arCore;
 
     public GLView(Context context) {
         super(context);
         setEGLContextFactory(new ContextFactory());
         setEGLConfigChooser(new ConfigChooser());
 
-        arCore = new ArCore();
-        arCore.initialize();
+        if (arCore == null) {
+            arCore = new ArCore();
+            arCore.initialize();
+        }
 
         this.setRenderer(new Renderer() {
             @Override

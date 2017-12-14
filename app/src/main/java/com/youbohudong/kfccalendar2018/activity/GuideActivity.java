@@ -27,7 +27,7 @@ import java.util.List;
 public class GuideActivity extends BaseActivity {
     private VideoView videoView;
     private ViewPager viewPager;
-    private List<GuideBean> list;
+    private List<GuideBean> guideBeanList;
     private int currentItem;
 
     @Override
@@ -41,33 +41,30 @@ public class GuideActivity extends BaseActivity {
 
     @Override
     public void initView() {
-        videoView = (VideoView) findViewById(R.id.video_view);
-        viewPager = (ViewPager) findViewById(R.id.viewpager);
-    }
+        guideBeanList = new ArrayList<>();
+        guideBeanList.add(new GuideBean("欢迎来到K记大玩家", "本上校为你带来了整整一年的惊喜…"));
+        guideBeanList.add(new GuideBean("AR黑科技 扫扫有惊喜", "玩转AR黑科技 扫海报 扫汉堡…\n扫得越多 惊喜越多"));
+        guideBeanList.add(new GuideBean("收集贴纸 秀翻朋友圈", "收集限定精美贴纸\n分享朋友圈秀出独一无二的你"));
+        guideBeanList.add(new GuideBean("参加主题活动 赢惊喜礼物", "开启消息推送获取最新活动讯息\n参加店内活动赢取免费礼物"));
 
-    @Override
-    public void initData() {
+        viewPager = findViewById(R.id.viewPager);
+        viewPager.setAdapter(new ViewPagerAdapter());
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
 
-        list = new ArrayList<>();
-        GuideBean bean1 = new GuideBean();
-        bean1.setTitle("欢迎来到K记大玩家");
-        bean1.setContent("本上校为你带来了整整一年的惊喜…");
-        GuideBean bean2 = new GuideBean();
-        bean2.setTitle("AR黑科技 扫扫有惊喜");
-        bean2.setContent("玩转AR黑科技 扫海报 扫汉堡…\\n扫得越多 惊喜越多");
-        GuideBean bean3 = new GuideBean();
-        bean3.setTitle("收集贴纸 秀翻朋友圈");
-        bean3.setContent("收集限定精美贴纸\\n分享朋友圈秀出独一无二的你");
-        GuideBean bean4 = new GuideBean();
-        bean4.setTitle("参加主题活动 赢惊喜礼物");
-        bean4.setContent("开启消息推送获取最新活动讯息\\n参加店内活动赢取免费礼物");
-        list.add(bean1);
-        list.add(bean2);
-        list.add(bean3);
-        list.add(bean4);
+            @Override
+            public void onPageSelected(int position) {
+                currentItem = position;
+            }
 
-        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter();
-        viewPager.setAdapter(viewPagerAdapter);
+            @Override
+            public void onPageScrollStateChanged(int state) {
+            }
+        });
+
+        videoView = findViewById(R.id.videoView);
         String uri = "android.resource://" + getPackageName() + "/" + R.raw.guide;
         videoView.setVideoURI(Uri.parse(uri));
         videoView.start();
@@ -81,24 +78,23 @@ public class GuideActivity extends BaseActivity {
     }
 
     @Override
+    public void initData() {
+    }
+
+    @Override
     public void initListening() {
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+    }
 
-            }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        videoView.start();
+    }
 
-            @Override
-            public void onPageSelected(int position) {
-                currentItem = position;
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
-        });
-
+    @Override
+    protected void onPause() {
+        videoView.stopPlayback();
+        super.onResume();
     }
 
     public class ViewPagerAdapter extends PagerAdapter {
@@ -148,13 +144,13 @@ public class GuideActivity extends BaseActivity {
                 img_next.setBackgroundResource(R.mipmap.start);
             }
 
-            txt_title.setText(list.get(position).getTitle());
-            txt_content.setText(list.get(position).getContent());
+            txt_title.setText(guideBeanList.get(position).getTitle());
+            txt_content.setText(guideBeanList.get(position).getContent());
             container.addView(v);
             img_next.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if (currentItem == (list.size() - 1)) {
+                    if (currentItem == (guideBeanList.size() - 1)) {
                         startActivity(new Intent(GuideActivity.this, CustomerCameraActivity.class));
                         GuideActivity.this.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                         finish();
@@ -182,18 +178,12 @@ public class GuideActivity extends BaseActivity {
 
         @Override
         public int getCount() {
-            return list.size();
+            return guideBeanList.size();
         }
 
         @Override
         public boolean isViewFromObject(View view, Object object) {
             return view == object;
         }
-    }
-
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
     }
 }

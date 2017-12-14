@@ -57,6 +57,8 @@ import okhttp3.Call;
 import okhttp3.Request;
 
 public class CustomerCameraActivity extends BaseActivity implements SurfaceHolder.Callback, View.OnClickListener, RightAdapter.UpdateItemListening, SingleTouchView.DeleteUIListening {
+    private static List<LeftBean> stampGroupListData;
+
     private static final int THUMB_SIZE = 150;
     //声明一个camera对象
     private Camera camera;
@@ -194,8 +196,6 @@ public class CustomerCameraActivity extends BaseActivity implements SurfaceHolde
                     lv_right.setAdapter(rightAdapter);
                     leftAdapter.setPos(i);
                     leftAdapter.notifyDataSetChanged();
-
-
                 }
             }
         });
@@ -217,25 +217,27 @@ public class CustomerCameraActivity extends BaseActivity implements SurfaceHolde
         leftAdapter = new LeftAdapter(CustomerCameraActivity.this, leftList);
 //        leftAdapter.setmOnLeftClickListening(this);
         lv_left.setAdapter(leftAdapter);
-        getData();
 
+        if (stampGroupListData == null) {
+            requestStampGroupData();
+        }
     }
 
     /**
      * 从服务器获取数据
      */
-    private void getData() {
+    private void requestStampGroupData() {
         String url = "https://www.youbohudong.com/api/biz/vip/kfc/calendar-2018/stamps";
         OkHttpUtils
                 .get()
                 .url(url)
                 .id(100)
                 .build()
-                .execute(new MyStringCallback());
+                .execute(new StampGroupDataCallback());
     }
 
 
-    public class MyStringCallback extends StringCallback {
+    public class StampGroupDataCallback extends StringCallback {
         @Override
         public void onBefore(Request request, int id) {
             setTitle("loading...");
@@ -253,13 +255,11 @@ public class CustomerCameraActivity extends BaseActivity implements SurfaceHolde
 
         @Override
         public void onResponse(String response, int id) {
-
             Gson gson = new Gson();
             // json转为带泛型的list
-            List<LeftBean> retList = gson.fromJson(response, new TypeToken<List<LeftBean>>() {
-            }.getType());
+            stampGroupListData = gson.fromJson(response, new TypeToken<List<LeftBean>>() {}.getType());
             leftList.clear();
-            leftList.addAll(retList);
+            leftList.addAll(stampGroupListData);
             LeftBean bean = new LeftBean();
             bean.setName("敬请期待");
             leftList.add(bean);

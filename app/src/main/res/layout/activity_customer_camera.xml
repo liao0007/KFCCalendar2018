@@ -168,7 +168,7 @@
                     />
 
                 <TextView
-                    android:id="@+id/txt_frendsquare"
+                    android:id="@+id/txt_friendsquare"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:text="分享到微信朋友圈"
@@ -194,10 +194,10 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp" app:srcCompat="@mipmap/help"
                 android:id="@+id/helpButton"
-                android:layout_alignBottom="@+id/img_start"
-                android:layout_alignRight="@+id/linearLayout"
-                android:layout_alignEnd="@+id/linearLayout" style="@style/Widget.AppCompat.Button.Borderless"
-                android:adjustViewBounds="false"/>
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_marginBottom="20dp"
+                android:layout_alignBottom="@+id/img_start" android:layout_alignLeft="@+id/linearLayout"
+                android:layout_alignStart="@+id/linearLayout"/>
 
     </RelativeLayout>
 

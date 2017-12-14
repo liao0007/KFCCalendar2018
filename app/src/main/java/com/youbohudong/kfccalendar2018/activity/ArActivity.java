@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
@@ -50,6 +52,7 @@ public class ArActivity extends BaseActivity implements View.OnClickListener {
     My_Dialog dialog;
     private  RelativeLayout rl_scan_success;
     private ImageView img_back;
+    private RelativeLayout background;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,10 +73,12 @@ public class ArActivity extends BaseActivity implements View.OnClickListener {
         txt_gosee = (TextView) v.findViewById(R.id.txt_gosee);
         rl_scan_success=(RelativeLayout) v.findViewById(R.id.rl_scan_success);
         img_back=(ImageView) v.findViewById(R.id.img_back);
+        background=(RelativeLayout) v.findViewById(R.id.backgroundLayout);
 
         img_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                background.setBackgroundResource(android.R.color.background_dark);
                 finish();
             }
         });
@@ -93,9 +98,7 @@ public class ArActivity extends BaseActivity implements View.OnClickListener {
             @Override
             public void onSuccess() {
                 ((ViewGroup) findViewById(R.id.preview)).addView(glView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-
                 ((ViewGroup) findViewById(R.id.preview)).addView(v, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-
             }
 
             @Override
@@ -112,8 +115,6 @@ public class ArActivity extends BaseActivity implements View.OnClickListener {
         scanView = (ScanView) findViewById(R.id.scanview);
         scanView.play();
         txt_action = (TextView) findViewById(R.id.btn_event_list);
-
-
     }
 
     @Override
@@ -179,12 +180,14 @@ public class ArActivity extends BaseActivity implements View.OnClickListener {
             glView.onResume();
             glView.startTracker();
             glView.startCamera();
+            background.setBackgroundResource(android.R.color.transparent);
         }
     }
 
     @Override
     protected void onPause() {
         if (glView != null) {
+            background.setBackgroundResource(android.R.color.background_dark);
             glView.stopCamera();
             glView.stopTracker();
             glView.onPause();

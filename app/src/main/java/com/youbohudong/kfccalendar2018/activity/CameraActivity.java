@@ -8,15 +8,15 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.DisplayMetrics;
 import android.view.*;
 import android.widget.*;
 import com.youbohudong.kfccalendar2018.R;
 import com.youbohudong.kfccalendar2018.base.BaseActivity;
-import com.youbohudong.kfccalendar2018.bean.LeftBean;
 import com.youbohudong.kfccalendar2018.camera.util.CameraParamUtil;
 import com.youbohudong.kfccalendar2018.utils.SharedPreferencesUtils;
 import com.youbohudong.kfccalendar2018.utils.Util;
@@ -30,9 +30,9 @@ public class CameraActivity extends BaseActivity implements SurfaceHolder.Callba
     private ProgressBar savingProgressBar;
 
     private int currentCameraId = Camera.CameraInfo.CAMERA_FACING_BACK;//0代表前置摄像头，1代表后置摄像头
-    private static final int REQUEST_XC_CODE = 101;
+    private static final int REQUEST_IMPORT_FROM_ALBUM_CODE = 101;
     private ContentResolver contentResolver;
-    private Display display;
+    private DisplayMetrics displayMetrics;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +42,9 @@ public class CameraActivity extends BaseActivity implements SurfaceHolder.Callba
         spUtils.setBoolean("is_first", false);
 
         WindowManager wm = (WindowManager) getSystemService(WINDOW_SERVICE);
-        display = wm.getDefaultDisplay();
+        displayMetrics = new DisplayMetrics();
+        wm.getDefaultDisplay().getMetrics(displayMetrics);
+
         contentResolver = getContentResolver();
 
         savingProgressBar = findViewById(R.id.savingProgressBar);
@@ -84,7 +86,7 @@ public class CameraActivity extends BaseActivity implements SurfaceHolder.Callba
                 Intent intent = new Intent(Intent.ACTION_PICK);
                 intent.setType("image/*");
                 // 开启一个带有返回值的Activity，请求码为PHOTO_REQUEST_GALLERY
-                startActivityForResult(intent, REQUEST_XC_CODE);
+                startActivityForResult(intent, REQUEST_IMPORT_FROM_ALBUM_CODE);
             }
         });
 
@@ -117,7 +119,7 @@ public class CameraActivity extends BaseActivity implements SurfaceHolder.Callba
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_XC_CODE && resultCode == RESULT_OK && data != null) {
+        if (requestCode == REQUEST_IMPORT_FROM_ALBUM_CODE && resultCode == RESULT_OK && data != null) {
             // 得到图片的全路径
             Uri uri = data.getData();
             if (uri != null) {
@@ -171,11 +173,28 @@ public class CameraActivity extends BaseActivity implements SurfaceHolder.Callba
         camera.autoFocus(new Camera.AutoFocusCallback() {
             @Override
             public void onAutoFocus(boolean success, Camera camera) {
+                MediaPlayer mediaPlayer = MediaPlayer.create(CameraActivity.this, R.raw.shutter);
+                mediaPlayer.start();
+
                 camera.takePicture(null, null, new Camera.PictureCallback() {
                     @Override
                     public void onPictureTaken(byte[] data, Camera camera) {
                         try {// 获得图片
-                            compressAndCacheImage(BitmapFactory.decodeByteArray(data, 0, data.length));
+
+                            Bitmap image = BitmapFactory.decodeByteArray(data, 0, data.length);
+
+                             /* rotate */
+                            Matrix matrix = new Matrix();
+                            matrix.reset();
+                            if (currentCameraId == Camera.CameraInfo.CAMERA_FACING_BACK) {
+                                matrix.postRotate(90);
+                            } else {
+                                matrix.postRotate(90);
+                                matrix.postScale(-1, 1);
+                            }
+                            image = Bitmap.createBitmap(image, 0, 0, image.getWidth(), image.getHeight(), matrix, true);
+
+                            compressAndCacheImage(image);
                             startActivity(new Intent(CameraActivity.this, StampActivity.class));
                             finish();
                         } catch (Exception e) {
@@ -189,20 +208,6 @@ public class CameraActivity extends BaseActivity implements SurfaceHolder.Callba
 
     private void compressAndCacheImage(Bitmap image) {
         savingProgressBar.setVisibility(View.VISIBLE);
-
-        /* compress */
-        image = Util.compressImage(image);
-
-        /* rotate */
-        Matrix matrix = new Matrix();
-        matrix.reset();
-        if (currentCameraId == 1) {
-            matrix.postRotate(90);
-        } else {
-            matrix.postRotate(90);
-            matrix.postScale(-1, 1);
-        }
-        image = Bitmap.createBitmap(image, 0, 0, image.getWidth(), image.getHeight(), matrix, true);
 
         /* save to file */
         try {
@@ -263,17 +268,18 @@ public class CameraActivity extends BaseActivity implements SurfaceHolder.Callba
         cameraParameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
 
         cameraParameters.setPictureFormat(PixelFormat.JPEG); // 设置图片格式
-        cameraParameters.setJpegQuality(80); // 设置照片质量
+        cameraParameters.setJpegQuality(100); // 设置照片质量
 
         //获得相机支持的照片尺寸,选择合适的尺寸
         List<Camera.Size> supportedPictureSizes = cameraParameters.getSupportedPictureSizes();
-        int maxSize = Math.max(display.getWidth(), display.getHeight());
-        if (maxSize > 0) {
-            for (Camera.Size size : supportedPictureSizes) {
-                if (maxSize <= Math.max(size.width, size.height)) {
-                    cameraParameters.setPictureSize(size.width, size.height);
-                    break;
-                }
+
+        double ratio = displayMetrics.widthPixels * 1.0 / displayMetrics.heightPixels;
+        System.out.println("display ratio:" + ratio);
+        for (Camera.Size size : supportedPictureSizes) {
+            System.out.println("cam ratio:" + size.height * 1.0 / size.width);
+            if (Math.abs(size.height * 1.0 / size.width  - ratio) < 0.01 && size.width <= displayMetrics.heightPixels) {
+                cameraParameters.setPictureSize(size.width, size.height);
+                break;
             }
         }
 

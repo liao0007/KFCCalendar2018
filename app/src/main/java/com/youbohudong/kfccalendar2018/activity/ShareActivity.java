@@ -25,6 +25,7 @@ import de.greenrobot.event.ThreadMode;
 public class ShareActivity extends BaseActivity {
     private LinearLayout shareDialogLinearLayout;
     private ImageView photoImageView;
+    private ImageView saveSuccessImageView;
     private DisplayMetrics displayMetrics;
 
     private boolean isShareDialogVisible = false;
@@ -91,6 +92,8 @@ public class ShareActivity extends BaseActivity {
             }
         });
 
+        saveSuccessImageView = findViewById(R.id.saveSuccessImageView);
+
         initView();
         initListening();
         initData();
@@ -156,6 +159,18 @@ public class ShareActivity extends BaseActivity {
     public void onStart() {
         super.onStart();
         EventBus.getDefault().register(this);
+
+        saveSuccessImageView.animate()
+                .alpha(0)
+                .setStartDelay(1)
+                .setDuration(700)
+                .setInterpolator(new AccelerateDecelerateInterpolator())
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        saveSuccessImageView.setVisibility(View.GONE);
+                    }
+                });
     }
 
     @Override

@@ -14,6 +14,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.DisplayMetrics;
 import android.view.*;
 import android.widget.*;
 import com.youbohudong.kfccalendar2018.R;
@@ -35,7 +36,9 @@ public class CameraActivity extends BaseActivity implements SurfaceHolder.Callba
     private int currentCameraId = Camera.CameraInfo.CAMERA_FACING_BACK;//0代表前置摄像头，1代表后置摄像头
     private static final int REQUEST_XC_CODE = 101;
     private ContentResolver contentResolver;
-    private Display display;
+    private DisplayMetrics displayMetrics;
+
+    private boolean isTakingPhoto = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +48,9 @@ public class CameraActivity extends BaseActivity implements SurfaceHolder.Callba
         spUtils.setBoolean("is_first", false);
 
         WindowManager wm = (WindowManager) getSystemService(WINDOW_SERVICE);
-        display = wm.getDefaultDisplay();
+        displayMetrics = new DisplayMetrics();
+        wm.getDefaultDisplay().getMetrics(displayMetrics);
+
         contentResolver = getContentResolver();
 
         savingProgressBar = findViewById(R.id.savingProgressBar);
@@ -171,6 +176,10 @@ public class CameraActivity extends BaseActivity implements SurfaceHolder.Callba
 
 
     private void takePhoto() {
+        if(isTakingPhoto) {
+            return;
+        }
+        isTakingPhoto = true;
         camera.autoFocus(new Camera.AutoFocusCallback() {
             @Override
             public void onAutoFocus(boolean success, Camera camera) {
@@ -189,7 +198,6 @@ public class CameraActivity extends BaseActivity implements SurfaceHolder.Callba
 
                         compressAndCacheImage(bitmap);
                         startActivity(new Intent(CameraActivity.this, ShareActivity.class));
-
                     }
                 });
             }
@@ -259,7 +267,7 @@ public class CameraActivity extends BaseActivity implements SurfaceHolder.Callba
 
         cameraParameters.setPictureFormat(PixelFormat.JPEG); // 设置图片格式
         cameraParameters.setJpegQuality(100); // 设置照片质量
-        cameraParameters.setPictureSize(display.getHeight(), display.getWidth());
+        cameraParameters.setPictureSize(displayMetrics.heightPixels, displayMetrics.widthPixels);
 
         camera.setParameters(cameraParameters);
     }
@@ -272,6 +280,7 @@ public class CameraActivity extends BaseActivity implements SurfaceHolder.Callba
             camera.startPreview();
         }
         savingProgressBar.setVisibility(View.GONE);
+        isTakingPhoto = false;
     }
 
     @Override

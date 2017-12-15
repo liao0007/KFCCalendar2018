@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.EventLog;
 import android.view.Display;
 import android.view.View;
@@ -24,7 +25,7 @@ import de.greenrobot.event.ThreadMode;
 public class ShareActivity extends BaseActivity {
     private LinearLayout shareDialogLinearLayout;
     private ImageView photoImageView;
-    private Display display;
+    private DisplayMetrics displayMetrics;
 
     private boolean isShareDialogVisible = false;
     private boolean isAnimatingDialog = false;
@@ -35,7 +36,8 @@ public class ShareActivity extends BaseActivity {
         setContentView(R.layout.activity_share);
 
         WindowManager wm = (WindowManager) getSystemService(WINDOW_SERVICE);
-        display = wm.getDefaultDisplay();
+        displayMetrics = new DisplayMetrics();
+        wm.getDefaultDisplay().getMetrics(displayMetrics);
 
         shareDialogLinearLayout = findViewById(R.id.shareDialogLinearLayout);
 
@@ -114,7 +116,8 @@ public class ShareActivity extends BaseActivity {
 
         isAnimatingDialog = true;
         if (!isShareDialogVisible) {
-            shareDialogLinearLayout.setY(display.getHeight());
+
+            shareDialogLinearLayout.setY(displayMetrics.heightPixels);
             shareDialogLinearLayout.animate()
                     .translationYBy(-shareDialogLinearLayout.getHeight())
                     .setDuration(500)
@@ -127,7 +130,7 @@ public class ShareActivity extends BaseActivity {
                         }
                     });
         } else {
-            shareDialogLinearLayout.setY(display.getHeight() - shareDialogLinearLayout.getHeight());
+            shareDialogLinearLayout.setY(displayMetrics.heightPixels - shareDialogLinearLayout.getHeight());
             shareDialogLinearLayout.animate()
                     .translationYBy(shareDialogLinearLayout.getHeight())
                     .setDuration(500)
@@ -145,7 +148,7 @@ public class ShareActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        shareDialogLinearLayout.setY(display.getHeight());
+        shareDialogLinearLayout.setY(displayMetrics.heightPixels);
         isShareDialogVisible = false;
     }
 

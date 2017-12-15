@@ -27,6 +27,7 @@ import com.youbohudong.kfccalendar2018.bean.LeftBean;
 import com.youbohudong.kfccalendar2018.bean.RightBean;
 import com.youbohudong.kfccalendar2018.utils.SharedPreferencesUtils;
 import com.youbohudong.kfccalendar2018.utils.ToastUtils;
+import com.youbohudong.kfccalendar2018.utils.Util;
 import com.youbohudong.kfccalendar2018.utils.WechatManager;
 import com.youbohudong.kfccalendar2018.view.SingleTouchView;
 import com.youbohudong.kfccalendar2018.view.SlefProgress;
@@ -392,7 +393,7 @@ public class CustomerCameraActivity extends BaseActivity implements SurfaceHolde
                         Bitmap bMap;
                         try {// 获得图片
                             bMap = BitmapFactory.decodeByteArray(data, 0, data.length);
-                            bMap = compressImage(bMap);
+                            bMap = Util.compressImage(bMap);
                             Bitmap bMapRotate;
                             Matrix matrix = new Matrix();
                             matrix.reset();
@@ -698,32 +699,6 @@ public class CustomerCameraActivity extends BaseActivity implements SurfaceHolde
             } catch (Exception e) {
             }
         }
-    }
-
-
-    /**
-     * 质量压缩方法
-     *
-     * @param image
-     * @return
-     */
-    public static Bitmap compressImage(Bitmap image) {
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        image.compress(Bitmap.CompressFormat.JPEG, 100, baos);// 质量压缩方法，这里100表示不压缩，把压缩后的数据存放到baos中
-        int options = 90;
-
-        while (baos.toByteArray().length / 1024 > 1024 * 2) { // 循环判断如果压缩后图片是否大于10m
-            // ,大于继续压缩
-            baos.reset(); // 重置baos即清空baos
-            image.compress(Bitmap.CompressFormat.JPEG, options, baos);// 这里压缩options%，把压缩后的数据存放到baos中
-            options -= 10;// 每次都减少10
-        }
-        BitmapFactory.Options bmpoptions = new BitmapFactory.Options();
-        bmpoptions.inSampleSize = 2;
-        ByteArrayInputStream isBm = new ByteArrayInputStream(baos.toByteArray());// 把压缩后的数据baos存放到ByteArrayInputStream中
-        Bitmap bitmap = BitmapFactory.decodeStream(isBm, null, bmpoptions);// 把ByteArrayInputStream数据生成图片
-        return bitmap;
     }
 
     public void onEventMainThread(RightBean event) {

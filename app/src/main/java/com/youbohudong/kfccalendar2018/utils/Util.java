@@ -33,6 +33,30 @@ public class Util {
         return result;
     }
 
+    /**
+     * 质量压缩方法
+     *
+     * @param image
+     * @return
+     */
+    public static Bitmap compressImage(Bitmap image) {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        image.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);// 质量压缩方法，这里100表示不压缩，把压缩后的数据存放到baos中
+        int options = 90;
+
+        while (byteArrayOutputStream.toByteArray().length / 1024 > 1024 * 2) { // 循环判断如果压缩后图片是否大于10m
+            // ,大于继续压缩
+            byteArrayOutputStream.reset(); // 重置baos即清空baos
+            image.compress(Bitmap.CompressFormat.JPEG, options, byteArrayOutputStream);// 这里压缩options%，把压缩后的数据存放到baos中
+            options -= 10;// 每次都减少10
+        }
+        BitmapFactory.Options bmpoptions = new BitmapFactory.Options();
+        bmpoptions.inSampleSize = 2;
+        ByteArrayInputStream isBm = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());// 把压缩后的数据baos存放到ByteArrayInputStream中
+        Bitmap bitmap = BitmapFactory.decodeStream(isBm, null, bmpoptions);// 把ByteArrayInputStream数据生成图片
+        return bitmap;
+    }
+
     public static byte[] getHtmlByteArray(final String url) {
         URL htmlUrl = null;
         InputStream inStream = null;

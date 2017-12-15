@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -26,6 +27,8 @@ import java.util.List;
 
 public class CameraActivity extends BaseActivity implements SurfaceHolder.Callback {
     private Camera camera;
+
+    private SurfaceView cameraSurfaceView;
     private SurfaceHolder cameraSurfaceHolder;
     private ProgressBar savingProgressBar;
 
@@ -47,7 +50,7 @@ public class CameraActivity extends BaseActivity implements SurfaceHolder.Callba
 
         savingProgressBar = findViewById(R.id.savingProgressBar);
 
-        SurfaceView cameraSurfaceView = findViewById(R.id.cameraSurfaceView);
+        cameraSurfaceView = findViewById(R.id.cameraSurfaceView);
         cameraSurfaceHolder = cameraSurfaceView.getHolder();
         cameraSurfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
         cameraSurfaceHolder.addCallback(this);
@@ -174,41 +177,31 @@ public class CameraActivity extends BaseActivity implements SurfaceHolder.Callba
                 camera.takePicture(null, null, new Camera.PictureCallback() {
                     @Override
                     public void onPictureTaken(byte[] data, Camera camera) {
-                        try {// 获得图片
-                            compressAndCacheImage(BitmapFactory.decodeByteArray(data, 0, data.length));
-                            startActivity(new Intent(CameraActivity.this, ShareActivity.class));
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
+                        /* rotate */
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+                        Matrix matrix = new Matrix();
+                        matrix.postRotate(90);
+                        bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(),
+                                matrix, true);
+
+                        compressAndCacheImage(bitmap);
+                        startActivity(new Intent(CameraActivity.this, ShareActivity.class));
+
                     }
                 });
             }
         });
     }
 
+
     private void compressAndCacheImage(Bitmap image) {
         savingProgressBar.setVisibility(View.VISIBLE);
 
-        /* compress */
-        image = Util.compressImage(image);
-
-        /* rotate */
-        Matrix matrix = new Matrix();
-        matrix.reset();
-        if (currentCameraId == 1) {
-            matrix.postRotate(90);
-        } else {
-            matrix.postRotate(270);
-            matrix.postScale(-1, 1);
-        }
-        image = Bitmap.createBitmap(image, 0, 0, image.getWidth(), image.getHeight(), matrix, true);
-
-        /* save to file */
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        image.compress(Bitmap.CompressFormat.JPEG, 80, byteArrayOutputStream);
         try {
-            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-            image.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
             FileOutputStream fileOutputStream = openFileOutput("temp", Context.MODE_PRIVATE);
-            fileOutputStream.write(bytes.toByteArray());
+            fileOutputStream.write(byteArrayOutputStream.toByteArray());
             fileOutputStream.close();
         } catch (Exception e) {
             e.printStackTrace();
@@ -262,19 +255,8 @@ public class CameraActivity extends BaseActivity implements SurfaceHolder.Callba
         cameraParameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
 
         cameraParameters.setPictureFormat(PixelFormat.JPEG); // 设置图片格式
-        cameraParameters.setJpegQuality(80); // 设置照片质量
-
-        //获得相机支持的照片尺寸,选择合适的尺寸
-        List<Camera.Size> supportedPictureSizes = cameraParameters.getSupportedPictureSizes();
-        int maxSize = Math.max(display.getWidth(), display.getHeight());
-        if (maxSize > 0) {
-            for (Camera.Size size : supportedPictureSizes) {
-                if (maxSize <= Math.max(size.width, size.height)) {
-                    cameraParameters.setPictureSize(size.width, size.height);
-                    break;
-                }
-            }
-        }
+        cameraParameters.setJpegQuality(100); // 设置照片质量
+        cameraParameters.setPictureSize(display.getHeight(), display.getWidth());
 
         camera.setParameters(cameraParameters);
     }

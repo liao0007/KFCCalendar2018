@@ -42,14 +42,11 @@ public class ArActivity extends BaseActivity {
 
     private static final String EasyArKey = "amxBNPSXKbRBragBOjnJ0rV5tjSBwQZFk3SqTyd8qlTOv54A8CFjO4fP8RaVD9NDDKcvzXc4aPWHFj7cW5gtViFP1Q4j5nD23zodBz30agY29ai2ar7VQPcW7n41yxP8zv5ZlNhWy1vY4xujQpW8U34E9ZLyKT3byHamzdqWwUD1jnoGS82pRYqGQXiiQGn2pfpwC5BO";
 
-    private RelativeLayout glViewRelativeLayout;
     private GLView glView;
 
     private RelativeLayout overlayRelativeLayout;
-    private ImageButton navigationBackImageButton;
 
     private LinearLayout scanAnimationLinearLayout;
-    private Button eventListButton;
 
     private RelativeLayout scanSuccessRelativeLayout;
     private ProgressBar scanSuccessProgressBar;
@@ -73,7 +70,6 @@ public class ArActivity extends BaseActivity {
         setContentView(activityAr);
 
         /* gl view*/
-        glViewRelativeLayout = activityAr.findViewById(R.id.glViewRelativeLayout);
         glView = new GLView(this);
         requestCameraPermission(new CameraPermissionCallback() {
             @Override
@@ -90,7 +86,7 @@ public class ArActivity extends BaseActivity {
         overlayRelativeLayout = activityAr.findViewById(R.id.overlayRelativeLayout);
 
         /* navigation */
-        navigationBackImageButton = activityAr.findViewById(R.id.navigationBackImageButton);
+        ImageButton navigationBackImageButton = activityAr.findViewById(R.id.navigationBackImageButton);
         navigationBackImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -101,7 +97,7 @@ public class ArActivity extends BaseActivity {
 
         /* scan element */
         scanAnimationLinearLayout = activityAr.findViewById(R.id.scanAnimationLinearLayout);
-        eventListButton = activityAr.findViewById(R.id.eventListButton);
+        Button eventListButton = activityAr.findViewById(R.id.eventListButton);
         eventListButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

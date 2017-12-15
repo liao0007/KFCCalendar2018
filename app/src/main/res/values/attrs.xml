@@ -39,7 +39,7 @@
     </declare-styleable>
 
 
-    <declare-styleable name="ScanView">
+    <declare-styleable name="ScanAnimationView">
         <attr name="scanLineDrawable" format="reference"/>
         <attr name="scanFrameDrawable" format="reference"/>
 

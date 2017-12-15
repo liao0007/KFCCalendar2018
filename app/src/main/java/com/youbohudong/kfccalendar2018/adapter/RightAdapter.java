@@ -15,7 +15,7 @@ import com.youbohudong.kfccalendar2018.R;
 import com.youbohudong.kfccalendar2018.bean.LeftBean;
 import com.youbohudong.kfccalendar2018.utils.SharedPreferencesUtils;
 import com.youbohudong.kfccalendar2018.view.PupWinRightUtils;
-import com.youbohudong.kfccalendar2018.view.SlefProgress;
+import com.youbohudong.kfccalendar2018.view.StampDownloadProgress;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,7 +64,7 @@ public class RightAdapter extends BaseAdapter {
             view = mInflater.inflate(R.layout.right_layout, null);
             holder.img_pic = (ImageView) view.findViewById(R.id.img_pic);
             holder.rl_bg = (RelativeLayout) view.findViewById(R.id.rl_bg);
-            holder.sprogrss = (SlefProgress) view.findViewById(R.id.sprogrss);
+            holder.sprogrss = (StampDownloadProgress) view.findViewById(R.id.sprogrss);
             holder.fl_shade = (RelativeLayout) view.findViewById(R.id.fl_shade);
             holder.txt_down = (TextView) view.findViewById(R.id.txt_down);
             view.setTag(holder);
@@ -138,7 +138,7 @@ public class RightAdapter extends BaseAdapter {
     public class ViewHolder {
         public ImageView img_pic;
         RelativeLayout rl_bg;
-        public SlefProgress sprogrss;
+        public StampDownloadProgress sprogrss;
         RelativeLayout fl_shade;
         TextView txt_down;
     }
@@ -161,7 +161,7 @@ public class RightAdapter extends BaseAdapter {
     public interface UpdateItemListening {
         void onItemClick(int parentIndex, int pos, String fileName);
 
-        void onDownloadItem(int parentIndex, int pos, SlefProgress v, TextView view);
+        void onDownloadItem(int parentIndex, int pos, StampDownloadProgress v, TextView view);
 
     }
 }

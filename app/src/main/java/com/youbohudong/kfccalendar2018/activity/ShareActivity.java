@@ -1,8 +1,11 @@
 package com.youbohudong.kfccalendar2018.activity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -24,6 +27,11 @@ public class ShareActivity extends BaseActivity {
 
         photoImageView = findViewById(R.id.photoImageView);
         photoImageView.setDrawingCacheEnabled(true);
+        try {
+            photoImageView.setImageBitmap(BitmapFactory.decodeStream(openFileInput("temp")));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         ImageButton retakeImageButton = findViewById(R.id.retakeImageButton);
         retakeImageButton.setOnClickListener(new View.OnClickListener() {
@@ -43,7 +51,7 @@ public class ShareActivity extends BaseActivity {
             }
         });
 
-        ImageButton shareToSessionButton = findViewById(R.id.shareToSessionButton);
+        Button shareToSessionButton = findViewById(R.id.shareToSessionButton);
         shareToSessionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -52,7 +60,7 @@ public class ShareActivity extends BaseActivity {
             }
         });
 
-        ImageButton shareToCircleButton = findViewById(R.id.shareToCircleButton);
+        Button shareToCircleButton = findViewById(R.id.shareToCircleButton);
         shareToCircleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -61,7 +69,7 @@ public class ShareActivity extends BaseActivity {
             }
         });
 
-        ImageButton shareCancelButton = findViewById(R.id.shareCancelButton);
+        Button shareCancelButton = findViewById(R.id.shareCancelButton);
         shareCancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

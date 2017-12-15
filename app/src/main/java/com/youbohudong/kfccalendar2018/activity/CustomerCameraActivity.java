@@ -30,7 +30,7 @@ import com.youbohudong.kfccalendar2018.utils.ToastUtils;
 import com.youbohudong.kfccalendar2018.utils.Util;
 import com.youbohudong.kfccalendar2018.utils.WechatManager;
 import com.youbohudong.kfccalendar2018.view.SingleTouchView;
-import com.youbohudong.kfccalendar2018.view.SlefProgress;
+import com.youbohudong.kfccalendar2018.view.StampDownloadProgress;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.FileCallBack;
 import com.zhy.http.okhttp.callback.StringCallback;
@@ -594,7 +594,7 @@ public class CustomerCameraActivity extends BaseActivity implements SurfaceHolde
     private static final String savePath = Environment.getExternalStorageDirectory() + "/downLoadImg/";
     int progress;
 
-    public void downloadImg(final String imgUrl, final String fileName, int parentIndex, int pos, final SlefProgress v, final TextView view) {
+    public void downloadImg(final String imgUrl, final String fileName, int parentIndex, int pos, final StampDownloadProgress v, final TextView view) {
         OkHttpUtils.get().url(imgUrl).build().execute(new FileCallBack(savePath, fileName) {
 
             @Override
@@ -642,7 +642,7 @@ public class CustomerCameraActivity extends BaseActivity implements SurfaceHolde
     }
 
     @Override
-    public void onDownloadItem(int parentIndex, int pos, SlefProgress v, TextView view) {
+    public void onDownloadItem(int parentIndex, int pos, StampDownloadProgress v, TextView view) {
         String url = leftList.get(parentIndex).getStamps().get(pos).getImage();
         downloadImg(url, url.substring(url.lastIndexOf("/")), parentIndex, pos, v, view);
     }

@@ -46,7 +46,7 @@
                 android:layout_below="@+id/navigationBarLinearLayout"
                 android:gravity="center">
 
-            <com.youbohudong.kfccalendar2018.view.ScanView
+            <com.youbohudong.kfccalendar2018.view.ScanAnimationView
                     android:layout_width="300dp"
                     android:layout_height="300dp"
                     android:layout_gravity="center"

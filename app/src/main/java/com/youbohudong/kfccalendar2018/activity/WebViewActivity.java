@@ -128,7 +128,7 @@ public class WebViewActivity extends BaseActivity {
                     Map<String, String> params = urlToParams(instruction);
 
                     int scene = 0;
-                    if (params.get("type").length() > 0 && Integer.parseInt(params.get("type")) == 0) {
+                    if (params.get("type").length() > 0 && Integer.parseInt(params.get("type")) == 1) {
                         scene = SendMessageToWX.Req.WXSceneSession;
                     } else {
                         scene = SendMessageToWX.Req.WXSceneTimeline;

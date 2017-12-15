@@ -3,7 +3,13 @@ package com.youbohudong.kfccalendar2018.utils;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.target.Target;
 import com.tencent.mm.opensdk.modelmsg.SendMessageToWX;
 import com.tencent.mm.opensdk.modelmsg.WXImageObject;
 import com.tencent.mm.opensdk.modelmsg.WXMediaMessage;
@@ -14,6 +20,7 @@ import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.concurrent.ExecutionException;
 
 public class WechatManager {
     public static final String TransactionTypeImage = "TransactionTypeImage";
@@ -25,23 +32,21 @@ public class WechatManager {
         return WXAPIFactory.createWXAPI(context, ApiKey);
     }
 
-    public static void shareUrl(Context context, String url, String title, String thumbnailImagePath, int mTargetScene) {
-        WXMediaMessage mediaMessage = new WXMediaMessage(new WXWebpageObject(url));
+    public static void shareUrl(final Context context, String url, String title, String thumbnailImageUrl, final int mTargetScene) {
+        final WXMediaMessage mediaMessage = new WXMediaMessage(new WXWebpageObject(url));
         mediaMessage.title = title;
 
         try {
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            Bitmap bitmap = BitmapFactory.decodeStream((InputStream) new URL(thumbnailImagePath).getContent());
-            createThumbnailFromBitmap(bitmap);
-            mediaMessage.thumbData = stream.toByteArray();
-        } catch (Exception ex) {
-
+            Bitmap bitmap = Glide.with(context).load(thumbnailImageUrl).asBitmap().into(Target.SIZE_ORIGINAL,Target.SIZE_ORIGINAL).get();
+            Bitmap thumbnail = createThumbnailFromBitmap(bitmap);
+            mediaMessage.thumbData = Util.bmpToByteArray(thumbnail, true);
+            share(context, mediaMessage, TransactionTypeWebpage, mTargetScene);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
         }
-
-        share(context, mediaMessage, TransactionTypeWebpage, mTargetScene);
     }
-
-
 
     public static void shareImage(Context context, String thumbnailImagePath, int mTargetScene) {
         Bitmap bitmap = createThumbnailFromFile(thumbnailImagePath);
@@ -56,13 +61,13 @@ public class WechatManager {
         share(context, mediaMessage, TransactionTypeImage, mTargetScene);
     }
 
-    public static Bitmap createThumbnailFromFile(String srcPath) {
+    private static Bitmap createThumbnailFromFile(String srcPath) {
         BitmapFactory.Options newOpts = new BitmapFactory.Options();
         newOpts.inJustDecodeBounds = true;
         return createThumbnailFromBitmap(BitmapFactory.decodeFile(srcPath, newOpts));
     }
 
-    public static Bitmap createThumbnailFromBitmap(Bitmap bitmap) {
+    private static Bitmap createThumbnailFromBitmap(Bitmap bitmap) {
         BitmapFactory.Options newOpts = new BitmapFactory.Options();
         newOpts.inJustDecodeBounds = false;
         int w = newOpts.outWidth;

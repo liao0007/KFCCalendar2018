@@ -9,6 +9,7 @@ import android.graphics.Matrix;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.media.ExifInterface;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -254,6 +255,9 @@ public class CameraActivity extends BaseActivity implements SurfaceHolder.Callba
         camera.autoFocus(new Camera.AutoFocusCallback() {
             @Override
             public void onAutoFocus(boolean success, Camera camera) {
+                MediaPlayer mediaPlayer = MediaPlayer.create(CameraActivity.this, R.raw.shutter);
+                mediaPlayer.start();
+
                 if (safeToTakePicture) {
                     camera.takePicture(null, null, new Camera.PictureCallback() {
                         @Override
@@ -373,7 +377,7 @@ public class CameraActivity extends BaseActivity implements SurfaceHolder.Callba
     protected void onResume() {
         super.onResume();
         if (camera != null) {
-            camera.startPreview();
+            startCamera();
         }
         savingProgressBar.setVisibility(View.GONE);
     }
@@ -381,7 +385,7 @@ public class CameraActivity extends BaseActivity implements SurfaceHolder.Callba
     @Override
     protected void onPause() {
         if (camera != null) {
-            camera.stopPreview();
+            stopPreviewAndFreeCamera();
         }
         super.onPause();
     }

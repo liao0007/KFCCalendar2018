@@ -36,7 +36,7 @@
                 android:layout_centerInParent="true"
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
-                android:background="@color/lightgray"
+                android:background="@color/primaryRed"
                 android:max="100"
                 android:progress="0"
                 android:visibility="gone"
@@ -47,7 +47,8 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/sprogrss"
                 android:text="下载中..."
-                android:textColor="@color/app_white"
+                android:gravity="center"
+                android:textColor="@color/primaryRed"
                 android:textSize="10sp"
                 android:visibility="gone"/>
 

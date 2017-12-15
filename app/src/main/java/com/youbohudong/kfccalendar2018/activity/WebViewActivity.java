@@ -1,11 +1,14 @@
 package com.youbohudong.kfccalendar2018.activity;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -13,9 +16,12 @@ import android.webkit.WebViewClient;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+
+import com.tencent.mm.opensdk.modelbase.BaseResp;
 import com.tencent.mm.opensdk.modelmsg.SendMessageToWX;
 import com.youbohudong.kfccalendar2018.R;
 import com.youbohudong.kfccalendar2018.base.BaseActivity;
+import com.youbohudong.kfccalendar2018.bean.WeChatResponseEvent;
 import com.youbohudong.kfccalendar2018.utils.DeviceUuidFactory;
 import com.youbohudong.kfccalendar2018.utils.WechatManager;
 
@@ -24,6 +30,8 @@ import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+
+import de.greenrobot.event.EventBus;
 
 /**
  * Created by ${bcq} on 2017/12/11.
@@ -59,6 +67,7 @@ public class WebViewActivity extends BaseActivity {
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 return true;
             }
+
             public void onPageFinished(WebView view, String url) {
                 loadingProgressBar.setVisibility(View.GONE);
             }
@@ -117,7 +126,14 @@ public class WebViewActivity extends BaseActivity {
                     /* share */
                     instruction = instruction.substring(SchemaShareAction.length());
                     Map<String, String> params = urlToParams(instruction);
-                    WechatManager.shareUrl(context, params.get("url"), params.get("title"), params.get("thumb"), SendMessageToWX.Req.WXSceneSession);
+
+                    int scene = 0;
+                    if (params.get("type").length() > 0 && Integer.parseInt(params.get("type")) == 0) {
+                        scene = SendMessageToWX.Req.WXSceneSession;
+                    } else {
+                        scene = SendMessageToWX.Req.WXSceneTimeline;
+                    }
+                    WechatManager.shareUrl(context, params.get("url"), params.get("title"), params.get("thumb"), scene);
 
                 }
             }
@@ -136,6 +152,33 @@ public class WebViewActivity extends BaseActivity {
                 }
             }
             return params;
+        }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
+    }
+
+    public void onEventMainThread(WeChatResponseEvent event) {
+        switch (event.payload.errCode) {
+            case BaseResp.ErrCode.ERR_OK:
+                Toast.makeText(WebViewActivity.this, "分享成功", Toast.LENGTH_SHORT).show();
+
+                break;
+            case BaseResp.ErrCode.ERR_USER_CANCEL:
+            case BaseResp.ErrCode.ERR_AUTH_DENIED:
+            case BaseResp.ErrCode.ERR_UNSUPPORT:
+            default:
+                Toast.makeText(WebViewActivity.this, "分享失败", Toast.LENGTH_SHORT).show();
+                break;
         }
     }
 

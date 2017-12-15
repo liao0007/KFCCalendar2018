@@ -106,7 +106,7 @@ public class CustomerCameraActivity extends BaseActivity implements SurfaceHolde
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_customer_camera);
+        setContentView(R.layout.activity_stamp);
         spUtils = new SharedPreferencesUtils(this);
         spUtils.setBoolean("is_first", false);
 
@@ -128,7 +128,6 @@ public class CustomerCameraActivity extends BaseActivity implements SurfaceHolde
         importFromAlbumImageButton = findViewById(R.id.importFromAlbumImageButton);
 
         SurfaceView suf_camera = findViewById(R.id.cameraSurfaceView);
-        rl_finish = findViewById(R.id.rl_finish);
         rl_root = findViewById(R.id.rl_root);
         fl_root = findViewById(R.id.fl_root);
         img_pic = findViewById(R.id.img_pic);
@@ -140,7 +139,6 @@ public class CustomerCameraActivity extends BaseActivity implements SurfaceHolde
         img_share = findViewById(R.id.shareImageButton);
         img_again = findViewById(R.id.retakeImageButton);
         img_savetip = findViewById(R.id.saveSuccessImageView);
-        img_save_pic = findViewById(R.id.saveImageView);
         img_ar = findViewById(R.id.arImageButton);
 
         ll_close = findViewById(R.id.stampGroupControllerCloseLinearLayout);
@@ -150,7 +148,6 @@ public class CustomerCameraActivity extends BaseActivity implements SurfaceHolde
         txt_frendsquare = findViewById(R.id.shareToCircleButton);
         txt_cancel = findViewById(R.id.shareCancelButton);
 
-        ll_save_pic = findViewById(R.id.ll_save_pic);
 
         helpButton = findViewById(R.id.helpImageButton);
 

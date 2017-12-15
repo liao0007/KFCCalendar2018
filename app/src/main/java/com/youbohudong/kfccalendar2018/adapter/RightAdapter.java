@@ -10,38 +10,91 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
 import com.bumptech.glide.Glide;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.youbohudong.kfccalendar2018.R;
 import com.youbohudong.kfccalendar2018.activity.StampActivity;
 import com.youbohudong.kfccalendar2018.bean.LeftBean;
+import com.youbohudong.kfccalendar2018.bean.UserDataBean;
+import com.youbohudong.kfccalendar2018.utils.DeviceUuidFactory;
 import com.youbohudong.kfccalendar2018.utils.SharedPreferencesUtils;
 import com.youbohudong.kfccalendar2018.utils.ToastUtils;
-import com.youbohudong.kfccalendar2018.view.PupWinRightUtils;
 import com.youbohudong.kfccalendar2018.view.StampDownloadProgress;
+import com.zhy.http.okhttp.OkHttpUtils;
+import com.zhy.http.okhttp.callback.StringCallback;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+
+import okhttp3.Call;
+import okhttp3.Request;
 
 /**
  * Created by ${bcq} on 2017/11/7.
  */
 
 public class RightAdapter extends BaseAdapter {
-    private Context ctx;
+    private static List<UserDataBean> userDataList;
+
+    private Context context;
     private List<LeftBean.StampsBean> list;
     private LayoutInflater mInflater;
     private List<View> viewList;                    //View对象集合
     private int parentIndex;
     private boolean isAvaliable;
     private ToastUtils toastUtils;
-    public RightAdapter(Context ctx, List<LeftBean.StampsBean> list, int parentIndex, boolean isAvaliable) {
-        this.ctx = ctx;
+
+    public RightAdapter(Context context, List<LeftBean.StampsBean> list, int parentIndex, boolean isAvailable) {
+        this.context = context;
         this.list = list;
-        this.isAvaliable = isAvaliable;
+        this.isAvaliable = isAvailable;
         this.parentIndex = parentIndex;
         this.viewList = new ArrayList<>();
-        mInflater = LayoutInflater.from(ctx);
-        toastUtils=new ToastUtils(ctx);
+        mInflater = LayoutInflater.from(context);
+        toastUtils = new ToastUtils(context);
+
+        if (userDataList == null) {
+            requestUserData();
+        }
+    }
+
+    /**
+     * 从服务器获取数据
+     */
+    private void requestUserData() {
+        UUID uuid = new DeviceUuidFactory(context).getDeviceUuid();
+        String url = "https://www.youbohudong.com/api/biz/vip/kfc/calendar-2018/tasks/" + uuid;
+        OkHttpUtils
+                .get()
+                .url(url)
+                .id(100)
+                .build()
+                .execute(new UserDataCallback());
+    }
+
+
+    public class UserDataCallback extends StringCallback {
+        @Override
+        public void onError(Call call, Exception e, int id) {
+            e.printStackTrace();
+        }
+
+        @Override
+        public void onResponse(String response, int id) {
+            Gson gson = new Gson();
+            // json转为带泛型的list
+            List<UserDataBean> listData = gson.fromJson(response, new TypeToken<List<UserDataBean>>() {
+            }.getType());
+
+            userDataList = listData;
+        }
+
+        @Override
+        public void inProgress(float progress, long total, int id) {
+        }
     }
 
     @Override
@@ -76,9 +129,9 @@ public class RightAdapter extends BaseAdapter {
         }
         final LeftBean.StampsBean bean = list.get(i);
         if (bean != null) {
-            Glide.with(ctx).load(bean.getThumb()).into(holder.img_pic);
-            final boolean isDown = new SharedPreferencesUtils(ctx).getBoolean(bean.getImage(), false);
-            if (isDown) {
+            Glide.with(context).load(bean.getThumb()).into(holder.img_pic);
+            final boolean isDownloaded = new SharedPreferencesUtils(context).getBoolean(bean.getImage(), false);
+            if (isDownloaded) {
                 holder.fl_shade.setVisibility(View.GONE);
                 holder.sprogrss.setVisibility(View.GONE);
             } else {
@@ -97,22 +150,27 @@ public class RightAdapter extends BaseAdapter {
 
                 @Override
                 public boolean onTouch(View view, MotionEvent motionEvent) {
+                    String taskKey = bean.getTaskKey();
+                    String note = bean.getNote();
+
                     switch (motionEvent.getAction()) {
                         case MotionEvent.ACTION_DOWN:
-                            if (!TextUtils.isEmpty(bean.getNote())) {
-                                toastUtils.show(ctx, bean.getNote());
+                            if (isAvaliable && !TextUtils.isEmpty(taskKey) && !checkTaskKeyCompeleted(taskKey) && !TextUtils.isEmpty(note)) {
+                                toastUtils.show(context, bean.getNote());
                             }
                             break;
                         case MotionEvent.ACTION_MOVE:
                             break;
                         case MotionEvent.ACTION_UP:
                             if (isAvaliable) {
-                                if (isDown) {
+                                if (isDownloaded) {
                                     holder.sprogrss.setVisibility(View.GONE);
                                     mUpdateItemListening.onItemClick(parentIndex, i, bean.getImage().substring(bean.getImage().lastIndexOf("/")));
                                 } else {
-                                    holder.sprogrss.setVisibility(View.VISIBLE);
-                                    mUpdateItemListening.onDownloadItem(parentIndex, i, holder.sprogrss, holder.txt_down);
+                                    if (isAvaliable && (TextUtils.isEmpty(taskKey) || (!TextUtils.isEmpty(taskKey) && checkTaskKeyCompeleted(taskKey)))) {
+                                        holder.sprogrss.setVisibility(View.VISIBLE);
+                                        mUpdateItemListening.onDownloadItem(parentIndex, i, holder.sprogrss, holder.txt_down);
+                                    }
                                 }
                             } else {
                                 holder.sprogrss.setVisibility(View.GONE);
@@ -125,6 +183,16 @@ public class RightAdapter extends BaseAdapter {
             });
         }
         return view;
+    }
+
+    private boolean checkTaskKeyCompeleted(String taskKey) {
+        for (UserDataBean userData :
+                userDataList) {
+            if (userData.getTaskKey().equals(taskKey) && userData.isCompleted()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public class ViewHolder {

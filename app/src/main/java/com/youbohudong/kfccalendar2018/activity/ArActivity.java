@@ -190,7 +190,6 @@ public class ArActivity extends BaseActivity {
 
     @Override
     protected void onResume() {
-        EventBus.getDefault().register(this);
         super.onResume();
         if (glView != null) {
             glView.onResume();
@@ -201,12 +200,23 @@ public class ArActivity extends BaseActivity {
 
     @Override
     protected void onPause() {
-        EventBus.getDefault().unregister(this);
         overlayRelativeLayout.setBackgroundResource(android.R.color.black);
         if (glView != null) {
             glView.onPause();
         }
         super.onPause();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    protected void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
     }
 
     private static boolean isTrackEventFired = false;

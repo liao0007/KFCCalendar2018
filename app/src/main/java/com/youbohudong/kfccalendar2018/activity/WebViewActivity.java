@@ -2,6 +2,7 @@ package com.youbohudong.kfccalendar2018.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 import com.tencent.mm.opensdk.modelmsg.SendMessageToWX;
 import com.youbohudong.kfccalendar2018.R;
@@ -32,12 +34,16 @@ public class WebViewActivity extends BaseActivity {
     private static final String SchemaShareAction = "share";
     private static final String SchemaScanAction = "scan";
 
+    private ProgressBar loadingProgressBar;
+
     private String callingActivity;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_webview);
+
+        loadingProgressBar = findViewById(R.id.loadingProgressBar);
 
         ImageButton navigationBackImageButton = findViewById(R.id.navigationBackImageButton);
         navigationBackImageButton.setOnClickListener(new View.OnClickListener() {
@@ -52,6 +58,9 @@ public class WebViewActivity extends BaseActivity {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 return true;
+            }
+            public void onPageFinished(WebView view, String url) {
+                loadingProgressBar.setVisibility(View.GONE);
             }
         });
         UUID uuid = new DeviceUuidFactory(this).getDeviceUuid();

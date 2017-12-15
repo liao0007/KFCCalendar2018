@@ -21,7 +21,7 @@ import cn.easyar.Engine;
 
 public class GLView extends GLSurfaceView
 {
-    private ArCore arCore;
+    private static ArCore arCore;
 
     public GLView(Context context)
     {
@@ -29,7 +29,10 @@ public class GLView extends GLSurfaceView
         setEGLContextFactory(new ContextFactory());
         setEGLConfigChooser(new ConfigChooser());
 
-        arCore = new ArCore();
+        if(arCore == null) {
+            arCore = new ArCore();
+            arCore.initialize();
+        }
 
         this.setRenderer(new GLSurfaceView.Renderer() {
             @Override
@@ -61,7 +64,7 @@ public class GLView extends GLSurfaceView
     {
         super.onAttachedToWindow();
         synchronized (arCore) {
-            if (arCore.initialize()) {
+            if (arCore != null) {
                 arCore.start();
             }
         }
@@ -72,7 +75,6 @@ public class GLView extends GLSurfaceView
     {
         synchronized (arCore) {
             arCore.stop();
-            arCore.dispose();
         }
         super.onDetachedFromWindow();
     }

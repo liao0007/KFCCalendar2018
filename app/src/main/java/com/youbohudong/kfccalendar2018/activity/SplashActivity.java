@@ -22,7 +22,7 @@ public class SplashActivity extends BaseActivity {
         boolean isInitialLaunch = sharedPreferencesUtils.getBoolean(IsInitialLaunchKey, true);
 
         if (isInitialLaunch) {
-            startActivity(new Intent(SplashActivity.this, CustomerCameraActivity.class));
+            startActivity(new Intent(SplashActivity.this, CameraActivity.class));
             SplashActivity.this.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
             finish();
         } else {

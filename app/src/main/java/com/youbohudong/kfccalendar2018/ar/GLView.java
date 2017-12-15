@@ -8,127 +8,122 @@
 
 package com.youbohudong.kfccalendar2018.ar;
 
-import android.content.Context;
-import android.opengl.GLSurfaceView;
-import cn.easyar.Engine;
-
 import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.egl.EGLContext;
 import javax.microedition.khronos.egl.EGLDisplay;
 import javax.microedition.khronos.opengles.GL10;
 
-public class GLView extends GLSurfaceView {
+import android.content.Context;
+import android.opengl.GLSurfaceView;
 
-    private static ArCore arCore;
+import cn.easyar.Engine;
 
-    public GLView(Context context) {
+public class GLView extends GLSurfaceView
+{
+    private ArCore arCore;
+
+    public GLView(Context context)
+    {
         super(context);
         setEGLContextFactory(new ContextFactory());
         setEGLConfigChooser(new ConfigChooser());
 
-        if (arCore == null) {
-            arCore = new ArCore();
-            arCore.initialize();
-        }
+        arCore = new ArCore();
 
-        final ArCore _arCore = arCore;
-
-        this.setRenderer(new Renderer() {
+        this.setRenderer(new GLSurfaceView.Renderer() {
             @Override
             public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-                synchronized (_arCore) {
-                    _arCore.initGL();
+                synchronized (arCore) {
+                    arCore.initGL();
                 }
             }
 
             @Override
             public void onSurfaceChanged(GL10 gl, int w, int h) {
-                synchronized (_arCore) {
-                    _arCore.resizeGL(w, h);
+                synchronized (arCore) {
+                    arCore.resizeGL(w, h);
                 }
             }
 
             @Override
             public void onDrawFrame(GL10 gl) {
-                synchronized (_arCore) {
-                    _arCore.render();
+                synchronized (arCore) {
+                    arCore.render();
                 }
             }
         });
         this.setZOrderMediaOverlay(true);
     }
 
-    public boolean startCamera() {
-        return arCore.startCamera();
-    }
-
-    public boolean stopCamera() {
-        return arCore.stopCamera();
-    }
-
-    public boolean startTracker() {
-        return arCore.startTracker();
-    }
-
-    public boolean stopTracker() {
-        return arCore.stopTracker();
-    }
-
     @Override
-    protected void onAttachedToWindow() {
-        final ArCore _arCore = arCore;
-
+    protected void onAttachedToWindow()
+    {
         super.onAttachedToWindow();
-        synchronized (_arCore) {
-            _arCore.startCamera();
-            _arCore.startTracker();
+        synchronized (arCore) {
+            if (arCore.initialize()) {
+                arCore.start();
+            }
         }
     }
 
     @Override
-    protected void onDetachedFromWindow() {
-        final ArCore _arCore = arCore;
-
-        synchronized (_arCore) {
-            _arCore.stopTracker();
-            _arCore.stopCamera();
+    protected void onDetachedFromWindow()
+    {
+        synchronized (arCore) {
+            arCore.stop();
+            arCore.dispose();
         }
         super.onDetachedFromWindow();
     }
 
     @Override
-    public void onResume() {
+    public void onResume()
+    {
         super.onResume();
         Engine.onResume();
     }
 
     @Override
-    public void onPause() {
+    public void onPause()
+    {
         Engine.onPause();
         super.onPause();
     }
 
-    private static class ContextFactory implements EGLContextFactory {
+    public void startTracker() {
+        arCore.startTracker();
+    }
+
+    public void stopTracker() {
+        arCore.stopTracker();
+    }
+
+    private static class ContextFactory implements GLSurfaceView.EGLContextFactory
+    {
         private static int EGL_CONTEXT_CLIENT_VERSION = 0x3098;
 
-        public EGLContext createContext(EGL10 egl, EGLDisplay display, EGLConfig eglConfig) {
+        public EGLContext createContext(EGL10 egl, EGLDisplay display, EGLConfig eglConfig)
+        {
             EGLContext context;
-            int[] attrib = {EGL_CONTEXT_CLIENT_VERSION, 2, EGL10.EGL_NONE};
-            context = egl.eglCreateContext(display, eglConfig, EGL10.EGL_NO_CONTEXT, attrib);
+            int[] attrib = { EGL_CONTEXT_CLIENT_VERSION, 2, EGL10.EGL_NONE };
+            context = egl.eglCreateContext(display, eglConfig, EGL10.EGL_NO_CONTEXT, attrib );
             return context;
         }
 
-        public void destroyContext(EGL10 egl, EGLDisplay display, EGLContext context) {
+        public void destroyContext(EGL10 egl, EGLDisplay display, EGLContext context)
+        {
             egl.eglDestroyContext(display, context);
         }
     }
 
-    private static class ConfigChooser implements EGLConfigChooser {
-        public EGLConfig chooseConfig(EGL10 egl, EGLDisplay display) {
+    private static class ConfigChooser implements GLSurfaceView.EGLConfigChooser
+    {
+        public EGLConfig chooseConfig(EGL10 egl, EGLDisplay display)
+        {
             final int EGL_OPENGL_ES2_BIT = 0x0004;
-            final int[] attrib = {EGL10.EGL_RED_SIZE, 4, EGL10.EGL_GREEN_SIZE, 4, EGL10.EGL_BLUE_SIZE, 4,
-                    EGL10.EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT, EGL10.EGL_NONE};
+            final int[] attrib = { EGL10.EGL_RED_SIZE, 4, EGL10.EGL_GREEN_SIZE, 4, EGL10.EGL_BLUE_SIZE, 4,
+                    EGL10.EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT, EGL10.EGL_NONE };
 
             int[] num_config = new int[1];
             egl.eglChooseConfig(display, attrib, null, 0, num_config);
@@ -141,7 +136,8 @@ public class GLView extends GLSurfaceView {
             egl.eglChooseConfig(display, attrib, configs, numConfigs,
                     num_config);
 
-            for (EGLConfig config : configs) {
+            for (EGLConfig config : configs)
+            {
                 int[] val = new int[1];
                 int r = 0, g = 0, b = 0, a = 0, d = 0;
                 if (egl.eglGetConfigAttrib(display, config, EGL10.EGL_DEPTH_SIZE, val))

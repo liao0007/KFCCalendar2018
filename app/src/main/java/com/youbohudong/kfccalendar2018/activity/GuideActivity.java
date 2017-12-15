@@ -151,7 +151,7 @@ public class GuideActivity extends BaseActivity {
                 @Override
                 public void onClick(View view) {
                     if (currentItem == (guideBeanList.size() - 1)) {
-                        startActivity(new Intent(GuideActivity.this, CustomerCameraActivity.class));
+                        startActivity(new Intent(GuideActivity.this, CameraActivity.class));
                         GuideActivity.this.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                         finish();
                     } else {
@@ -163,7 +163,7 @@ public class GuideActivity extends BaseActivity {
             txt_skip.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    startActivity(new Intent(GuideActivity.this, CustomerCameraActivity.class));
+                    startActivity(new Intent(GuideActivity.this, CameraActivity.class));
                     GuideActivity.this.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                     finish();
                 }

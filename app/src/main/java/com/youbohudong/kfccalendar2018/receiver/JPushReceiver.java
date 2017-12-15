@@ -115,7 +115,7 @@ public class JPushReceiver extends BroadcastReceiver {
 //
 //        } else if (JPushInterface.ACTION_CONNECTION_CHANGE.equals(intent.getAction())) {
 //            boolean connected = intent.getBooleanExtra(JPushInterface.EXTRA_CONNECTION_CHANGE, false);
-//            Log.w(TAG, "[JPushReceiver]" + intent.getAction() + " connected state change to " + connected);
+//            Log.w(TAG, "[JPushReceiver]" + intent.getAction() + " connected state switchCamera to " + connected);
 //        } else {
 //            Log.d(TAG, "[JPushReceiver] Unhandled intent - " + intent.getAction());
 //        }

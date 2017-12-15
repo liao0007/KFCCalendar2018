@@ -88,11 +88,26 @@ public class ArCore {
         }
     }
 
-    public boolean startCamera() {
+    public boolean start()
+    {
         boolean status = true;
         status &= (camera != null) && camera.start();
         status &= (streamer != null) && streamer.start();
         camera.setFocusMode(CameraDeviceFocusMode.Continousauto);
+        for (ImageTracker tracker : trackers) {
+            status &= tracker.start();
+        }
+        return status;
+    }
+
+    public boolean stop()
+    {
+        boolean status = true;
+        for (ImageTracker tracker : trackers) {
+            status &= tracker.stop();
+        }
+        status &= (streamer != null) && streamer.stop();
+        status &= (camera != null) && camera.stop();
         return status;
     }
 
@@ -109,13 +124,6 @@ public class ArCore {
         for (ImageTracker tracker : trackers) {
             status &= tracker.stop();
         }
-        return status;
-    }
-
-    public boolean stopCamera() {
-        boolean status = true;
-        status &= (streamer != null) && streamer.stop();
-        status &= (camera != null) && camera.stop();
         return status;
     }
 

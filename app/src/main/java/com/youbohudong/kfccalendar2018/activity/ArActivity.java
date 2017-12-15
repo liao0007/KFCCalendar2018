@@ -63,17 +63,10 @@ public class ArActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        initView();
-        initListening();
-        initData();
-    }
 
-    @Override
-    public void initView() {
         if (!Engine.initialize(this, EasyArKey)) {
             Log.e("ArCore", "Initialization Failed.");
         }
-        EventBus.getDefault().register(this);
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON, WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         final View activityAr = LayoutInflater.from(this).inflate(R.layout.activity_ar, null);
@@ -139,6 +132,13 @@ public class ArActivity extends BaseActivity {
             }
         });
 
+        initView();
+        initListening();
+        initData();
+    }
+
+    @Override
+    public void initView() {
     }
 
     @Override
@@ -195,11 +195,10 @@ public class ArActivity extends BaseActivity {
 
     @Override
     protected void onResume() {
+        EventBus.getDefault().register(this);
         super.onResume();
         if (glView != null) {
             glView.onResume();
-            glView.startTracker();
-            glView.startCamera();
             showScanLayout();
         }
         overlayRelativeLayout.setBackgroundResource(android.R.color.transparent);
@@ -207,37 +206,37 @@ public class ArActivity extends BaseActivity {
 
     @Override
     protected void onPause() {
+        EventBus.getDefault().unregister(this);
         overlayRelativeLayout.setBackgroundResource(android.R.color.black);
         if (glView != null) {
-            glView.stopCamera();
-            glView.stopTracker();
             glView.onPause();
         }
         super.onPause();
     }
 
     private static boolean isTrackEventFired = false;
-    public void onEventMainThread(CalendarEvent event) {
-        glView.stopTracker();
 
+    public void onEventMainThread(CalendarEvent event) {
         if (!isTrackEventFired) {
             MediaPlayer mediaPlayer = MediaPlayer.create(this, R.raw.scan_success);
             mediaPlayer.start();
             isTrackEventFired = true;
-        }
 
-        String taskKey = (String) event.what;
-        UUID uuid = new DeviceUuidFactory(this).getDeviceUuid();
-        requestTaskCompletion(uuid, taskKey);
+            String taskKey = (String) event.what;
+            UUID uuid = new DeviceUuidFactory(this).getDeviceUuid();
+            requestTaskCompletion(uuid, taskKey);
+        }
     }
 
     private void showScanLayout() {
         isTrackEventFired = false;
+        glView.startTracker();
         scanAnimationLinearLayout.setVisibility(View.VISIBLE);
         scanSuccessRelativeLayout.setVisibility(View.GONE);
     }
 
     private void showScanSuccessLayout(Boolean isLoading) {
+        glView.stopTracker();
         scanAnimationLinearLayout.setVisibility(View.GONE);
         scanSuccessRelativeLayout.setVisibility(View.VISIBLE);
 
@@ -314,16 +313,5 @@ public class ArActivity extends BaseActivity {
         @Override
         public void inProgress(float progress, long total, int id) {
         }
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if ((keyCode == KeyEvent.KEYCODE_BACK)) {
-            finish();
-            return false;
-        } else {
-            return super.onKeyDown(keyCode, event);
-        }
-
     }
 }

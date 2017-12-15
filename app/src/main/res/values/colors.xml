@@ -19,4 +19,5 @@
 
     <color name="primaryRed">#DE0000</color>
     <color name="secondaryRed">#D83035</color>
+    <color name="grey">#999999</color>
 </resources>

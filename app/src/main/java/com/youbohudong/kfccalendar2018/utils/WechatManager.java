@@ -3,6 +3,7 @@ package com.youbohudong.kfccalendar2018.utils;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import com.tencent.mm.opensdk.modelmsg.SendMessageToWX;
 import com.tencent.mm.opensdk.modelmsg.WXImageObject;
 import com.tencent.mm.opensdk.modelmsg.WXMediaMessage;
@@ -40,9 +41,15 @@ public class WechatManager {
         share(context, mediaMessage, TransactionTypeWebpage, mTargetScene);
     }
 
+
+
     public static void shareImage(Context context, String thumbnailImagePath, int mTargetScene) {
-        Bitmap bmp = createThumbnailFromFile(thumbnailImagePath);
-        WXImageObject mediaObject = new WXImageObject(bmp);
+        Bitmap bitmap = createThumbnailFromFile(thumbnailImagePath);
+        shareImage(context, bitmap, mTargetScene);
+    }
+
+    public static void shareImage(Context context, Bitmap bitmap, int mTargetScene) {
+        WXImageObject mediaObject = new WXImageObject(bitmap);
 
         WXMediaMessage mediaMessage = new WXMediaMessage();
         mediaMessage.mediaObject = mediaObject;

@@ -32,7 +32,7 @@ public class WeChatEntryActivity extends BaseActivity implements IWXAPIEventHand
         setContentView(R.layout.wx_layout);
 
         img_bg = findViewById(R.id.img_bg);
-        img_savetip = findViewById(R.id.img_savetip);
+        img_savetip = findViewById(R.id.saveSuccessImageView);
         img_sharetip = findViewById(R.id.img_sharetip);
         img_againtip = findViewById(R.id.img_againtip);
 

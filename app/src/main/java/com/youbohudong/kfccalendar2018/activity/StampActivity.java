@@ -41,7 +41,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CustomerCameraActivity extends BaseActivity implements SurfaceHolder.Callback, View.OnClickListener, RightAdapter.UpdateItemListening, SingleTouchView.DeleteUIListening {
+public class StampActivity extends BaseActivity implements SurfaceHolder.Callback, View.OnClickListener, RightAdapter.UpdateItemListening, SingleTouchView.DeleteUIListening {
     private static List<LeftBean> stampGroupListData;
 
     private static final int THUMB_SIZE = 150;
@@ -175,10 +175,10 @@ public class CustomerCameraActivity extends BaseActivity implements SurfaceHolde
         lv_left.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                new ToastUtils(CustomerCameraActivity.this).show(CustomerCameraActivity.this, leftList.get(i).getNote());
+                new ToastUtils(StampActivity.this).show(StampActivity.this, leftList.get(i).getNote());
                 if (leftList.get(i).getStamps() != null) {
-                    rightAdapter = new RightAdapter(CustomerCameraActivity.this, leftList.get(i).getStamps(), i, leftList.get(i).isIsAvailable());
-                    rightAdapter.setmUpdateItemListening(CustomerCameraActivity.this);
+                    rightAdapter = new RightAdapter(StampActivity.this, leftList.get(i).getStamps(), i, leftList.get(i).isIsAvailable());
+                    rightAdapter.setmUpdateItemListening(StampActivity.this);
                     lv_right.setAdapter(rightAdapter);
                     leftAdapter.setPos(i);
                     leftAdapter.notifyDataSetChanged();
@@ -189,8 +189,8 @@ public class CustomerCameraActivity extends BaseActivity implements SurfaceHolde
         helpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(CustomerCameraActivity.this, GuideActivity.class));
-                CustomerCameraActivity.this.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                startActivity(new Intent(StampActivity.this, GuideActivity.class));
+                StampActivity.this.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
             }
         });
 
@@ -200,7 +200,7 @@ public class CustomerCameraActivity extends BaseActivity implements SurfaceHolde
     public void initData() {
         leftList = new ArrayList<>();
         rightList = new ArrayList<>();
-        leftAdapter = new LeftAdapter(CustomerCameraActivity.this, leftList);
+        leftAdapter = new LeftAdapter(StampActivity.this, leftList);
 //        leftAdapter.setmOnLeftClickListening(this);
         lv_left.setAdapter(leftAdapter);
 
@@ -250,8 +250,8 @@ public class CustomerCameraActivity extends BaseActivity implements SurfaceHolde
             bean.setName("敬请期待");
             leftList.add(bean);
             leftAdapter.notifyDataSetChanged();
-            rightAdapter = new RightAdapter(CustomerCameraActivity.this, leftList.get(0).getStamps(), 0, leftList.get(0).isIsAvailable());
-            rightAdapter.setmUpdateItemListening(CustomerCameraActivity.this);
+            rightAdapter = new RightAdapter(StampActivity.this, leftList.get(0).getStamps(), 0, leftList.get(0).isIsAvailable());
+            rightAdapter.setmUpdateItemListening(StampActivity.this);
             lv_right.setAdapter(rightAdapter);
         }
 
@@ -628,8 +628,8 @@ public class CustomerCameraActivity extends BaseActivity implements SurfaceHolde
     @Override
     public void onItemClick(int parentIndex, int pos, String fileName) {
 
-        SingleTouchView singleTouchView = new SingleTouchView(CustomerCameraActivity.this);
-        singleTouchView.setmDeleteUIListening(CustomerCameraActivity.this);
+        SingleTouchView singleTouchView = new SingleTouchView(StampActivity.this);
+        singleTouchView.setmDeleteUIListening(StampActivity.this);
         singleTouchView.setImageScale(1);
         singleTouchView.setControlLocation(SingleTouchView.RIGHT_BOTTOM);
         singleTouchView.setControlDelLocation(SingleTouchView.LEFT_TOP);

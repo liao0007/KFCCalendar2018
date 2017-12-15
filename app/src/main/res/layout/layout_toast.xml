@@ -9,8 +9,8 @@
         android:id="@+id/ll_loading"
         android:layout_width="165dp"
         android:layout_height="wrap_content"
-        android:padding="5dp"
-        android:background="@drawable/progress_custom_bg"
+        android:padding="10dp"
+        android:background="@drawable/toast_bg"
         android:gravity="center"
          >
 
@@ -18,9 +18,8 @@
             android:id="@+id/tv_loading_dialog"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="15dp"
             android:text=""
-            android:textSize="21sp"
+            android:textSize="15sp"
             android:textColor="@color/white"
             />
     </LinearLayout>

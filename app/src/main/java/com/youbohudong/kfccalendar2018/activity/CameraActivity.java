@@ -8,13 +8,10 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
-import android.media.ExifInterface;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.util.DisplayMetrics;
 import android.view.*;
 import android.widget.*;
 import com.youbohudong.kfccalendar2018.R;
@@ -29,16 +26,13 @@ import java.util.List;
 
 public class CameraActivity extends BaseActivity implements SurfaceHolder.Callback {
     private Camera camera;
-
     private SurfaceHolder cameraSurfaceHolder;
     private ProgressBar savingProgressBar;
 
     private int currentCameraId = Camera.CameraInfo.CAMERA_FACING_BACK;//0代表前置摄像头，1代表后置摄像头
     private static final int REQUEST_XC_CODE = 101;
     private ContentResolver contentResolver;
-    private DisplayMetrics displayMetrics;
-
-    private boolean isTakingPhoto = false;
+    private Display display;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,9 +42,7 @@ public class CameraActivity extends BaseActivity implements SurfaceHolder.Callba
         spUtils.setBoolean("is_first", false);
 
         WindowManager wm = (WindowManager) getSystemService(WINDOW_SERVICE);
-        displayMetrics = new DisplayMetrics();
-        wm.getDefaultDisplay().getMetrics(displayMetrics);
-
+        display = wm.getDefaultDisplay();
         contentResolver = getContentResolver();
 
         savingProgressBar = findViewById(R.id.savingProgressBar);
@@ -131,7 +123,7 @@ public class CameraActivity extends BaseActivity implements SurfaceHolder.Callba
             if (uri != null) {
                 try {
                     compressAndCacheImage(MediaStore.Images.Media.getBitmap(contentResolver, uri));
-                    startActivity(new Intent(CameraActivity.this, ShareActivity.class));
+                    startActivity(new Intent(CameraActivity.this, StampActivity.class));
                 } catch (Exception e) {
                 }
             }
@@ -176,43 +168,48 @@ public class CameraActivity extends BaseActivity implements SurfaceHolder.Callba
 
 
     private void takePhoto() {
-        if(isTakingPhoto) {
-            return;
-        }
-        isTakingPhoto = true;
         camera.autoFocus(new Camera.AutoFocusCallback() {
             @Override
             public void onAutoFocus(boolean success, Camera camera) {
                 camera.takePicture(null, null, new Camera.PictureCallback() {
                     @Override
                     public void onPictureTaken(byte[] data, Camera camera) {
-                        MediaPlayer mediaPlayer = MediaPlayer.create(CameraActivity.this, R.raw.shutter);
-                        mediaPlayer.start();
-
-                        /* rotate */
-                        Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
-                        Matrix matrix = new Matrix();
-                        matrix.postRotate(90);
-                        bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(),
-                                matrix, true);
-
-                        compressAndCacheImage(bitmap);
-                        startActivity(new Intent(CameraActivity.this, ShareActivity.class));
+                        try {// 获得图片
+                            compressAndCacheImage(BitmapFactory.decodeByteArray(data, 0, data.length));
+                            startActivity(new Intent(CameraActivity.this, StampActivity.class));
+                            finish();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
                 });
             }
         });
     }
 
-
     private void compressAndCacheImage(Bitmap image) {
         savingProgressBar.setVisibility(View.VISIBLE);
 
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        image.compress(Bitmap.CompressFormat.JPEG, 80, byteArrayOutputStream);
+        /* compress */
+        image = Util.compressImage(image);
+
+        /* rotate */
+        Matrix matrix = new Matrix();
+        matrix.reset();
+        if (currentCameraId == 1) {
+            matrix.postRotate(90);
+        } else {
+            matrix.postRotate(90);
+            matrix.postScale(-1, 1);
+        }
+        image = Bitmap.createBitmap(image, 0, 0, image.getWidth(), image.getHeight(), matrix, true);
+
+        /* save to file */
         try {
+            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+            image.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
             FileOutputStream fileOutputStream = openFileOutput("temp", Context.MODE_PRIVATE);
-            fileOutputStream.write(byteArrayOutputStream.toByteArray());
+            fileOutputStream.write(bytes.toByteArray());
             fileOutputStream.close();
         } catch (Exception e) {
             e.printStackTrace();
@@ -266,8 +263,19 @@ public class CameraActivity extends BaseActivity implements SurfaceHolder.Callba
         cameraParameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
 
         cameraParameters.setPictureFormat(PixelFormat.JPEG); // 设置图片格式
-        cameraParameters.setJpegQuality(100); // 设置照片质量
-        cameraParameters.setPictureSize(displayMetrics.heightPixels, displayMetrics.widthPixels);
+        cameraParameters.setJpegQuality(80); // 设置照片质量
+
+        //获得相机支持的照片尺寸,选择合适的尺寸
+        List<Camera.Size> supportedPictureSizes = cameraParameters.getSupportedPictureSizes();
+        int maxSize = Math.max(display.getWidth(), display.getHeight());
+        if (maxSize > 0) {
+            for (Camera.Size size : supportedPictureSizes) {
+                if (maxSize <= Math.max(size.width, size.height)) {
+                    cameraParameters.setPictureSize(size.width, size.height);
+                    break;
+                }
+            }
+        }
 
         camera.setParameters(cameraParameters);
     }
@@ -280,7 +288,6 @@ public class CameraActivity extends BaseActivity implements SurfaceHolder.Callba
             camera.startPreview();
         }
         savingProgressBar.setVisibility(View.GONE);
-        isTakingPhoto = false;
     }
 
     @Override

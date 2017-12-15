@@ -12,8 +12,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.youbohudong.kfccalendar2018.R;
+import com.youbohudong.kfccalendar2018.activity.StampActivity;
 import com.youbohudong.kfccalendar2018.bean.LeftBean;
 import com.youbohudong.kfccalendar2018.utils.SharedPreferencesUtils;
+import com.youbohudong.kfccalendar2018.utils.ToastUtils;
 import com.youbohudong.kfccalendar2018.view.PupWinRightUtils;
 import com.youbohudong.kfccalendar2018.view.StampDownloadProgress;
 
@@ -91,29 +93,18 @@ public class RightAdapter extends BaseAdapter {
 
 
             view.setOnTouchListener(new View.OnTouchListener() {
-                PupWinRightUtils popWin = new PupWinRightUtils(ctx);
-                float startx, nowx;
-                float starty, nowy;
 
                 @Override
                 public boolean onTouch(View view, MotionEvent motionEvent) {
                     switch (motionEvent.getAction()) {
                         case MotionEvent.ACTION_DOWN:
                             if (!TextUtils.isEmpty(bean.getNote())) {
-                                popWin.show(view.findViewById(R.id.img_pic), bean.getNote());
+                                new ToastUtils(ctx).show(ctx, bean.getNote());
                             }
-                            startx = motionEvent.getX();
-                            starty = motionEvent.getY();
                             break;
                         case MotionEvent.ACTION_MOVE:
-//                        nowx=motionEvent.getX();
-//                        nowy=motionEvent.getY();
-//                        if(nowy-starty>=0) {
-//                            popWin.close();
-//                        }
                             break;
                         case MotionEvent.ACTION_UP:
-                            popWin.close();
                             if (isAvaliable) {
                                 if (isDown) {
                                     holder.sprogrss.setVisibility(View.GONE);

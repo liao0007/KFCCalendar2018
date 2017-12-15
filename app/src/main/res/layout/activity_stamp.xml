@@ -28,43 +28,6 @@
                 android:orientation="vertical"
                 android:visibility="visible" android:id="@+id/linearLayout">
 
-            <ImageButton
-                    android:id="@+id/arImageButton"
-                    android:layout_width="40dp"
-                    android:layout_height="50dp"
-                    android:layout_marginLeft="30dp"
-                    android:layout_marginTop="40dp"
-                    app:srcCompat="@mipmap/ar_icon" style="@style/Widget.AppCompat.Button.Borderless"/>
-
-            <ImageButton
-                    android:id="@+id/switchCameraImageButton"
-                    android:layout_width="40dp"
-                    android:layout_height="50dp"
-                    app:srcCompat="@mipmap/switch_camera" style="@style/Widget.AppCompat.Button.Borderless"/>
-            <ImageButton
-                    android:id="@+id/importFromAlbumImageButton"
-                    android:layout_width="40dp"
-                    android:layout_height="50dp"
-                    android:layout_marginTop="15dp" app:srcCompat="@mipmap/album"
-                    style="@style/Widget.AppCompat.Button.Borderless"/>
-
-            <ImageButton
-                    android:id="@+id/takePhotoImageButton"
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
-                    android:layout_marginBottom="30dp"
-                    android:gravity="center"
-                    android:layout_alignParentBottom="true" android:layout_centerHorizontal="true"
-                    app:srcCompat="@mipmap/takephoto" style="@style/Widget.AppCompat.Button.Borderless"/>
-
-            <ImageButton
-                    android:layout_width="40dp"
-                    android:layout_height="40dp" app:srcCompat="@mipmap/help"
-                    android:id="@+id/helpImageButton"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_marginBottom="20dp"
-                    android:layout_alignBottom="@+id/takePhotoImageButton" android:layout_alignLeft="@+id/linearLayout"
-                    android:layout_alignStart="@+id/linearLayout"/>
         </LinearLayout>
 
         <RelativeLayout

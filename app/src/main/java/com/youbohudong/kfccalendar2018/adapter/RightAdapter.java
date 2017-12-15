@@ -33,7 +33,7 @@ public class RightAdapter extends BaseAdapter {
     private List<View> viewList;                    //View对象集合
     private int parentIndex;
     private boolean isAvaliable;
-
+    private ToastUtils toastUtils;
     public RightAdapter(Context ctx, List<LeftBean.StampsBean> list, int parentIndex, boolean isAvaliable) {
         this.ctx = ctx;
         this.list = list;
@@ -41,6 +41,7 @@ public class RightAdapter extends BaseAdapter {
         this.parentIndex = parentIndex;
         this.viewList = new ArrayList<>();
         mInflater = LayoutInflater.from(ctx);
+        toastUtils=new ToastUtils(ctx);
     }
 
     @Override
@@ -99,7 +100,7 @@ public class RightAdapter extends BaseAdapter {
                     switch (motionEvent.getAction()) {
                         case MotionEvent.ACTION_DOWN:
                             if (!TextUtils.isEmpty(bean.getNote())) {
-                                new ToastUtils(ctx).show(ctx, bean.getNote());
+                                toastUtils.show(ctx, bean.getNote());
                             }
                             break;
                         case MotionEvent.ACTION_MOVE:

@@ -7,12 +7,16 @@ import android.graphics.Bitmap.Config;
 import android.graphics.Paint.Style;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Handler;
+import android.os.Message;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
+
 import com.youbohudong.kfccalendar2018.R;
 
 import java.util.Arrays;
@@ -82,7 +86,7 @@ public class SingleTouchView extends View {
     /**
      * 图片的缩放比例
      */
-    private float mScale = DEFAULT_SCALE;
+    private double mScale = DEFAULT_SCALE;
 
     /**
      * 用于缩放，旋转，平移的矩阵
@@ -131,6 +135,7 @@ public class SingleTouchView extends View {
      * 画外围框的Path
      */
     private Path mPath = new Path();
+    private Paint mbgPaint=new Paint();
     private Paint mlinePaint=new Paint();
 
     /**
@@ -381,13 +386,16 @@ public class SingleTouchView extends View {
         //处于可编辑状态才画边框和控制图标
         if(isEditable){
             DashPathEffect pathEffect = new DashPathEffect(new float[] { 10,10 }, 1);
-            mlinePaint.reset();
-            mlinePaint.setStyle(Paint.Style.STROKE);
-            mlinePaint.setStrokeWidth(1);
-            mlinePaint.setColor(Color.WHITE);
-            mlinePaint.setAntiAlias(true);
-            mlinePaint.setPathEffect(pathEffect);
+            mbgPaint.reset();
+            mbgPaint.setStyle(Paint.Style.STROKE);
+            mbgPaint.setStrokeWidth(1);
+            mbgPaint.setColor(Color.WHITE);
+            mbgPaint.setAntiAlias(true);
+            mbgPaint.setPathEffect(pathEffect);
+
+            mlinePaint.setColor(Color.GRAY);
             mlinePaint.setStyle(Style.FILL);
+            mlinePaint.setAlpha(80);
 
             mPath.reset();
             mPath.moveTo(mLTPoint.x, mLTPoint.y);
@@ -396,6 +404,7 @@ public class SingleTouchView extends View {
             mPath.lineTo(mLBPoint.x, mLBPoint.y);
             mPath.lineTo(mLTPoint.x, mLTPoint.y);
             mPath.lineTo(mRTPoint.x, mRTPoint.y);
+            canvas.drawPath(mPath, mbgPaint);
             canvas.drawPath(mPath, mlinePaint);
 //
 //            //创建画笔
@@ -436,12 +445,12 @@ public class SingleTouchView extends View {
      */
     private void transformDraw(){
         if(mBitmap == null) return;
-        int bitmapWidth = (int)(mBitmap.getWidth() * mScale/2);
-        int bitmapHeight = (int)(mBitmap.getHeight()* mScale/2);
+        int bitmapWidth = (int)(mBitmap.getWidth() * mScale);
+        int bitmapHeight = (int)(mBitmap.getHeight()* mScale);
         computeRect(-framePadding, -framePadding, bitmapWidth + framePadding, bitmapHeight + framePadding, mDegree);
 
         //设置缩放比例
-        matrix.setScale(mScale/2, mScale/2);
+        matrix.setScale((float) mScale, (float)mScale);
         //绕着图片中心进行旋转
         matrix.postRotate(mDegree % 360, bitmapWidth/2, bitmapHeight/2);
         //设置画该图片的起始点
@@ -457,13 +466,43 @@ public class SingleTouchView extends View {
         mDeleteUIListening.onDeleteUI(this);
     }
 
+    // 统计500ms内的点击次数
+    TouchEventCountThread mInTouchEventCount = new TouchEventCountThread();
+    TouchEventHandler mTouchEventHandler = new TouchEventHandler();
+
+    public class TouchEventCountThread implements Runnable {
+        public int touchCount = 0;
+        public boolean isLongClick = false;
+
+        @Override
+        public void run() {
+            Message msg = new Message();
+            if(0 == touchCount){ // long click
+                isLongClick = true;
+            } else {
+                msg.arg1 = touchCount;
+                mTouchEventHandler.sendMessage(msg);
+                touchCount = 0;
+            }
+        }
+    }
+    public class TouchEventHandler extends Handler {
+
+        @Override
+        public void handleMessage(Message msg) {
+            mEditViewListening.editView(SingleTouchView.this);
+//            Toast.makeText(getContext(), "touch " + msg.arg1 + " time.", Toast.LENGTH_SHORT).show();
+        }
+    }
 
     public boolean onTouchEvent(MotionEvent event) {
-        if(!isEditable){
-            return super.onTouchEvent(event);
-        }
+//        if(!isEditable){
+//            return super.onTouchEvent(event);
+//        }
         switch (event.getAction() ) {
             case MotionEvent.ACTION_DOWN:
+                if (0 == mInTouchEventCount.touchCount) // 第一次按下时,开始统计
+                    postDelayed(mInTouchEventCount, 100);
                 bringToFront();
                 mPreMovePointF.set(event.getX() + mViewPaddingLeft, event.getY() + mViewPaddingTop);
 
@@ -471,10 +510,19 @@ public class SingleTouchView extends View {
 
                 break;
             case MotionEvent.ACTION_UP:
-                mStatus = STATUS_INIT;
+                // 一次点击事件要有按下和抬起, 有抬起必有按下, 所以只需要在ACTION_UP中处理
+                mInTouchEventCount.touchCount++;
+                // 如果是长按操作, 则Handler的消息,不能将touchCount置0, 需要特殊处理
+                if(mInTouchEventCount.isLongClick) {
+                    mInTouchEventCount.touchCount = 0;
+                    mInTouchEventCount.isLongClick = false;
+                }
 
+                mStatus = STATUS_INIT;
                 break;
             case MotionEvent.ACTION_MOVE:
+
+
                 mCurMovePointF.set(event.getX() + mViewPaddingLeft, event.getY() + mViewPaddingTop);
                 if (mStatus == STATUS_ROTATE_ZOOM) {
                     float scale = 1f;
@@ -786,7 +834,7 @@ public class SingleTouchView extends View {
         }
     }
 
-    public float getImageScale() {
+    public double getImageScale() {
         return mScale;
     }
 
@@ -794,7 +842,7 @@ public class SingleTouchView extends View {
      * 设置图片缩放比例
      * @param scale
      */
-    public void setImageScale(float scale) {
+    public void setImageScale(double scale) {
         if(this.mScale != scale){
             this.mScale = scale;
             transformDraw();
@@ -943,5 +991,18 @@ public class SingleTouchView extends View {
         void onDeleteUI(View v);
     }
 
+    EditViewListening mEditViewListening;
+
+    public EditViewListening getmEditViewListening() {
+        return mEditViewListening;
+    }
+
+    public void setmEditViewListening(EditViewListening mEditViewListening) {
+        this.mEditViewListening = mEditViewListening;
+    }
+
+    public interface EditViewListening{
+        void editView(View v);
+    }
 
 }

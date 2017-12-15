@@ -8,12 +8,16 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
+import android.media.ExifInterface;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.*;
 import android.widget.*;
+
 import com.youbohudong.kfccalendar2018.R;
 import com.youbohudong.kfccalendar2018.base.BaseActivity;
 import com.youbohudong.kfccalendar2018.bean.LeftBean;
@@ -22,6 +26,7 @@ import com.youbohudong.kfccalendar2018.utils.SharedPreferencesUtils;
 import com.youbohudong.kfccalendar2018.utils.Util;
 
 import java.io.*;
+import java.lang.reflect.Method;
 import java.util.List;
 
 public class CameraActivity extends BaseActivity implements SurfaceHolder.Callback {
@@ -31,6 +36,8 @@ public class CameraActivity extends BaseActivity implements SurfaceHolder.Callba
 
     private int currentCameraId = Camera.CameraInfo.CAMERA_FACING_BACK;//0代表前置摄像头，1代表后置摄像头
     private static final int REQUEST_XC_CODE = 101;
+    private static final int XJ_CODE = 102;
+    private static final int XC_CODE = 103;
     private ContentResolver contentResolver;
     private Display display;
 
@@ -122,8 +129,82 @@ public class CameraActivity extends BaseActivity implements SurfaceHolder.Callba
             Uri uri = data.getData();
             if (uri != null) {
                 try {
-                    compressAndCacheImage(MediaStore.Images.Media.getBitmap(contentResolver, uri));
-                    startActivity(new Intent(CameraActivity.this, StampActivity.class));
+
+                    //根据图片的filepath获取到一个ExifInterface的对象
+
+                    ExifInterface exif = null;
+
+                    try {
+
+                        exif = new ExifInterface(uri.getPath());
+
+                    } catch (IOException e) {
+
+                        e.printStackTrace();
+
+                        exif = null;
+
+                    }
+                    int degree = 0;
+
+                    if (exif != null) {
+
+                        // 读取图片中相机方向信息
+
+                        int ori = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION,
+
+                                ExifInterface.ORIENTATION_UNDEFINED);
+
+                        // 计算旋转角度
+
+                        switch (ori) {
+
+                            case ExifInterface.ORIENTATION_ROTATE_90:
+
+                                degree = 90;
+
+                                break;
+
+                            case ExifInterface.ORIENTATION_ROTATE_180:
+
+                                degree = 180;
+
+                                break;
+
+                            case ExifInterface.ORIENTATION_ROTATE_270:
+
+                                degree = 270;
+
+                                break;
+
+                            default:
+
+                                degree = 0;
+
+                                break;
+
+                        }
+
+                        if (degree != 0) {
+
+                            // 旋转图片
+
+                            Matrix m = new Matrix();
+
+                            m.postRotate(degree);
+//
+//                            bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),
+//
+//                                    bitmap.getHeight(), m, true);
+
+                        }
+                    }
+
+//                    compressAndCacheImage(MediaStore.Images.Media.getBitmap(contentResolver, uri));
+
+                    Intent intent = new Intent(CameraActivity.this, StampActivity.class);
+                    intent.putExtra("URI", uri.toString());
+                    startActivity(intent);
                 } catch (Exception e) {
                 }
             }
@@ -163,26 +244,46 @@ public class CameraActivity extends BaseActivity implements SurfaceHolder.Callba
             // Important: Call startPreview() to start updating the preview
             // surface. Preview must be started before you can take a picture.
             camera.startPreview();
+            safeToTakePicture = true;
         }
     }
 
+    private boolean safeToTakePicture = false;
 
     private void takePhoto() {
         camera.autoFocus(new Camera.AutoFocusCallback() {
             @Override
             public void onAutoFocus(boolean success, Camera camera) {
-                camera.takePicture(null, null, new Camera.PictureCallback() {
-                    @Override
-                    public void onPictureTaken(byte[] data, Camera camera) {
-                        try {// 获得图片
-                            compressAndCacheImage(BitmapFactory.decodeByteArray(data, 0, data.length));
-                            startActivity(new Intent(CameraActivity.this, StampActivity.class));
-                            finish();
-                        } catch (Exception e) {
-                            e.printStackTrace();
+                if (safeToTakePicture) {
+                    camera.takePicture(null, null, new Camera.PictureCallback() {
+                        @Override
+                        public void onPictureTaken(byte[] data, Camera camera) {
+
+                            Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+                             /* rotate */
+                            Matrix matrix = new Matrix();
+                            matrix.reset();
+                            if (currentCameraId == Camera.CameraInfo.CAMERA_FACING_BACK) {
+                                matrix.postRotate(90);
+                            } else {
+                                matrix.postRotate(-90);
+                                matrix.postScale(-1, 1);
+                            }
+
+                            bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+
+                            try {// 获得图片
+                                compressAndCacheImage(bitmap);
+                                startActivity(new Intent(CameraActivity.this, StampActivity.class));
+                                finish();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                         }
-                    }
-                });
+                    });
+                    safeToTakePicture = false;
+                }
+
             }
         });
     }
@@ -192,17 +293,6 @@ public class CameraActivity extends BaseActivity implements SurfaceHolder.Callba
 
         /* compress */
         image = Util.compressImage(image);
-
-        /* rotate */
-        Matrix matrix = new Matrix();
-        matrix.reset();
-        if (currentCameraId == 1) {
-            matrix.postRotate(90);
-        } else {
-            matrix.postRotate(90);
-            matrix.postScale(-1, 1);
-        }
-        image = Bitmap.createBitmap(image, 0, 0, image.getWidth(), image.getHeight(), matrix, true);
 
         /* save to file */
         try {
@@ -232,35 +322,10 @@ public class CameraActivity extends BaseActivity implements SurfaceHolder.Callba
     }
 
     private void configCamera(Camera camera) {
-        camera.setDisplayOrientation(CameraParamUtil.getInstance().getCameraDisplayOrientation(CameraActivity.this, currentCameraId));
+        camera.setDisplayOrientation(90);
 
         Camera.Parameters cameraParameters = camera.getParameters();
-
-        //set color efects to none
-        cameraParameters.setColorEffect(Camera.Parameters.EFFECT_NONE);
-
-        //set antibanding to none
-        if (cameraParameters.getAntibanding() != null) {
-            cameraParameters.setAntibanding(Camera.Parameters.ANTIBANDING_AUTO);
-        }
-
-        // set white ballance
-        if (cameraParameters.getWhiteBalance() != null) {
-            cameraParameters.setWhiteBalance(Camera.Parameters.WHITE_BALANCE_AUTO);
-        }
-
-        //set flash
-        if (cameraParameters.getFlashMode() != null) {
-            cameraParameters.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
-        }
-
-        //set zoom
-        if (cameraParameters.isZoomSupported()) {
-            cameraParameters.setZoom(0);
-        }
-
-        //set focus mode
-        cameraParameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
+//        setDispaly(cameraParameters, camera);
 
         cameraParameters.setPictureFormat(PixelFormat.JPEG); // 设置图片格式
         cameraParameters.setJpegQuality(80); // 设置照片质量
@@ -280,6 +345,29 @@ public class CameraActivity extends BaseActivity implements SurfaceHolder.Callba
         camera.setParameters(cameraParameters);
     }
 
+    // 控制图像的正确显示方向
+    private void setDispaly(Camera.Parameters parameters, Camera camera) {
+        if (Integer.parseInt(Build.VERSION.SDK) >= 8) {
+            setDisplayOrientation(camera, 90);
+        } else {
+            parameters.setRotation(90);
+        }
+
+    }
+
+    // 实现的图像的正确显示
+    private void setDisplayOrientation(Camera camera, int i) {
+        Method downPolymorphic;
+        try {
+            downPolymorphic = camera.getClass().getMethod(
+                    "setDisplayOrientation", new Class[]{int.class});
+            if (downPolymorphic != null) {
+                downPolymorphic.invoke(camera, new Object[]{i});
+            }
+        } catch (Exception e) {
+            Log.e("Came_e", "图像出错");
+        }
+    }
 
     @Override
     protected void onResume() {

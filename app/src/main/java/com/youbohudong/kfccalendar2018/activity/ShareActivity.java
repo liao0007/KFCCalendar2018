@@ -54,6 +54,7 @@ public class ShareActivity extends BaseActivity {
                 Intent intent = new Intent(ShareActivity.this, CameraActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
+                finish();
             }
         });
 

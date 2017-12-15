@@ -274,6 +274,10 @@ public class StampActivity extends BaseActivity implements View.OnClickListener,
         switch (view.getId()) {
             case R.id.saveImageButton://保存
                 drawer_layout.closeDrawer(Gravity.RIGHT);
+                try {
+                    Thread.sleep(600);
+                } catch (Exception e) {
+                }
                 showStampGroupImageButton.setVisibility(View.GONE);
                 returnImageButton.setVisibility(View.GONE);
                 saveImageButton.setVisibility(View.GONE);

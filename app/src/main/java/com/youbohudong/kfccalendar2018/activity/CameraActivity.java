@@ -9,6 +9,7 @@ import android.graphics.Matrix;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.media.ExifInterface;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -28,7 +29,6 @@ import java.util.List;
 public class CameraActivity extends BaseActivity implements SurfaceHolder.Callback {
     private Camera camera;
 
-    private SurfaceView cameraSurfaceView;
     private SurfaceHolder cameraSurfaceHolder;
     private ProgressBar savingProgressBar;
 
@@ -50,7 +50,7 @@ public class CameraActivity extends BaseActivity implements SurfaceHolder.Callba
 
         savingProgressBar = findViewById(R.id.savingProgressBar);
 
-        cameraSurfaceView = findViewById(R.id.cameraSurfaceView);
+        SurfaceView cameraSurfaceView = findViewById(R.id.cameraSurfaceView);
         cameraSurfaceHolder = cameraSurfaceView.getHolder();
         cameraSurfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
         cameraSurfaceHolder.addCallback(this);
@@ -177,6 +177,9 @@ public class CameraActivity extends BaseActivity implements SurfaceHolder.Callba
                 camera.takePicture(null, null, new Camera.PictureCallback() {
                     @Override
                     public void onPictureTaken(byte[] data, Camera camera) {
+                        MediaPlayer mediaPlayer = MediaPlayer.create(CameraActivity.this, R.raw.shutter);
+                        mediaPlayer.start();
+
                         /* rotate */
                         Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
                         Matrix matrix = new Matrix();

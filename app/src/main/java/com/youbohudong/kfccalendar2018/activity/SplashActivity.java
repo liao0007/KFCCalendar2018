@@ -3,9 +3,18 @@ package com.youbohudong.kfccalendar2018.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.Toast;
+import com.tencent.mm.opensdk.modelbase.BaseReq;
+import com.tencent.mm.opensdk.modelbase.BaseResp;
+import com.tencent.mm.opensdk.openapi.IWXAPIEventHandler;
 import com.youbohudong.kfccalendar2018.R;
 import com.youbohudong.kfccalendar2018.base.BaseActivity;
+import com.youbohudong.kfccalendar2018.bean.WeChatResponseEvent;
 import com.youbohudong.kfccalendar2018.utils.SharedPreferencesUtils;
+import de.greenrobot.event.EventBus;
 
 /**
  * Created by ${bcq} on 2017/11/6.
@@ -50,4 +59,5 @@ public class SplashActivity extends BaseActivity {
     public void initListening() {
 
     }
+
 }

@@ -11,7 +11,8 @@ package com.youbohudong.kfccalendar2018.ar;
 import android.opengl.GLES20;
 import android.util.Log;
 import cn.easyar.*;
-import com.youbohudong.kfccalendar2018.bean.CalendarEvent;
+import com.youbohudong.kfccalendar2018.bean.ArScanEvent;
+import com.youbohudong.kfccalendar2018.bean.WeChatResponseEvent;
 import de.greenrobot.event.EventBus;
 
 import java.util.ArrayList;
@@ -197,7 +198,7 @@ public class ArCore {
                 Target target = targetInstance.target();
                 int status = targetInstance.status();
                 if (status == TargetStatus.Tracked) {
-                    EventBus.getDefault().post(new CalendarEvent(target.name()));
+                    EventBus.getDefault().post(new ArScanEvent(target.name()));
                 }
             } else {
                 if (tracked_target != 0) {

@@ -3,16 +3,13 @@ package com.youbohudong.kfccalendar2018.utils;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.PixelFormat;
-import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import com.youbohudong.kfccalendar2018.R;
 
 /**
@@ -62,13 +59,13 @@ public class ToastUtils{
             mWindowParams.alpha = 1.0f;
             mWindowParams.width = WindowManager.LayoutParams.WRAP_CONTENT;
             mWindowParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
-            mWindowParams.gravity = Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM;
+            mWindowParams.gravity = Gravity.CENTER_HORIZONTAL;
             mWindowParams.format = PixelFormat.TRANSLUCENT;
             mWindowParams.type = WindowManager.LayoutParams.TYPE_TOAST;
             mWindowParams.setTitle("ToastUtils");
             mWindowParams.packageName = mContext.getPackageName();
             mWindowParams.windowAnimations = animStyleId;// TODO
-            mWindowParams.y = mContext.getResources().getDisplayMetrics().widthPixels / 5;
+            mWindowParams.y = mContext.getResources().getDisplayMetrics().widthPixels / 12;
         }
 
         @SuppressWarnings("deprecation")
@@ -83,7 +80,6 @@ public class ToastUtils{
 
         public void show(Context context, String title) {
             removeView();
-
             if (toastView == null) {
                 toastView = getDefaultToastView(context);
             }
@@ -92,9 +88,7 @@ public class ToastUtils{
             ll_loading.getBackground().setAlpha(159);
             txt_title.setText(title);
             mWindowParams.gravity = android.support.v4.view.GravityCompat
-                    .getAbsoluteGravity(Gravity.CENTER,
-                            android.support.v4.view.ViewCompat
-                                    .getLayoutDirection(toastView));
+                    .getAbsoluteGravity(Gravity.CENTER_HORIZONTAL,android.support.v4.view.ViewCompat.getLayoutDirection(toastView));
             removeView();
             mWindowManager.addView(toastView, mWindowParams);
             if (mHandler == null) {

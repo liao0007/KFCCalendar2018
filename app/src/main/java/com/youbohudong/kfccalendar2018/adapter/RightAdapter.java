@@ -12,10 +12,12 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.youbohudong.kfccalendar2018.R;
+import com.youbohudong.kfccalendar2018.activity.StampActivity;
 import com.youbohudong.kfccalendar2018.bean.LeftBean;
 import com.youbohudong.kfccalendar2018.utils.SharedPreferencesUtils;
+import com.youbohudong.kfccalendar2018.utils.ToastUtils;
 import com.youbohudong.kfccalendar2018.view.PupWinRightUtils;
-import com.youbohudong.kfccalendar2018.view.SlefProgress;
+import com.youbohudong.kfccalendar2018.view.StampDownloadProgress;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,7 +66,7 @@ public class RightAdapter extends BaseAdapter {
             view = mInflater.inflate(R.layout.right_layout, null);
             holder.img_pic = (ImageView) view.findViewById(R.id.img_pic);
             holder.rl_bg = (RelativeLayout) view.findViewById(R.id.rl_bg);
-            holder.sprogrss = (SlefProgress) view.findViewById(R.id.sprogrss);
+            holder.sprogrss = (StampDownloadProgress) view.findViewById(R.id.sprogrss);
             holder.fl_shade = (RelativeLayout) view.findViewById(R.id.fl_shade);
             holder.txt_down = (TextView) view.findViewById(R.id.txt_down);
             view.setTag(holder);
@@ -74,7 +76,7 @@ public class RightAdapter extends BaseAdapter {
         final LeftBean.StampsBean bean = list.get(i);
         if (bean != null) {
             Glide.with(ctx).load(bean.getThumb()).into(holder.img_pic);
-            final boolean isDown = new SharedPreferencesUtils(ctx).getBln(bean.getImage(), false);
+            final boolean isDown = new SharedPreferencesUtils(ctx).getBoolean(bean.getImage(), false);
             if (isDown) {
                 holder.fl_shade.setVisibility(View.GONE);
                 holder.sprogrss.setVisibility(View.GONE);
@@ -91,29 +93,18 @@ public class RightAdapter extends BaseAdapter {
 
 
             view.setOnTouchListener(new View.OnTouchListener() {
-                PupWinRightUtils popWin = new PupWinRightUtils(ctx);
-                float startx, nowx;
-                float starty, nowy;
 
                 @Override
                 public boolean onTouch(View view, MotionEvent motionEvent) {
                     switch (motionEvent.getAction()) {
                         case MotionEvent.ACTION_DOWN:
                             if (!TextUtils.isEmpty(bean.getNote())) {
-                                popWin.show(view.findViewById(R.id.img_pic), bean.getNote());
+                                new ToastUtils(ctx).show(ctx, bean.getNote());
                             }
-                            startx = motionEvent.getX();
-                            starty = motionEvent.getY();
                             break;
                         case MotionEvent.ACTION_MOVE:
-//                        nowx=motionEvent.getX();
-//                        nowy=motionEvent.getY();
-//                        if(nowy-starty>=0) {
-//                            popWin.close();
-//                        }
                             break;
                         case MotionEvent.ACTION_UP:
-                            popWin.close();
                             if (isAvaliable) {
                                 if (isDown) {
                                     holder.sprogrss.setVisibility(View.GONE);
@@ -138,7 +129,7 @@ public class RightAdapter extends BaseAdapter {
     public class ViewHolder {
         public ImageView img_pic;
         RelativeLayout rl_bg;
-        public SlefProgress sprogrss;
+        public StampDownloadProgress sprogrss;
         RelativeLayout fl_shade;
         TextView txt_down;
     }
@@ -161,7 +152,7 @@ public class RightAdapter extends BaseAdapter {
     public interface UpdateItemListening {
         void onItemClick(int parentIndex, int pos, String fileName);
 
-        void onDownloadItem(int parentIndex, int pos, SlefProgress v, TextView view);
+        void onDownloadItem(int parentIndex, int pos, StampDownloadProgress v, TextView view);
 
     }
 }

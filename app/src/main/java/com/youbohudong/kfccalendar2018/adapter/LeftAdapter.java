@@ -1,9 +1,7 @@
 package com.youbohudong.kfccalendar2018.adapter;
 
 import android.content.Context;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -11,7 +9,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import com.youbohudong.kfccalendar2018.R;
 import com.youbohudong.kfccalendar2018.bean.LeftBean;
-import com.youbohudong.kfccalendar2018.view.PupWinUtils;
 
 import java.util.List;
 

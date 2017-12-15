@@ -9,16 +9,16 @@ import android.widget.ProgressBar;
  * 自定义进度条
  */
 
-public class SlefProgress extends ProgressBar {
-    public SlefProgress(Context context) {
+public class StampDownloadProgress extends ProgressBar {
+    public StampDownloadProgress(Context context) {
         this(context, null);
     }
 
-    public SlefProgress(Context context, AttributeSet attrs) {
+    public StampDownloadProgress(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public SlefProgress(Context context, AttributeSet attrs, int defStyleAttr) {
+    public StampDownloadProgress(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 }

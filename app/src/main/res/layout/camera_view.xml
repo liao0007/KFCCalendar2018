@@ -30,20 +30,24 @@
         android:layout_marginRight="50dp"
         android:orientation="horizontal">
 
-        <ImageView
+        <ImageButton
             android:id="@+id/image_flash"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
             android:visibility="gone"
-            android:src="@drawable/ic_flash_on"/>
+            android:src="@drawable/ic_flash_on"
+            style="@style/Widget.AppCompat.Button.Borderless"
+        />
 
-        <ImageView
+        <ImageButton
             android:id="@+id/image_switch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
-            android:src="@mipmap/paster"/>
+            android:src="@mipmap/paster"
+            style="@style/Widget.AppCompat.Button.Borderless"
+        />
 
     </LinearLayout>
 

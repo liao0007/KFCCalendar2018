@@ -18,69 +18,70 @@ import com.youbohudong.kfccalendar2018.R;
  *
  * @author 2017年5月23日
  */
-public class ScanView extends View implements ValueAnimator.AnimatorUpdateListener {
+public class ScanAnimationView extends View implements ValueAnimator.AnimatorUpdateListener {
 
     private static final int PLAY_STATE_PLAYING = 1;
     private static final int PLAY_STATE_PAUSE = 2;
 
-    Drawable drawableLine;
-    Drawable drawableFrame;
+    private Drawable drawableLine;
+    private Drawable drawableFrame;
 
-    int linePaddingLeft;
-    int linePaddingRight;
-    int linePaddingTop;
-    int linePaddingBottom;
+    private int linePaddingLeft;
+    private int linePaddingRight;
+    private int linePaddingTop;
+    private int linePaddingBottom;
 
-    int framePaddingLeft;
-    int framePaddingRight;
-    int framePaddingTop;
-    int framePaddingBottom;
+    private int framePaddingLeft;
+    private int framePaddingRight;
+    private int framePaddingTop;
+    private int framePaddingBottom;
 
-    float lineHeight = 0.3f;
+    private float lineHeight = 0.3f;
 
     private ValueAnimator animatorLine;
     private Interpolator interpolator;
 
     private int duration = 2500;
 
-    int playState = PLAY_STATE_PLAYING;
+    private int playState = PLAY_STATE_PLAYING;
 
-    public ScanView(Context context) {
+    public ScanAnimationView(Context context) {
         super(context);
         init(context);
+        play();
     }
 
-    public ScanView(Context context, AttributeSet attrs) {
+    public ScanAnimationView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public ScanView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public ScanAnimationView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         initAttrs(context, attrs);
     }
 
     private void initAttrs(Context context, AttributeSet attrs) {
         init(context);
-        TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.ScanView);
-        drawableLine = typedArray.getDrawable(R.styleable.ScanView_scanLineDrawable);
-        drawableFrame = typedArray.getDrawable(R.styleable.ScanView_scanFrameDrawable);
-        lineHeight = typedArray.getFloat(R.styleable.ScanView_lineHeight, lineHeight);
+        TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.ScanAnimationView);
+        drawableLine = typedArray.getDrawable(R.styleable.ScanAnimationView_scanLineDrawable);
+        drawableFrame = typedArray.getDrawable(R.styleable.ScanAnimationView_scanFrameDrawable);
+        lineHeight = typedArray.getFloat(R.styleable.ScanAnimationView_lineHeight, lineHeight);
 
         framePaddingLeft = framePaddingRight = framePaddingTop = framePaddingBottom =
-                typedArray.getDimensionPixelSize(R.styleable.ScanView_framePaddings, 0);
-        framePaddingLeft = typedArray.getDimensionPixelSize(R.styleable.ScanView_framePaddingLeft, framePaddingLeft);
-        framePaddingRight = typedArray.getDimensionPixelSize(R.styleable.ScanView_framePaddingRight, framePaddingRight);
-        framePaddingTop = typedArray.getDimensionPixelSize(R.styleable.ScanView_framePaddingTop, framePaddingTop);
-        framePaddingBottom = typedArray.getDimensionPixelSize(R.styleable.ScanView_framePaddingBottom, framePaddingBottom);
+                typedArray.getDimensionPixelSize(R.styleable.ScanAnimationView_framePaddings, 0);
+        framePaddingLeft = typedArray.getDimensionPixelSize(R.styleable.ScanAnimationView_framePaddingLeft, framePaddingLeft);
+        framePaddingRight = typedArray.getDimensionPixelSize(R.styleable.ScanAnimationView_framePaddingRight, framePaddingRight);
+        framePaddingTop = typedArray.getDimensionPixelSize(R.styleable.ScanAnimationView_framePaddingTop, framePaddingTop);
+        framePaddingBottom = typedArray.getDimensionPixelSize(R.styleable.ScanAnimationView_framePaddingBottom, framePaddingBottom);
 
         linePaddingLeft = linePaddingRight = linePaddingTop = linePaddingBottom =
-                typedArray.getDimensionPixelSize(R.styleable.ScanView_linePadding, 0);
-        linePaddingLeft = typedArray.getDimensionPixelSize(R.styleable.ScanView_linePaddingLeft, linePaddingLeft);
-        linePaddingRight = typedArray.getDimensionPixelSize(R.styleable.ScanView_linePaddingRight, linePaddingRight);
-        linePaddingBottom = typedArray.getDimensionPixelSize(R.styleable.ScanView_linePaddingBottom, linePaddingBottom);
-        linePaddingTop = typedArray.getDimensionPixelSize(R.styleable.ScanView_linePaddingTop, linePaddingTop);
+                typedArray.getDimensionPixelSize(R.styleable.ScanAnimationView_linePadding, 0);
+        linePaddingLeft = typedArray.getDimensionPixelSize(R.styleable.ScanAnimationView_linePaddingLeft, linePaddingLeft);
+        linePaddingRight = typedArray.getDimensionPixelSize(R.styleable.ScanAnimationView_linePaddingRight, linePaddingRight);
+        linePaddingBottom = typedArray.getDimensionPixelSize(R.styleable.ScanAnimationView_linePaddingBottom, linePaddingBottom);
+        linePaddingTop = typedArray.getDimensionPixelSize(R.styleable.ScanAnimationView_linePaddingTop, linePaddingTop);
 
-        duration = typedArray.getInt(R.styleable.ScanView_duration, duration);
+        duration = typedArray.getInt(R.styleable.ScanAnimationView_duration, duration);
 
         typedArray.recycle();
     }

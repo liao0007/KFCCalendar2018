@@ -5,16 +5,12 @@ package com.youbohudong.kfccalendar2018.bean;
  */
 
 public class GuideBean {
-    private int img;
     private String title;
     private String content;
 
-    public int getImg() {
-        return img;
-    }
-
-    public void setImg(int img) {
-        this.img = img;
+    public GuideBean(String title, String content) {
+        this.title = title;
+        this.content = content;
     }
 
     public String getTitle() {

@@ -5,18 +5,19 @@ import android.Manifest;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.*;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
+import android.widget.*;
 import cn.easyar.Engine;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.target.ImageViewTarget;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.google.gson.Gson;
 import com.youbohudong.kfccalendar2018.R;
 import com.youbohudong.kfccalendar2018.ar.GLView;
@@ -24,8 +25,6 @@ import com.youbohudong.kfccalendar2018.base.BaseActivity;
 import com.youbohudong.kfccalendar2018.bean.CalendarEvent;
 import com.youbohudong.kfccalendar2018.bean.TaskCompletionBean;
 import com.youbohudong.kfccalendar2018.utils.DeviceUuidFactory;
-import com.youbohudong.kfccalendar2018.view.My_Dialog;
-import com.youbohudong.kfccalendar2018.view.ScanView;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.StringCallback;
 import de.greenrobot.event.EventBus;
@@ -39,69 +38,96 @@ import java.util.UUID;
  * Created by ${bcq} on 2017/12/10.
  */
 
-public class ArActivity extends BaseActivity implements View.OnClickListener {
-    private static String key = "amxBNPSXKbRBragBOjnJ0rV5tjSBwQZFk3SqTyd8qlTOv54A8CFjO4fP8RaVD9NDDKcvzXc4aPWHFj7cW5gtViFP1Q4j5nD23zodBz30agY29ai2ar7VQPcW7n41yxP8zv5ZlNhWy1vY4xujQpW8U34E9ZLyKT3byHamzdqWwUD1jnoGS82pRYqGQXiiQGn2pfpwC5BO";
+public class ArActivity extends BaseActivity {
+
+    private static final String EasyArKey = "amxBNPSXKbRBragBOjnJ0rV5tjSBwQZFk3SqTyd8qlTOv54A8CFjO4fP8RaVD9NDDKcvzXc4aPWHFj7cW5gtViFP1Q4j5nD23zodBz30agY29ai2ar7VQPcW7n41yxP8zv5ZlNhWy1vY4xujQpW8U34E9ZLyKT3byHamzdqWwUD1jnoGS82pRYqGQXiiQGn2pfpwC5BO";
+
     private GLView glView;
-    private ScanView scanView;
-    private TextView txt_action, txt_des, txt_gosee;
-    private ImageView img_scan;
-    private LinearLayout ll_root;
+
+    private RelativeLayout overlayRelativeLayout;
+
+    private LinearLayout scanAnimationLinearLayout;
+
+    private RelativeLayout scanSuccessRelativeLayout;
+    private ProgressBar scanSuccessProgressBar;
+    private LinearLayout scanSuccessDetailLinearLayout;
+    private ImageView scanSuccessImageView;
+    private TextView scanSuccessTextView;
+    private Button scanSuccessGoButton;
+
     private TaskCompletionBean taskCompletionBean;
-    My_Dialog dialog;
-    private  RelativeLayout rl_scan_success;
-    private ImageView img_back;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_ar);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON, WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        dialog = new My_Dialog(this);
-        if (!Engine.initialize(this, key)) {
+
+        if (!Engine.initialize(this, EasyArKey)) {
             Log.e("ArCore", "Initialization Failed.");
         }
-        EventBus.getDefault().register(this);
+
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON, WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        final View activityAr = LayoutInflater.from(this).inflate(R.layout.activity_ar, null);
+        setContentView(activityAr);
+
+        /* gl view*/
         glView = new GLView(this);
-
-        final View v = LayoutInflater.from(this).inflate(R.layout.scan_layout, null);
-        img_scan = (ImageView) v.findViewById(R.id.img_scan);
-        ll_root = (LinearLayout) v.findViewById(R.id.ll_root);
-        txt_des = (TextView) v.findViewById(R.id.txt_des);
-        txt_gosee = (TextView) v.findViewById(R.id.txt_gosee);
-        rl_scan_success=(RelativeLayout) v.findViewById(R.id.rl_scan_success);
-        img_back=(ImageView) v.findViewById(R.id.img_back);
-
-        img_back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
-        txt_gosee.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (txt_gosee.getText().toString().equals("知道了")) {
-                    finish();
-                } else {
-                    Intent intent = new Intent(ArActivity.this, WebViewActivity.class);
-                    intent.putExtra("URL", taskCompletionBean.getCompletionUrl());
-                    startActivity(intent);
-                }
-            }
-        });
-        requestCameraPermission(new PermissionCallback() {
+        requestCameraPermission(new CameraPermissionCallback() {
             @Override
             public void onSuccess() {
-                ((ViewGroup) findViewById(R.id.preview)).addView(glView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-
-                ((ViewGroup) findViewById(R.id.preview)).addView(v, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-
+                ((ViewGroup) findViewById(R.id.glViewRelativeLayout)).addView(glView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             }
 
             @Override
             public void onFailure() {
             }
         });
+
+        /* link elements */
+        overlayRelativeLayout = activityAr.findViewById(R.id.overlayRelativeLayout);
+
+        /* navigation */
+        ImageButton navigationBackImageButton = activityAr.findViewById(R.id.navigationBackImageButton);
+        navigationBackImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                overlayRelativeLayout.setBackgroundResource(android.R.color.background_dark);
+                finish();
+            }
+        });
+
+        /* scan element */
+        scanAnimationLinearLayout = activityAr.findViewById(R.id.scanAnimationLinearLayout);
+        Button eventListButton = activityAr.findViewById(R.id.eventListButton);
+        eventListButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(ArActivity.this, WebViewActivity.class);
+                intent.putExtra("URL", "https://www.youbohudong.com/biz/vip/kfc/calendar-2018/tasks");
+                startActivity(intent);
+            }
+        });
+
+        /* scan success view */
+        scanSuccessRelativeLayout = activityAr.findViewById(R.id.scanSuccessRelativeLayout);
+        scanSuccessProgressBar = activityAr.findViewById(R.id.scanSuccessProgressBar);
+        scanSuccessImageView = activityAr.findViewById(R.id.scanSuccessImageView);
+        scanSuccessDetailLinearLayout = activityAr.findViewById(R.id.scanSuccessDetailLinearLayout);
+        scanSuccessTextView = activityAr.findViewById(R.id.scanSuccessTextView);
+        scanSuccessGoButton = activityAr.findViewById(R.id.scanSuccessGoButton);
+        scanSuccessGoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (scanSuccessGoButton.getText().toString().equals("知道了")) {
+                    finish();
+                } else {
+                    Intent intent = new Intent(ArActivity.this, WebViewActivity.class);
+                    intent.putExtra("URL", taskCompletionBean.getCompletionUrl());
+                    intent.putExtra("calling-activity", ArActivity);
+                    startActivity(intent);
+                }
+            }
+        });
+
         initView();
         initListening();
         initData();
@@ -109,34 +135,27 @@ public class ArActivity extends BaseActivity implements View.OnClickListener {
 
     @Override
     public void initView() {
-        scanView = (ScanView) findViewById(R.id.scanview);
-        scanView.play();
-        txt_action = (TextView) findViewById(R.id.btn_event_list);
-
-
     }
 
     @Override
     public void initData() {
-
     }
 
     @Override
     public void initListening() {
-        txt_action.setOnClickListener(this);
     }
 
-    private interface PermissionCallback {
+    private interface CameraPermissionCallback {
         void onSuccess();
 
         void onFailure();
     }
 
-    private HashMap<Integer, PermissionCallback> permissionCallbacks = new HashMap<Integer, PermissionCallback>();
+    private HashMap<Integer, CameraPermissionCallback> permissionCallbacks = new HashMap<Integer, CameraPermissionCallback>();
     private int permissionRequestCodeSerial = 0;
 
     @TargetApi(23)
-    private void requestCameraPermission(PermissionCallback callback) {
+    private void requestCameraPermission(CameraPermissionCallback callback) {
         if (Build.VERSION.SDK_INT >= 23) {
             if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
                 int requestCode = permissionRequestCodeSerial;
@@ -154,7 +173,7 @@ public class ArActivity extends BaseActivity implements View.OnClickListener {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (permissionCallbacks.containsKey(requestCode)) {
-            PermissionCallback callback = permissionCallbacks.get(requestCode);
+            CameraPermissionCallback callback = permissionCallbacks.get(requestCode);
             permissionCallbacks.remove(requestCode);
             boolean executed = false;
             for (int result : grantResults) {
@@ -172,51 +191,66 @@ public class ArActivity extends BaseActivity implements View.OnClickListener {
 
     @Override
     protected void onResume() {
+        EventBus.getDefault().register(this);
         super.onResume();
-        scanView.setVisibility(View.VISIBLE);
-        scanView.play();
         if (glView != null) {
             glView.onResume();
-            glView.startTracker();
-            glView.startCamera();
+            showScanLayout();
         }
+        overlayRelativeLayout.setBackgroundResource(android.R.color.transparent);
     }
 
     @Override
     protected void onPause() {
+        EventBus.getDefault().unregister(this);
+        overlayRelativeLayout.setBackgroundResource(android.R.color.black);
         if (glView != null) {
-            glView.stopCamera();
-            glView.stopTracker();
             glView.onPause();
         }
         super.onPause();
     }
 
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.btn_event_list://动作
-                Intent intent = new Intent(this, WebViewActivity.class);
-                intent.putExtra("URL", "https://www.youbohudong.com/biz/vip/kfc/calendar-2018/tasks");
-                startActivity(intent);
-                break;
+    private static boolean isTrackEventFired = false;
+
+    public void onEventMainThread(CalendarEvent event) {
+        if (!isTrackEventFired) {
+            MediaPlayer mediaPlayer = MediaPlayer.create(this, R.raw.scan_success);
+            mediaPlayer.start();
+            isTrackEventFired = true;
+
+            String taskKey = (String) event.what;
+            UUID uuid = new DeviceUuidFactory(this).getDeviceUuid();
+            requestTaskCompletion(uuid, taskKey);
         }
     }
 
-    public void onEventMainThread(CalendarEvent event) {
-        scanView.stop();
-        String taskKey = (String) event.what;
+    private void showScanLayout() {
+        isTrackEventFired = false;
+        glView.startTracker();
+        scanAnimationLinearLayout.setVisibility(View.VISIBLE);
+        scanSuccessRelativeLayout.setVisibility(View.GONE);
+    }
+
+    private void showScanSuccessLayout(Boolean isLoading) {
         glView.stopTracker();
-        UUID uuid = new DeviceUuidFactory(this).getDeviceUuid();
-        completeTask(uuid, taskKey);
+        scanAnimationLinearLayout.setVisibility(View.GONE);
+        scanSuccessRelativeLayout.setVisibility(View.VISIBLE);
+
+        if (isLoading) {
+            scanSuccessProgressBar.setVisibility(View.VISIBLE);
+            scanSuccessDetailLinearLayout.setVisibility(View.GONE);
+        } else {
+            scanSuccessProgressBar.setVisibility(View.GONE);
+            scanSuccessDetailLinearLayout.setVisibility(View.VISIBLE);
+        }
     }
 
     /**
      * 从服务器获取数据
      */
-    private void completeTask(UUID uuid, String taskKey) {
-        dialog.ShowDialog();
-        String url = "https://www.youbohudong.com/api/biz/vip/kfc/calendar-2018/tasks/"+uuid+"/"+taskKey;
+    private void requestTaskCompletion(UUID uuid, String taskKey) {
+        showScanSuccessLayout(true);
+        String url = "https://www.youbohudong.com/api/biz/vip/kfc/calendar-2018/tasks/" + uuid + "/" + taskKey;
         OkHttpUtils
                 .get()
                 .url(url)
@@ -238,48 +272,42 @@ public class ArActivity extends BaseActivity implements View.OnClickListener {
 
         @Override
         public void onError(Call call, Exception e, int id) {
+            showScanLayout();
             e.printStackTrace();
-            dialog.DismissDialog();
         }
 
         @Override
         public void onResponse(String response, int id) {
-            dialog.DismissDialog();
-            txt_action.setVisibility(View.GONE);
             Gson gson = new Gson();
             taskCompletionBean = gson.fromJson(response, TaskCompletionBean.class);
+
+
             if (!TextUtils.isEmpty(taskCompletionBean.getCompletionResource())) {
-                img_scan.setVisibility(View.VISIBLE);
-                scanView.setVisibility(View.GONE);
-                rl_scan_success.setVisibility(View.VISIBLE);
-                rl_scan_success.getBackground().setAlpha(70);
-                Glide.with(ArActivity.this).load(taskCompletionBean.getCompletionResource()).into(img_scan);
+                scanSuccessImageView.setVisibility(View.VISIBLE);
+                scanSuccessRelativeLayout.setVisibility(View.VISIBLE);
+
+                Glide.with(ArActivity.this).load(taskCompletionBean.getCompletionResource())
+                        .into(new ImageViewTarget<GlideDrawable>(scanSuccessImageView) {
+                            @Override
+                            protected void setResource(GlideDrawable glideDrawable) {
+                                showScanSuccessLayout(false);
+                                scanSuccessImageView.setImageDrawable(glideDrawable);
+                            }
+                        });
             } else {
-                img_scan.setVisibility(View.GONE);
+                showScanSuccessLayout(false);
             }
+
             if (!TextUtils.isEmpty(taskCompletionBean.getCompletionUrl())) {
-                txt_des.setText(taskCompletionBean.getCompletionDescription());
-                txt_gosee.setText("去看看");
+                scanSuccessTextView.setText(taskCompletionBean.getCompletionDescription());
+                scanSuccessGoButton.setText("去看看");
             } else {
-                ll_root.setVisibility(View.VISIBLE);
-                txt_gosee.setText("知道了");
+                scanSuccessGoButton.setText("知道了");
             }
-            dialog.DismissDialog();
         }
 
         @Override
         public void inProgress(float progress, long total, int id) {
         }
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if ((keyCode == KeyEvent.KEYCODE_BACK)) {
-            finish();
-            return false;
-        } else {
-            return super.onKeyDown(keyCode, event);
-        }
-
     }
 }

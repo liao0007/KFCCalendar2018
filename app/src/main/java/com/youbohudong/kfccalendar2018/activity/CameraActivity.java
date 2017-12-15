@@ -171,7 +171,6 @@ public class CameraActivity extends BaseActivity implements SurfaceHolder.Callba
         camera.autoFocus(new Camera.AutoFocusCallback() {
             @Override
             public void onAutoFocus(boolean success, Camera camera) {
-                savingProgressBar.setVisibility(View.VISIBLE);
                 camera.takePicture(null, null, new Camera.PictureCallback() {
                     @Override
                     public void onPictureTaken(byte[] data, Camera camera) {
@@ -187,13 +186,28 @@ public class CameraActivity extends BaseActivity implements SurfaceHolder.Callba
         });
     }
 
-    private void compressAndCacheImage(Bitmap bitmap) {
-        String fileName = "temp";
+    private void compressAndCacheImage(Bitmap image) {
+        savingProgressBar.setVisibility(View.VISIBLE);
+
+        /* compress */
+        image = Util.compressImage(image);
+
+        /* rotate */
+        Matrix matrix = new Matrix();
+        matrix.reset();
+        if (currentCameraId == 1) {
+            matrix.postRotate(90);
+        } else {
+            matrix.postRotate(270);
+            matrix.postScale(-1, 1);
+        }
+        image = Bitmap.createBitmap(image, 0, 0, image.getWidth(), image.getHeight(), matrix, true);
+
+        /* save to file */
         try {
             ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-            bitmap = Util.compressImage(bitmap);
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-            FileOutputStream fileOutputStream = openFileOutput(fileName, Context.MODE_PRIVATE);
+            image.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+            FileOutputStream fileOutputStream = openFileOutput("temp", Context.MODE_PRIVATE);
             fileOutputStream.write(bytes.toByteArray());
             fileOutputStream.close();
         } catch (Exception e) {
@@ -218,9 +232,37 @@ public class CameraActivity extends BaseActivity implements SurfaceHolder.Callba
 
     private void configCamera(Camera camera) {
         camera.setDisplayOrientation(CameraParamUtil.getInstance().getCameraDisplayOrientation(CameraActivity.this, currentCameraId));
+
         Camera.Parameters cameraParameters = camera.getParameters();
+
+        //set color efects to none
+        cameraParameters.setColorEffect(Camera.Parameters.EFFECT_NONE);
+
+        //set antibanding to none
+        if (cameraParameters.getAntibanding() != null) {
+            cameraParameters.setAntibanding(Camera.Parameters.ANTIBANDING_AUTO);
+        }
+
+        // set white ballance
+        if (cameraParameters.getWhiteBalance() != null) {
+            cameraParameters.setWhiteBalance(Camera.Parameters.WHITE_BALANCE_AUTO);
+        }
+
+        //set flash
+        if (cameraParameters.getFlashMode() != null) {
+            cameraParameters.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
+        }
+
+        //set zoom
+        if (cameraParameters.isZoomSupported()) {
+            cameraParameters.setZoom(0);
+        }
+
+        //set focus mode
+        cameraParameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
+
         cameraParameters.setPictureFormat(PixelFormat.JPEG); // 设置图片格式
-        cameraParameters.setJpegQuality(100); // 设置照片质量
+        cameraParameters.setJpegQuality(80); // 设置照片质量
 
         //获得相机支持的照片尺寸,选择合适的尺寸
         List<Camera.Size> supportedPictureSizes = cameraParameters.getSupportedPictureSizes();
@@ -234,15 +276,6 @@ public class CameraActivity extends BaseActivity implements SurfaceHolder.Callba
             }
         }
 
-        List<Camera.Size> supportedPreviewSizes = cameraParameters.getSupportedPreviewSizes();
-        if (maxSize > 0) {
-            for (Camera.Size ShowSize : supportedPreviewSizes) {
-                if (maxSize <= Math.max(ShowSize.width, ShowSize.height)) {
-                    cameraParameters.setPreviewSize(ShowSize.width, ShowSize.height);
-                    break;
-                }
-            }
-        }
         camera.setParameters(cameraParameters);
     }
 

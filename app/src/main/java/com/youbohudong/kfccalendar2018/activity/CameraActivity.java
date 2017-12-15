@@ -25,6 +25,7 @@ import com.youbohudong.kfccalendar2018.bean.LeftBean;
 import com.youbohudong.kfccalendar2018.camera.util.CameraParamUtil;
 import com.youbohudong.kfccalendar2018.utils.SharedPreferencesUtils;
 import com.youbohudong.kfccalendar2018.utils.Util;
+import com.youbohudong.kfccalendar2018.view.CameraSurfaceView;
 
 import java.io.*;
 import java.lang.reflect.Method;
@@ -32,14 +33,12 @@ import java.util.List;
 
 public class CameraActivity extends BaseActivity implements SurfaceHolder.Callback {
     private Camera camera;
+    private CameraSurfaceView cameraSurfaceView;
     private SurfaceHolder cameraSurfaceHolder;
     private ProgressBar savingProgressBar;
 
     private int currentCameraId = Camera.CameraInfo.CAMERA_FACING_BACK;//0代表前置摄像头，1代表后置摄像头
     private static final int REQUEST_XC_CODE = 101;
-    private static final int XJ_CODE = 102;
-    private static final int XC_CODE = 103;
-    private ContentResolver contentResolver;
     private Display display;
 
     @Override
@@ -51,11 +50,10 @@ public class CameraActivity extends BaseActivity implements SurfaceHolder.Callba
 
         WindowManager wm = (WindowManager) getSystemService(WINDOW_SERVICE);
         display = wm.getDefaultDisplay();
-        contentResolver = getContentResolver();
 
         savingProgressBar = findViewById(R.id.savingProgressBar);
 
-        SurfaceView cameraSurfaceView = findViewById(R.id.cameraSurfaceView);
+        cameraSurfaceView = findViewById(R.id.cameraSurfaceView);
         cameraSurfaceHolder = cameraSurfaceView.getHolder();
         cameraSurfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
         cameraSurfaceHolder.addCallback(this);
@@ -334,43 +332,28 @@ public class CameraActivity extends BaseActivity implements SurfaceHolder.Callba
         cameraParameters.setPictureFormat(PixelFormat.JPEG); // 设置图片格式
         cameraParameters.setJpegQuality(80); // 设置照片质量
 
+
+        int maxSize = Math.max(display.getWidth(), display.getHeight());
+        double ratio = display.getWidth() * 1.0 / display.getHeight();
+
         //获得相机支持的照片尺寸,选择合适的尺寸
         List<Camera.Size> supportedPictureSizes = cameraParameters.getSupportedPictureSizes();
-        int maxSize = Math.max(display.getWidth(), display.getHeight());
-        if (maxSize > 0) {
-            for (Camera.Size size : supportedPictureSizes) {
-                if (maxSize <= Math.max(size.width, size.height)) {
-                    cameraParameters.setPictureSize(size.width, size.height);
-                    break;
-                }
+        for (Camera.Size size : supportedPictureSizes) {
+            double sizeRatio = size.height * 1.0 / size.width;
+            if (maxSize <= Math.max(size.width, size.height) && Math.abs(sizeRatio - ratio) <= 0.01) {
+                cameraParameters.setPictureSize(size.width, size.height);
+                break;
             }
+        }
+
+        List<Camera.Size> supportedPreviewSizes = cameraParameters.getSupportedPreviewSizes();
+        cameraSurfaceView.mSupportedPreviewSizes = supportedPreviewSizes;
+
+        if(cameraSurfaceView.mPreviewSize !=null){
+            cameraParameters.setPreviewSize(cameraSurfaceView.mPreviewSize.width, cameraSurfaceView.mPreviewSize.height);
         }
 
         camera.setParameters(cameraParameters);
-    }
-
-    // 控制图像的正确显示方向
-    private void setDispaly(Camera.Parameters parameters, Camera camera) {
-        if (Integer.parseInt(Build.VERSION.SDK) >= 8) {
-            setDisplayOrientation(camera, 90);
-        } else {
-            parameters.setRotation(90);
-        }
-
-    }
-
-    // 实现的图像的正确显示
-    private void setDisplayOrientation(Camera camera, int i) {
-        Method downPolymorphic;
-        try {
-            downPolymorphic = camera.getClass().getMethod(
-                    "setDisplayOrientation", new Class[]{int.class});
-            if (downPolymorphic != null) {
-                downPolymorphic.invoke(camera, new Object[]{i});
-            }
-        } catch (Exception e) {
-            Log.e("Came_e", "图像出错");
-        }
     }
 
     @Override

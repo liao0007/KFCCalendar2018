@@ -67,18 +67,12 @@
         <activity android:name="com.youbohudong.kfccalendar2018.activity.WebViewActivity"
                   android:theme="@style/Theme.start"/>
 
+
         <activity
-                android:name="com.youbohudong.kfccalendar2018.activity.WeChatEntryActivity"
                 android:exported="true"
-                android:label="@string/app_name"
                 android:launchMode="singleTop"
-                android:theme="@style/Theme.start">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <data android:scheme="sdksample"/>
-            </intent-filter>
-        </activity>
+                android:name=".wxapi.WXEntryActivity"
+                android:theme="@android:style/Theme.NoDisplay" />
 
     </application>
 

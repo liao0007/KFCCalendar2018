@@ -17,12 +17,11 @@ import cn.easyar.Engine;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.target.ImageViewTarget;
-import com.bumptech.glide.request.target.SimpleTarget;
 import com.google.gson.Gson;
 import com.youbohudong.kfccalendar2018.R;
 import com.youbohudong.kfccalendar2018.ar.GLView;
 import com.youbohudong.kfccalendar2018.base.BaseActivity;
-import com.youbohudong.kfccalendar2018.bean.CalendarEvent;
+import com.youbohudong.kfccalendar2018.bean.ArScanEvent;
 import com.youbohudong.kfccalendar2018.bean.TaskCompletionBean;
 import com.youbohudong.kfccalendar2018.utils.DeviceUuidFactory;
 import com.zhy.http.okhttp.OkHttpUtils;
@@ -212,13 +211,13 @@ public class ArActivity extends BaseActivity {
 
     private static boolean isTrackEventFired = false;
 
-    public void onEventMainThread(CalendarEvent event) {
+    public void onEventMainThread(ArScanEvent event) {
         if (!isTrackEventFired) {
             MediaPlayer mediaPlayer = MediaPlayer.create(this, R.raw.scan_success);
             mediaPlayer.start();
             isTrackEventFired = true;
 
-            String taskKey = (String) event.what;
+            String taskKey = event.taskKey;
             UUID uuid = new DeviceUuidFactory(this).getDeviceUuid();
             requestTaskCompletion(uuid, taskKey);
         }

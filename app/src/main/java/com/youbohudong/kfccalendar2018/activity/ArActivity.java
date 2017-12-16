@@ -234,8 +234,8 @@ public class ArActivity extends BaseActivity {
             Gson gson = new Gson();
             taskCompletionBean = gson.fromJson(response, TaskCompletionBean.class);
 
-
             if (!TextUtils.isEmpty(taskCompletionBean.getCompletionResource())) {
+                scanSuccessImageView.setImageResource(android.R.color.transparent);
                 scanSuccessImageView.setVisibility(View.VISIBLE);
                 scanSuccessRelativeLayout.setVisibility(View.VISIBLE);
 

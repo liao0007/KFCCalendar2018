@@ -110,7 +110,7 @@ public class RightAdapter extends BaseAdapter {
         if (view == null) {
             holder = new ViewHolder();
             view = mInflater.inflate(R.layout.right_layout, null);
-            holder.img_pic = (ImageView) view.findViewById(R.id.img_pic);
+            holder.img_pic = (ImageView) view.findViewById(R.id.stampPhotoImageView);
             holder.rl_bg = (RelativeLayout) view.findViewById(R.id.rl_bg);
             holder.sprogrss = (StampDownloadProgress) view.findViewById(R.id.sprogrss);
             holder.fl_shade = (RelativeLayout) view.findViewById(R.id.fl_shade);

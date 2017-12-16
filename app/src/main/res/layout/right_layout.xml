@@ -14,7 +14,7 @@
     >
 
         <ImageView
-                android:id="@+id/img_pic"
+                android:id="@+id/stampPhotoImageView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:scaleType="fitXY"

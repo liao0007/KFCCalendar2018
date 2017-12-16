@@ -1,6 +1,7 @@
 package com.youbohudong.kfccalendar2018.activity;
 
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -10,8 +11,10 @@ import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v4.widget.DrawerLayout;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.*;
 import android.widget.*;
@@ -22,61 +25,52 @@ import com.youbohudong.kfccalendar2018.adapter.LeftAdapter;
 import com.youbohudong.kfccalendar2018.adapter.RightAdapter;
 import com.youbohudong.kfccalendar2018.base.BaseActivity;
 import com.youbohudong.kfccalendar2018.bean.LeftBean;
-import com.youbohudong.kfccalendar2018.bean.RightBean;
+import com.youbohudong.kfccalendar2018.utils.CapturePhotoUtils;
 import com.youbohudong.kfccalendar2018.utils.SharedPreferencesUtils;
 import com.youbohudong.kfccalendar2018.utils.ToastUtils;
-import com.youbohudong.kfccalendar2018.utils.Util;
 import com.youbohudong.kfccalendar2018.view.SingleTouchView;
 import com.youbohudong.kfccalendar2018.view.StampDownloadProgress;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.FileCallBack;
 import com.zhy.http.okhttp.callback.StringCallback;
-import de.greenrobot.event.EventBus;
 import okhttp3.Call;
 import okhttp3.Request;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.List;
 
 public class StampActivity extends BaseActivity implements View.OnClickListener, RightAdapter.UpdateItemListening, SingleTouchView.DeleteUIListening {
     private static List<LeftBean> stampGroupListData;
 
-    private static final int THUMB_SIZE = 150;
+    private DisplayMetrics displayMetrics;
 
     private ImageButton showStampGroupImageButton, returnImageButton, saveImageButton;
-    private RelativeLayout rl_root;
     private FrameLayout fl_root;
-    private ImageView img_pic;
+    private ImageView photoImageView;
     private DrawerLayout drawer_layout;
-    private List<LeftBean.StampsBean> rightList;
     private ListView lv_left, lv_right;
-    private LinearLayout ll_close;
 
-    private ImageView img_savetip;
     private LeftAdapter leftAdapter;
     private RightAdapter rightAdapter;
 
-    Display display;
-
-    int bmpHeight, bmpWidth;
-    private int currentLeftPos;
+    private int photoHeight, photoWidth;
     private SharedPreferencesUtils spUtils;
 
     private ToastUtils toastUtils;
     private int imgTag = 0;
     private LinearLayout llReturn_Save;
-    Uri mImageCaptureUri;
-    int sHight, sWidth;
+    private Uri mImageCaptureUri;
+//    private int sHeight, sWidth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_stamp);
         WindowManager wm = (WindowManager) getSystemService(WINDOW_SERVICE);
-        Display dy = wm.getDefaultDisplay();
-        sHight = dy.getHeight();
-        sWidth = dy.getWidth();
+        Display display = wm.getDefaultDisplay();
+        displayMetrics = new DisplayMetrics();
+        display.getMetrics(displayMetrics);
+
         String url = getIntent().getStringExtra("URI");
         if (!TextUtils.isEmpty(url)) {
             mImageCaptureUri = Uri.parse(url);
@@ -95,15 +89,12 @@ public class StampActivity extends BaseActivity implements View.OnClickListener,
         showStampGroupImageButton = findViewById(R.id.showStampGroupImageButton);
         returnImageButton = findViewById(R.id.returnImageButton);
         saveImageButton = findViewById(R.id.saveImageButton);
-        img_savetip = findViewById(R.id.saveSuccessImageView);
-        llReturn_Save = (LinearLayout) findViewById(R.id.llReturn_Save);
-        rl_root = findViewById(R.id.rl_root);
+        llReturn_Save = findViewById(R.id.llReturn_Save);
         fl_root = findViewById(R.id.fl_root);
-        img_pic = findViewById(R.id.img_pic);
+        photoImageView = findViewById(R.id.stampPhotoImageView);
+        photoImageView.setDrawingCacheEnabled(true);
         lv_left = findViewById(R.id.stampGroupListView);
         lv_right = findViewById(R.id.lv_right);
-        ll_close = findViewById(R.id.stampGroupControllerCloseLinearLayout);
-
     }
 
     @Override
@@ -115,7 +106,6 @@ public class StampActivity extends BaseActivity implements View.OnClickListener,
         lv_left.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                currentLeftPos = i;// 记录当前左面的位置
                 if (i == stampGroupListData.size() - 1) {
                     toastUtils.show(StampActivity.this, "不定期推出新贴纸，请关注App通知和线下活动！");
                 } else {
@@ -134,29 +124,6 @@ public class StampActivity extends BaseActivity implements View.OnClickListener,
                 }
             }
         });
-//        lv_right.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-//                if(stampGroupListData!=null&&stampGroupListData.size()>0){
-//                  LeftBean leftBean= stampGroupListData.get(currentLeftPos);
-//                    List<LeftBean.StampsBean> list=leftBean.getStamps();
-//                    if(list!=null&&list.size()>0){
-//                        LeftBean.StampsBean stampsBean= list.get(i);
-//                        if(leftBean.isIsAvailable()){
-//                            boolean isDown = new SharedPreferencesUtils(StampActivity.this).getBoolean(stampsBean.getImage(), false);
-//                            if(isDown){
-//
-//                            }else{
-//
-//                            }
-//                        }
-//                        if(!TextUtils.isEmpty(stampsBean.getNote())){
-//                            new ToastUtils(StampActivity.this).show(StampActivity.this, stampsBean.getNote());
-//                        }
-//                    }
-//                }
-//            }
-//        });
 
         fl_root.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -180,20 +147,16 @@ public class StampActivity extends BaseActivity implements View.OnClickListener,
 
     @Override
     public void initData() {
-        rightList = new ArrayList<>();
         try {
-            Bitmap photoBmp = null;
+            Bitmap photoBmp;
             if (mImageCaptureUri != null) {
-                photoBmp = decodeUri(this, mImageCaptureUri, sWidth, sHight);
-                bmpHeight = photoBmp.getHeight();
-                bmpWidth = photoBmp.getWidth();
-                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(sWidth, sHight);
-                img_pic.setLayoutParams(params);
-
+                photoBmp = decodeUri(this, mImageCaptureUri);
             } else {
                 photoBmp = BitmapFactory.decodeStream(openFileInput("temp"));
             }
-            img_pic.setImageBitmap(photoBmp);
+            photoHeight = photoBmp.getHeight();
+            photoWidth = photoBmp.getWidth();
+            photoImageView.setImageBitmap(photoBmp);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -207,7 +170,6 @@ public class StampActivity extends BaseActivity implements View.OnClickListener,
             rightAdapter.setmUpdateItemListening(StampActivity.this);
             lv_right.setAdapter(rightAdapter);
         }
-
     }
 
     /**
@@ -244,10 +206,9 @@ public class StampActivity extends BaseActivity implements View.OnClickListener,
         public void onResponse(String response, int id) {
             Gson gson = new Gson();
             // json转为带泛型的list
-            List<LeftBean> listData = gson.fromJson(response, new TypeToken<List<LeftBean>>() {
-            }.getType());
 
-            stampGroupListData = listData;
+            stampGroupListData = gson.fromJson(response, new TypeToken<List<LeftBean>>() {
+            }.getType());
 
             LeftBean bean = new LeftBean();
             bean.setName("敬请期待");
@@ -271,10 +232,10 @@ public class StampActivity extends BaseActivity implements View.OnClickListener,
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.saveImageButton://保存
-                drawer_layout.closeDrawer(Gravity.RIGHT);
+                drawer_layout.closeDrawer(Gravity.END);
                 try {
                     Thread.sleep(600);
-                } catch (Exception e) {
+                } catch (Exception ignored) {
                 }
                 showStampGroupImageButton.setVisibility(View.GONE);
                 returnImageButton.setVisibility(View.GONE);
@@ -283,7 +244,7 @@ public class StampActivity extends BaseActivity implements View.OnClickListener,
                 takeScreenShot();
                 break;
             case R.id.showStampGroupImageButton://贴纸
-                drawer_layout.openDrawer(Gravity.RIGHT);
+                drawer_layout.openDrawer(Gravity.END);
                 break;
             case R.id.returnImageButton:
                 startActivity(new Intent(StampActivity.this, CameraActivity.class));
@@ -291,14 +252,14 @@ public class StampActivity extends BaseActivity implements View.OnClickListener,
                 break;
 
             case R.id.stampGroupControllerCloseLinearLayout://关闭侧滑
-                drawer_layout.closeDrawer(Gravity.RIGHT);
+                drawer_layout.closeDrawer(Gravity.END);
                 break;
 
         }
     }
 
 
-    public void updateView() {
+    private void updateView() {
         int count = fl_root.getChildCount();
         for (int i = 0; i < count; i++) {
             SingleTouchView touchView = (SingleTouchView) fl_root.getChildAt(i);
@@ -306,12 +267,8 @@ public class StampActivity extends BaseActivity implements View.OnClickListener,
         }
     }
 
-    /**
-     * 设置可编辑view
-     *
-     * @param view
-     */
-    public void setEditView(SingleTouchView view) {
+
+    private void setEditView(SingleTouchView view) {
         int count = fl_root.getChildCount();
         for (int i = 0; i < count; i++) {
             SingleTouchView touchView = (SingleTouchView) fl_root.getChildAt(i);
@@ -326,26 +283,9 @@ public class StampActivity extends BaseActivity implements View.OnClickListener,
     }
 
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        EventBus.getDefault().unregister(this);
-    }
+    private static final String savePath = Environment.getExternalStorageDirectory() + "/kc2018/";
 
-
-    public static final Bitmap getBitmap(ContentResolver cr, Uri url)
-            throws FileNotFoundException, IOException {
-        InputStream input = cr.openInputStream(url);
-        Bitmap bitmap = BitmapFactory.decodeStream(input);
-        input.close();
-        return bitmap;
-    }
-
-
-    private static final String savePath = Environment.getExternalStorageDirectory() + "/downLoadImg/";
-    int progress;
-
-    public void downloadImg(final String imgUrl, final String fileName, int parentIndex, int pos, final StampDownloadProgress v, final TextView view) {
+    private void downloadImg(final String imgUrl, final String fileName, final StampDownloadProgress v, final TextView view) {
         OkHttpUtils.get().url(imgUrl).build().execute(new FileCallBack(savePath, fileName) {
 
             @Override
@@ -394,7 +334,7 @@ public class StampActivity extends BaseActivity implements View.OnClickListener,
         singleTouchView.bringToFront();
         singleTouchView.setTag(imgTag);
         fl_root.addView(singleTouchView);
-        drawer_layout.closeDrawer(Gravity.RIGHT);
+        drawer_layout.closeDrawer(Gravity.END);
         singleTouchView.setmEditViewListening(new SingleTouchView.EditViewListening() {
             @Override
             public void editView(View v) {
@@ -407,54 +347,47 @@ public class StampActivity extends BaseActivity implements View.OnClickListener,
     @Override
     public void onDownloadItem(int parentIndex, int pos, StampDownloadProgress v, TextView view) {
         String url = stampGroupListData.get(parentIndex).getStamps().get(pos).getImage();
-        downloadImg(url, url.substring(url.lastIndexOf("/")), parentIndex, pos, v, view);
+        downloadImg(url, url.substring(url.lastIndexOf("/")), v, view);
     }
 
-    /**
-     * 截屏
-     */
-    Bitmap screenBitmap;
+    private void takeScreenShot() {
+        View decorView = getWindow().getDecorView();
+        decorView.setDrawingCacheEnabled(true);
+        decorView.buildDrawingCache();
+        Bitmap bitmapScreen = decorView.getDrawingCache();
 
-    public void takeScreenShot() {
-        View dView = getWindow().getDecorView();
-        dView.setDrawingCacheEnabled(true);
-        dView.buildDrawingCache();
-        Bitmap bitmapScreen = dView.getDrawingCache();
-        img_pic.setVisibility(View.GONE);
-        if (bmpWidth > 0 && bmpHeight > 0 && bmpHeight < sHight * 2 / 3) {
-            screenBitmap = Bitmap.createBitmap(bitmapScreen, 0, (sHight - bmpHeight) / 2, sWidth, bmpHeight + 50);
-            dView.destroyDrawingCache();
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(sWidth, bmpHeight);
-            fl_root.removeAllViews();
+        int x, y, width, height;
+        double photoRatio = photoHeight * 1.0 / photoWidth;
+        double screenRatio = displayMetrics.heightPixels * 1.0 / displayMetrics.widthPixels;
+        if (photoRatio < screenRatio) {
+            //横屏 imageWith = screenWidth
+            width = displayMetrics.widthPixels;
+            height = photoHeight * width / photoWidth;
+            x = 0;
+            y = (displayMetrics.heightPixels - height) / 2;
         } else {
-            screenBitmap = Bitmap.createBitmap(bitmapScreen);
-            dView.destroyDrawingCache();
-            fl_root.removeAllViews();
+            //竖屏 imageHeight = screenHeight
+            height = displayMetrics.heightPixels;
+            width = photoWidth * height / photoHeight;
+            y = 0;
+            x = (displayMetrics.widthPixels - width) / 2;
         }
+
+        Bitmap screenBitmap;
+        screenBitmap = Bitmap.createBitmap(bitmapScreen, x, y, width, height);
+        decorView.destroyDrawingCache();
+        fl_root.removeAllViews();
+
         if (screenBitmap != null) {
             try {
-//                // 获取内置SD卡路径
-//                String sdCardPath = Environment.getExternalStorageDirectory().getPath();
-//                // 图片文件路径
-//                imagePath = sdCardPath + File.separator + "screenshot.png";
-//                File file = new File(imagePath);
-//                FileOutputStream os = new FileOutputStream(file);
-//                screenBitmap.compress(Bitmap.CompressFormat.PNG, 100, os);
-//                os.flush();
-//                os.close();
-//                img_savetip.setVisibility(View.VISIBLE);
-//                Message msg = new Message();
-//                msg.what = SAVE_PIC;
-//                img_savetip.bringToFront();
-//                mHandler.sendMessageDelayed(msg, 2000);
-
-                  /* compress */
-                screenBitmap = Util.compressImage(screenBitmap);
-
         /* rotate */
                 Matrix matrix = new Matrix();
                 matrix.reset();
                 screenBitmap = Bitmap.createBitmap(screenBitmap, 0, 0, screenBitmap.getWidth(), screenBitmap.getHeight(), matrix, true);
+
+
+                // insert into photo gallery
+                CapturePhotoUtils.insertImage(getContentResolver(), screenBitmap, "K记大玩家", "");
 
         /* save to file */
                 try {
@@ -463,54 +396,19 @@ public class StampActivity extends BaseActivity implements View.OnClickListener,
                     FileOutputStream fileOutputStream = openFileOutput("temp", Context.MODE_PRIVATE);
                     fileOutputStream.write(bytes.toByteArray());
                     fileOutputStream.close();
+
                     startActivity(new Intent(StampActivity.this, ShareActivity.class));
                     finish();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
 
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
         }
     }
 
-
-    public void onEventMainThread(RightBean event) {
-    }
-
-
-//    @Override
-//    public void onLeftItem(int pos) {
-//        if (stampGroupListData.get(pos).getStamps() != null) {
-//            rightAdapter = new RightAdapter(CustomerCameraActivity.this, stampGroupListData.get(pos).getStamps(),pos,stampGroupListData.get(pos).isIsAvailable());
-//            rightAdapter.setmUpdateItemListening(CustomerCameraActivity.this);
-//            lv_right.setAdapter(rightAdapter);
-//            leftAdapter.setPos(pos);
-//            leftAdapter.notifyDataSetChanged();
-//
-//
-//        }
-//    }
-
-    public void screenBmp(View layout) {
-        int width = layout.getWidth();
-        int height = layout.getHeight();
-
-        //打开图像缓存
-        layout.setDrawingCacheEnabled(true);
-        //测量Linearlayout的大小
-        layout.measure(0, 0);
-        width = layout.getMeasuredWidth();
-        height = layout.getMeasuredHeight();
-        //发送位置和尺寸到LienarLayout及其所有的子View
-        //简单地说，就是我们截取的屏幕区域，注意是以Linearlayout左上角为基准的，而不是屏幕左上角
-        layout.layout(0, 0, width, height);
-        //拿到截取图像的bitmap
-        Bitmap bitmap = layout.getDrawingCache();
-        rl_root.setVisibility(View.GONE);
-    }
-
-    int startX, startY;
+    private int startX, startY;
 
     private Rect mChangeImageBackgroundRect = null;
 
@@ -528,7 +426,7 @@ public class StampActivity extends BaseActivity implements View.OnClickListener,
         return mChangeImageBackgroundRect.contains(x, y);
     }
 
-    public void isShowSaveAndReturn(int x, int y) {
+    private void isShowSaveAndReturn(int x, int y) {
         int count = fl_root.getChildCount();
         for (int i = 0; i < count; i++) {
             SingleTouchView touchView = (SingleTouchView) fl_root.getChildAt(i);
@@ -542,76 +440,17 @@ public class StampActivity extends BaseActivity implements View.OnClickListener,
     }
 
 
-    /**
-     * 读取一个缩放后的图片，限定图片大小，避免OOM
-     *
-     * @param uri       图片uri，支持“file://”、“content://”
-     * @param maxWidth  最大允许宽度
-     * @param maxHeight 最大允许高度
-     * @return 返回一个缩放后的Bitmap，失败则返回null
-     */
-    public static Bitmap decodeUri(Context context, Uri uri, int maxWidth, int maxHeight) {
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true; //只读取图片尺寸
-        resolveUri(context, uri, options);
-
-        //计算实际缩放比例
-        int scale = 1;
-        for (int i = 0; i < Integer.MAX_VALUE; i++) {
-            if ((options.outWidth / scale > maxWidth &&
-                    options.outWidth / scale > maxWidth * 1.4) ||
-                    (options.outHeight / scale > maxHeight &&
-                            options.outHeight / scale > maxHeight * 1.4)) {
-                scale++;
-            } else {
-                break;
-            }
-        }
-
-        options.inSampleSize = scale;
-        options.inJustDecodeBounds = false;//读取图片内容
-        options.inPreferredConfig = Bitmap.Config.RGB_565; //根据情况进行修改
+    private static Bitmap decodeUri(Context context, Uri uri) {
         Bitmap bitmap = null;
         try {
-            bitmap = resolveUriForBitmap(context, uri, options);
+            bitmap = resolveUriForBitmap(context, uri);
         } catch (Throwable e) {
             e.printStackTrace();
         }
         return bitmap;
     }
 
-
-    private static void resolveUri(Context context, Uri uri, BitmapFactory.Options options) {
-        if (uri == null) {
-            return;
-        }
-
-        String scheme = uri.getScheme();
-        if (ContentResolver.SCHEME_CONTENT.equals(scheme) ||
-                ContentResolver.SCHEME_FILE.equals(scheme)) {
-            InputStream stream = null;
-            try {
-                stream = context.getContentResolver().openInputStream(uri);
-                BitmapFactory.decodeStream(stream, null, options);
-            } catch (Exception e) {
-                Log.w("resolveUri", "Unable to open content: " + uri, e);
-            } finally {
-                if (stream != null) {
-                    try {
-                        stream.close();
-                    } catch (IOException e) {
-                        Log.w("resolveUri", "Unable to close content: " + uri, e);
-                    }
-                }
-            }
-        } else if (ContentResolver.SCHEME_ANDROID_RESOURCE.equals(scheme)) {
-            Log.w("resolveUri", "Unable to close content: " + uri);
-        } else {
-            Log.w("resolveUri", "Unable to close content: " + uri);
-        }
-    }
-
-    private static Bitmap resolveUriForBitmap(Context context, Uri uri, BitmapFactory.Options options) {
+    private static Bitmap resolveUriForBitmap(Context context, Uri uri) {
         if (uri == null) {
             return null;
         }
@@ -623,7 +462,7 @@ public class StampActivity extends BaseActivity implements View.OnClickListener,
             InputStream stream = null;
             try {
                 stream = context.getContentResolver().openInputStream(uri);
-                bitmap = BitmapFactory.decodeStream(stream, null, options);
+                bitmap = BitmapFactory.decodeStream(stream);
             } catch (Exception e) {
                 Log.w("resolveUriForBitmap", "Unable to open content: " + uri, e);
             } finally {

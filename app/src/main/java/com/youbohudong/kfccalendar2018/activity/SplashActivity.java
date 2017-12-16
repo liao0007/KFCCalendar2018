@@ -86,11 +86,12 @@ public class SplashActivity extends BaseActivity {
         boolean isInitialLaunch = sharedPreferencesUtils.getBoolean(IsInitialLaunchKey, true);
 
         if (isInitialLaunch) {
-            startActivity(new Intent(SplashActivity.this, CameraActivity.class));
+            sharedPreferencesUtils.setBoolean(IsInitialLaunchKey, false);
+            startActivity(new Intent(SplashActivity.this, GuideActivity.class));
             SplashActivity.this.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
             finish();
         } else {
-            startActivity(new Intent(SplashActivity.this, GuideActivity.class));
+            startActivity(new Intent(SplashActivity.this, CameraActivity.class));
             SplashActivity.this.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
             finish();
         }
@@ -110,7 +111,7 @@ public class SplashActivity extends BaseActivity {
         } else {
             //有权限
             //如果是小米手机 则要判断系统设置中是否有允许。
-            if (checkAppOps(this, AppOpsManager.OPSTR_CAMERA) && checkAppOps(this, AppOpsManager.OPSTR_READ_EXTERNAL_STORAGE) && checkAppOps(this, AppOpsManager.OPSTR_WRITE_EXTERNAL_STORAGE)) {
+            if (checkAppOps(this, AppOpsManager.OPSTR_CAMERA) && checkAppOps(this, AppOpsManager.OPSTR_READ_EXTERNAL_STORAGE) && checkAppOps(this, AppOpsManager.OPSTR_WRITE_EXTERNAL_STORAGE) ) {
                 //通过权限
                 start();
             } else {

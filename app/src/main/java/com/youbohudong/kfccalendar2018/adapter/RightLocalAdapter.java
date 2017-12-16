@@ -45,7 +45,7 @@ public class RightLocalAdapter extends BaseAdapter {
         if (view == null) {
             holder = new ViewHolder();
             view = mInflater.inflate(R.layout.right_local_layout, null);
-            holder.img_pic = (ImageView) view.findViewById(R.id.img_pic);
+            holder.img_pic = (ImageView) view.findViewById(R.id.stampPhotoImageView);
             view.setTag(holder);
         } else {
             holder = (ViewHolder) view.getTag();

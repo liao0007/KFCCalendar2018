@@ -16,8 +16,8 @@ import java.io.ByteArrayOutputStream;
 import java.util.concurrent.ExecutionException;
 
 public class WechatManager {
-    public static final String TransactionTypeImage = "TransactionTypeImage";
-    public static final String TransactionTypeWebpage = "TransactionTypeWebpage";
+    private static final String TransactionTypeImage = "TransactionTypeImage";
+    private static final String TransactionTypeWebpage = "TransactionTypeWebpage";
 
     private static final String ApiKey = "wx9b7b3c02f132a518";
 
@@ -34,30 +34,17 @@ public class WechatManager {
             Bitmap thumbnail = createThumbnailFromBitmap(bitmap);
             mediaMessage.thumbData = Util.bmpToByteArray(thumbnail, true);
             share(context, mediaMessage, TransactionTypeWebpage, mTargetScene);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
+        } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
     }
 
-    public static void shareImage(Context context, String thumbnailImagePath, int mTargetScene) {
-        Bitmap bitmap = createThumbnailFromFile(thumbnailImagePath);
-        shareImage(context, bitmap, mTargetScene);
-    }
-
     public static void shareImage(Context context, Bitmap bitmap, int mTargetScene) {
-        WXImageObject mediaObject = new WXImageObject(bitmap);
+        WXImageObject mediaObject = new WXImageObject(createThumbnailFromBitmap(bitmap));
 
         WXMediaMessage mediaMessage = new WXMediaMessage();
         mediaMessage.mediaObject = mediaObject;
         share(context, mediaMessage, TransactionTypeImage, mTargetScene);
-    }
-
-    private static Bitmap createThumbnailFromFile(String srcPath) {
-        BitmapFactory.Options newOpts = new BitmapFactory.Options();
-        newOpts.inJustDecodeBounds = true;
-        return createThumbnailFromBitmap(BitmapFactory.decodeFile(srcPath, newOpts));
     }
 
     private static Bitmap createThumbnailFromBitmap(Bitmap bitmap) {

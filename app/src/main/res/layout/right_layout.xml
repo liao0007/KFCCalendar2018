@@ -39,13 +39,13 @@
                 android:max="100"
                 android:progress="0"
                 android:visibility="gone"
-        ></com.youbohudong.kfccalendar2018.view.StampDownloadProgress>
+        />
         <TextView
                 android:id="@+id/txt_down"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/sprogrss"
-                android:text="下载中..."
+                android:text="下载中"
                 android:gravity="center"
                 android:textColor="@color/primaryRed"
                 android:textSize="10sp"

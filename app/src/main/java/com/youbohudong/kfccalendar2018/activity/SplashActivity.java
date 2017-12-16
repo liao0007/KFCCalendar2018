@@ -40,10 +40,14 @@ public class SplashActivity extends BaseActivity {
     private final int REQUEST_CODE = 100;
     private SharedPreferencesUtils sharedPreferencesUtils;
 
+    private static final String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.CAMERA};
     private static final Map<String, String> permissionToText;
+
     static {
         HashMap<String, String> map = new HashMap<>();
         map.put(Manifest.permission.CAMERA, "相机");
+        map.put(Manifest.permission.WRITE_EXTERNAL_STORAGE, "写缓存");
+        map.put(Manifest.permission.READ_EXTERNAL_STORAGE, "读缓存");
         permissionToText = Collections.unmodifiableMap(map);
     }
 
@@ -100,13 +104,13 @@ public class SplashActivity extends BaseActivity {
                 showDialog(permission);
             } else {
                 //申请权限。
-                ActivityCompat.requestPermissions(this, new String[]{permission}, REQUEST_CODE);
+                ActivityCompat.requestPermissions(this, permissions, REQUEST_CODE);
             }
 
         } else {
             //有权限
             //如果是小米手机 则要判断系统设置中是否有允许。
-            if (checkAppOps(this, AppOpsManager.OPSTR_CAMERA)) {
+            if (checkAppOps(this, AppOpsManager.OPSTR_CAMERA) && checkAppOps(this, AppOpsManager.OPSTR_READ_EXTERNAL_STORAGE) && checkAppOps(this, AppOpsManager.OPSTR_WRITE_EXTERNAL_STORAGE)) {
                 //通过权限
                 start();
             } else {
@@ -162,7 +166,7 @@ public class SplashActivity extends BaseActivity {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case REQUEST_CODE:
-                checkPermission(false, Manifest.permission.CAMERA);
+                checkPermission(false, permissions[0]);
                 break;
         }
     }

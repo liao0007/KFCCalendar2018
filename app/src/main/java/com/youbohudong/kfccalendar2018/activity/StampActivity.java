@@ -360,6 +360,8 @@ public class StampActivity extends BaseActivity implements View.OnClickListener,
 
             @Override
             public void onError(Call call, Exception e, int id) {
+                v.setVisibility(View.GONE);
+                view.setVisibility(View.GONE);
             }
 
             @Override
@@ -386,6 +388,7 @@ public class StampActivity extends BaseActivity implements View.OnClickListener,
         singleTouchView.setImageScale(0.5);
         singleTouchView.setControlLocation(SingleTouchView.RIGHT_BOTTOM);
         singleTouchView.setControlDelLocation(SingleTouchView.LEFT_TOP);
+
         Bitmap bmp = BitmapFactory.decodeFile(savePath + fileName);
         singleTouchView.setImageResource(bmp);
         singleTouchView.bringToFront();

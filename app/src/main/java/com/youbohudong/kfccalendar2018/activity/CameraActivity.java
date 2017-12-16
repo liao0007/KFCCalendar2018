@@ -256,7 +256,7 @@ public class CameraActivity extends BaseActivity implements SurfaceHolder.Callba
         savingProgressBar.setVisibility(View.VISIBLE);
 
         /* compress */
-        image = Util.compressImage(image);
+//        image = Util.compressImage(image);
 
         /* save to file */
         try {

@@ -34,11 +34,6 @@
         </activity>
 
         <activity
-                android:name="com.youbohudong.kfccalendar2018.activity.CustomerCameraActivity"
-                android:configChanges="orientation|keyboardHidden"
-                android:theme="@style/Theme.start"/>
-
-        <activity
                 android:name="com.youbohudong.kfccalendar2018.activity.CameraActivity"
                 android:configChanges="orientation|keyboardHidden"
                 android:theme="@style/Theme.start"/>

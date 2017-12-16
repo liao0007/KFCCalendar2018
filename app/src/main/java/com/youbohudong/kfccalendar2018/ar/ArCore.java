@@ -12,7 +12,6 @@ import android.opengl.GLES20;
 import android.util.Log;
 import cn.easyar.*;
 import com.youbohudong.kfccalendar2018.bean.ArScanEvent;
-import com.youbohudong.kfccalendar2018.bean.WeChatResponseEvent;
 import de.greenrobot.event.EventBus;
 
 import java.util.ArrayList;
@@ -89,8 +88,7 @@ public class ArCore {
         }
     }
 
-    public boolean start()
-    {
+    public boolean start() {
         boolean status = true;
         status &= (camera != null) && camera.start();
         status &= (streamer != null) && streamer.start();
@@ -101,8 +99,7 @@ public class ArCore {
         return status;
     }
 
-    public boolean stop()
-    {
+    public boolean stop() {
         boolean status = true;
         for (ImageTracker tracker : trackers) {
             status &= tracker.stop();

@@ -15,31 +15,27 @@ import com.youbohudong.kfccalendar2018.R;
  * Created by ${bcq} on 2017/12/13.
  */
 
-public class CustomProgress extends Dialog
-{
-    private  CustomProgress dialog;
+public class CustomProgress extends Dialog {
+    private CustomProgress dialog;
     private Context ctx;
     private TextView tv_loading_dialog;
 
-    public CustomProgress(Context context)
-    {
+    public CustomProgress(Context context) {
         this(context, R.style.customDailog);
         this.ctx = context;
     }
 
-    public CustomProgress(Context context, int theme)
-    {
+    public CustomProgress(Context context, int theme) {
         super(context, theme);
     }
 
     /**
      * 当窗口焦点改变时调用
      */
-    public void onWindowFocusChanged(boolean hasFocus)
-    {
+    public void onWindowFocusChanged(boolean hasFocus) {
         View view = LayoutInflater.from(ctx).inflate(R.layout.layout_toast, null);
         LinearLayout ll_loading = (LinearLayout) view.findViewById(R.id.ll_loading);
-       TextView tv_loading_dialog=(TextView) view.findViewById(R.id.tv_loading_dialog);
+        TextView tv_loading_dialog = (TextView) view.findViewById(R.id.tv_loading_dialog);
         ll_loading.getBackground().setAlpha(80);
     }
 
@@ -50,8 +46,7 @@ public class CustomProgress extends Dialog
      *                按下返回键监听
      * @return
      */
-    public void showInit(Context context)
-    {
+    public void showInit(Context context) {
         dialog = null;
         dialog = new CustomProgress(context);
 
@@ -75,19 +70,17 @@ public class CustomProgress extends Dialog
 
     }
 
-    public void showTips(String content)
-    {
+    public void showTips(String content) {
 
         if (dialog != null && dialog.isShowing()) {
             dialog.dismiss();
-        }else if(dialog!=null&&(!((Activity)ctx).isFinishing())){
+        } else if (dialog != null && (!((Activity) ctx).isFinishing())) {
             tv_loading_dialog.setText(content);
             dialog.show();
         }
     }
 
-    public void CustomDismis()
-    {
+    public void CustomDismis() {
         if (dialog != null || dialog.isShowing()) {
             dialog.cancel();
             dialog.dismiss();

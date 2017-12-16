@@ -1,20 +1,15 @@
 package com.youbohudong.kfccalendar2018.activity;
 
+import android.Manifest;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.View;
 import android.widget.Toast;
-import com.tencent.mm.opensdk.modelbase.BaseReq;
-import com.tencent.mm.opensdk.modelbase.BaseResp;
-import com.tencent.mm.opensdk.openapi.IWXAPIEventHandler;
 import com.youbohudong.kfccalendar2018.R;
 import com.youbohudong.kfccalendar2018.base.BaseActivity;
-import com.youbohudong.kfccalendar2018.bean.WeChatResponseEvent;
+import com.youbohudong.kfccalendar2018.permission.PermissionUtils;
 import com.youbohudong.kfccalendar2018.utils.SharedPreferencesUtils;
-import de.greenrobot.event.EventBus;
 
 /**
  * Created by ${bcq} on 2017/11/6.
@@ -23,11 +18,41 @@ import de.greenrobot.event.EventBus;
 public class SplashActivity extends BaseActivity {
     private static final String IsInitialLaunchKey = "IsInitialLaunchKey";
 
+    private String[] permissions = {
+            Manifest.permission.CAMERA,
+            Manifest.permission.ACCESS_NETWORK_STATE
+    };
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
-        SharedPreferencesUtils sharedPreferencesUtils = new SharedPreferencesUtils(this);
+
+        if (PermissionUtils.isOverMarshmallow()) {
+            requestPermissions();
+        } else {
+            start();
+        }
+
+        initView();
+        initData();
+        initListening();
+    }
+
+    @Override
+    public void initView() {
+    }
+
+    @Override
+    public void initData() {
+    }
+
+    @Override
+    public void initListening() {
+    }
+
+    private void start() {
+        SharedPreferencesUtils sharedPreferencesUtils = new SharedPreferencesUtils(SplashActivity.this);
         boolean isInitialLaunch = sharedPreferencesUtils.getBoolean(IsInitialLaunchKey, true);
 
         if (isInitialLaunch) {
@@ -39,25 +64,33 @@ public class SplashActivity extends BaseActivity {
             SplashActivity.this.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
             finish();
         }
+    }
 
-        initView();
-        initData();
-        initListening();
+    private void requestPermissions() {
+        int requestCode = 0x001;
+        PermissionUtils.requestPermissions(SplashActivity.this, permissions, requestCode, new PermissionUtils.OnPermissionCallBack() {
+            @Override
+            public void onPermissionAllowed() {
+                start();
+            }
+
+            @Override
+            public void onPermissionDenied() {
+                Toast.makeText(SplashActivity.this, "权限获取失败", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
-    public void initView() {
-
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        PermissionUtils.onRequestPermissionsResult(this, requestCode, permissions, grantResults);
     }
 
     @Override
-    public void initData() {
-
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        PermissionUtils.onActivityResult(requestCode, resultCode, data);
     }
 
-    @Override
-    public void initListening() {
-
-    }
 
 }

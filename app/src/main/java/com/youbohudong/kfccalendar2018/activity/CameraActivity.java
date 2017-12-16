@@ -1,6 +1,5 @@
 package com.youbohudong.kfccalendar2018.activity;
 
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -11,24 +10,22 @@ import android.hardware.Camera;
 import android.media.ExifInterface;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
-import android.util.Log;
-import android.view.*;
-import android.widget.*;
-
+import android.view.Display;
+import android.view.SurfaceHolder;
+import android.view.View;
+import android.view.WindowManager;
+import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import com.youbohudong.kfccalendar2018.R;
 import com.youbohudong.kfccalendar2018.base.BaseActivity;
-import com.youbohudong.kfccalendar2018.bean.LeftBean;
-import com.youbohudong.kfccalendar2018.camera.util.CameraParamUtil;
 import com.youbohudong.kfccalendar2018.utils.SharedPreferencesUtils;
 import com.youbohudong.kfccalendar2018.utils.Util;
 import com.youbohudong.kfccalendar2018.view.CameraSurfaceView;
 
-import java.io.*;
-import java.lang.reflect.Method;
+import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.List;
 
 public class CameraActivity extends BaseActivity implements SurfaceHolder.Callback {
@@ -349,7 +346,7 @@ public class CameraActivity extends BaseActivity implements SurfaceHolder.Callba
         List<Camera.Size> supportedPreviewSizes = cameraParameters.getSupportedPreviewSizes();
         cameraSurfaceView.mSupportedPreviewSizes = supportedPreviewSizes;
 
-        if(cameraSurfaceView.mPreviewSize !=null){
+        if (cameraSurfaceView.mPreviewSize != null) {
             cameraParameters.setPreviewSize(cameraSurfaceView.mPreviewSize.width, cameraSurfaceView.mPreviewSize.height);
         }
 

@@ -1,14 +1,10 @@
 package com.youbohudong.kfccalendar2018.activity;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
-import android.view.animation.AccelerateDecelerateInterpolator;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -16,7 +12,6 @@ import android.webkit.WebViewClient;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Toast;
-
 import com.tencent.mm.opensdk.modelbase.BaseResp;
 import com.tencent.mm.opensdk.modelmsg.SendMessageToWX;
 import com.youbohudong.kfccalendar2018.R;
@@ -24,14 +19,13 @@ import com.youbohudong.kfccalendar2018.base.BaseActivity;
 import com.youbohudong.kfccalendar2018.bean.WeChatResponseEvent;
 import com.youbohudong.kfccalendar2018.utils.DeviceUuidFactory;
 import com.youbohudong.kfccalendar2018.utils.WechatManager;
+import de.greenrobot.event.EventBus;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-
-import de.greenrobot.event.EventBus;
 
 /**
  * Created by ${bcq} on 2017/12/11.

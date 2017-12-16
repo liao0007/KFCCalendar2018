@@ -2,13 +2,10 @@ package com.youbohudong.kfccalendar2018.activity;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.util.EventLog;
-import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -20,7 +17,6 @@ import com.youbohudong.kfccalendar2018.base.BaseActivity;
 import com.youbohudong.kfccalendar2018.bean.WeChatResponseEvent;
 import com.youbohudong.kfccalendar2018.utils.WechatManager;
 import de.greenrobot.event.EventBus;
-import de.greenrobot.event.ThreadMode;
 
 public class ShareActivity extends BaseActivity {
     private LinearLayout shareDialogLinearLayout;

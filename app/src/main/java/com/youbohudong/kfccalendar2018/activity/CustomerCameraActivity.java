@@ -241,7 +241,8 @@ public class CustomerCameraActivity extends BaseActivity implements SurfaceHolde
         public void onResponse(String response, int id) {
             Gson gson = new Gson();
             // json转为带泛型的list
-            stampGroupListData = gson.fromJson(response, new TypeToken<List<LeftBean>>() {}.getType());
+            stampGroupListData = gson.fromJson(response, new TypeToken<List<LeftBean>>() {
+            }.getType());
             leftList.clear();
             leftList.addAll(stampGroupListData);
             LeftBean bean = new LeftBean();

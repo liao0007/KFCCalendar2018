@@ -2,4 +2,8 @@
     <string name="app_name">K记大玩家</string>
     <string name="open">开</string>
     <string name="close">关</string>
+
+    <string name="dialog_msg">The permissions needed to apply are very important to the application, and will not work without opening the application.</string>
+    <string name="dialog_btn_cancel">Cancel</string>
+    <string name="dialog_btn_set">Set</string>
 </resources>

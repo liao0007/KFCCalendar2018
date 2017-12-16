@@ -1,17 +1,15 @@
 package com.youbohudong.kfccalendar2018.activity;
 
 
-import android.Manifest;
-import android.annotation.TargetApi;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.*;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.*;
 import cn.easyar.Engine;
 import com.bumptech.glide.Glide;
@@ -30,7 +28,6 @@ import de.greenrobot.event.EventBus;
 import okhttp3.Call;
 import okhttp3.Request;
 
-import java.util.HashMap;
 import java.util.UUID;
 
 /**
@@ -70,16 +67,7 @@ public class ArActivity extends BaseActivity {
 
         /* gl view*/
         glView = new GLView(this);
-        requestCameraPermission(new CameraPermissionCallback() {
-            @Override
-            public void onSuccess() {
-                ((ViewGroup) findViewById(R.id.glViewRelativeLayout)).addView(glView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-            }
-
-            @Override
-            public void onFailure() {
-            }
-        });
+        ((ViewGroup) findViewById(R.id.glViewRelativeLayout)).addView(glView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
         /* link elements */
         overlayRelativeLayout = activityAr.findViewById(R.id.overlayRelativeLayout);
@@ -142,50 +130,6 @@ public class ArActivity extends BaseActivity {
 
     @Override
     public void initListening() {
-    }
-
-    private interface CameraPermissionCallback {
-        void onSuccess();
-
-        void onFailure();
-    }
-
-    private HashMap<Integer, CameraPermissionCallback> permissionCallbacks = new HashMap<Integer, CameraPermissionCallback>();
-    private int permissionRequestCodeSerial = 0;
-
-    @TargetApi(23)
-    private void requestCameraPermission(CameraPermissionCallback callback) {
-        if (Build.VERSION.SDK_INT >= 23) {
-            if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-                int requestCode = permissionRequestCodeSerial;
-                permissionRequestCodeSerial += 1;
-                permissionCallbacks.put(requestCode, callback);
-                requestPermissions(new String[]{Manifest.permission.CAMERA}, requestCode);
-            } else {
-                callback.onSuccess();
-            }
-        } else {
-            callback.onSuccess();
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (permissionCallbacks.containsKey(requestCode)) {
-            CameraPermissionCallback callback = permissionCallbacks.get(requestCode);
-            permissionCallbacks.remove(requestCode);
-            boolean executed = false;
-            for (int result : grantResults) {
-                if (result != PackageManager.PERMISSION_GRANTED) {
-                    executed = true;
-                    callback.onFailure();
-                }
-            }
-            if (!executed) {
-                callback.onSuccess();
-            }
-        }
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     @Override

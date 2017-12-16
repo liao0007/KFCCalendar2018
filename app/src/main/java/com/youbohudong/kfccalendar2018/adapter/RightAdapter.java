@@ -10,12 +10,10 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.youbohudong.kfccalendar2018.R;
-import com.youbohudong.kfccalendar2018.activity.StampActivity;
 import com.youbohudong.kfccalendar2018.bean.LeftBean;
 import com.youbohudong.kfccalendar2018.bean.UserDataBean;
 import com.youbohudong.kfccalendar2018.utils.DeviceUuidFactory;
@@ -24,13 +22,10 @@ import com.youbohudong.kfccalendar2018.utils.ToastUtils;
 import com.youbohudong.kfccalendar2018.view.StampDownloadProgress;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.StringCallback;
+import okhttp3.Call;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-
-import okhttp3.Call;
-import okhttp3.Request;
 
 /**
  * Created by ${bcq} on 2017/11/7.
@@ -42,17 +37,15 @@ public class RightAdapter extends BaseAdapter {
     private Context context;
     private List<LeftBean.StampsBean> list;
     private LayoutInflater mInflater;
-    private List<View> viewList;                    //View对象集合
     private int parentIndex;
-    private boolean isAvaliable;
+    private boolean isAvailable;
     private ToastUtils toastUtils;
 
     public RightAdapter(Context context, List<LeftBean.StampsBean> list, int parentIndex, boolean isAvailable) {
         this.context = context;
         this.list = list;
-        this.isAvaliable = isAvailable;
+        this.isAvailable = isAvailable;
         this.parentIndex = parentIndex;
-        this.viewList = new ArrayList<>();
         mInflater = LayoutInflater.from(context);
         toastUtils = new ToastUtils(context);
 
@@ -86,10 +79,9 @@ public class RightAdapter extends BaseAdapter {
         public void onResponse(String response, int id) {
             Gson gson = new Gson();
             // json转为带泛型的list
-            List<UserDataBean> listData = gson.fromJson(response, new TypeToken<List<UserDataBean>>() {
-            }.getType());
 
-            userDataList = listData;
+            userDataList = gson.fromJson(response, new TypeToken<List<UserDataBean>>() {
+            }.getType());
         }
 
         @Override
@@ -155,19 +147,19 @@ public class RightAdapter extends BaseAdapter {
 
                     switch (motionEvent.getAction()) {
                         case MotionEvent.ACTION_DOWN:
-                            if (isAvaliable && !TextUtils.isEmpty(taskKey) && !checkTaskKeyCompeleted(taskKey) && !TextUtils.isEmpty(note)) {
+                            if (isAvailable && !TextUtils.isEmpty(taskKey) && !checkTaskKeyCompeleted(taskKey) && !TextUtils.isEmpty(note)) {
                                 toastUtils.show(context, bean.getNote());
                             }
                             break;
                         case MotionEvent.ACTION_MOVE:
                             break;
                         case MotionEvent.ACTION_UP:
-                            if (isAvaliable) {
+                            if (isAvailable) {
                                 if (isDownloaded) {
                                     holder.sprogrss.setVisibility(View.GONE);
                                     mUpdateItemListening.onItemClick(parentIndex, i, bean.getImage().substring(bean.getImage().lastIndexOf("/")));
                                 } else {
-                                    if (isAvaliable && (TextUtils.isEmpty(taskKey) || (!TextUtils.isEmpty(taskKey) && checkTaskKeyCompeleted(taskKey)))) {
+                                    if (isAvailable && (TextUtils.isEmpty(taskKey) || (!TextUtils.isEmpty(taskKey) && checkTaskKeyCompeleted(taskKey)))) {
                                         holder.sprogrss.setVisibility(View.VISIBLE);
                                         mUpdateItemListening.onDownloadItem(parentIndex, i, holder.sprogrss, holder.txt_down);
                                     }

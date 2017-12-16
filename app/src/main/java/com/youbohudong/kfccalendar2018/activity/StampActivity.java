@@ -15,7 +15,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.*;
 import android.widget.*;
-
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.youbohudong.kfccalendar2018.R;
@@ -32,7 +31,6 @@ import com.youbohudong.kfccalendar2018.view.StampDownloadProgress;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.FileCallBack;
 import com.zhy.http.okhttp.callback.StringCallback;
-
 import de.greenrobot.event.EventBus;
 import okhttp3.Call;
 import okhttp3.Request;

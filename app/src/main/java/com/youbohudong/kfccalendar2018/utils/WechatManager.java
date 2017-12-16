@@ -3,12 +3,7 @@ package com.youbohudong.kfccalendar2018.utils;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.target.Target;
 import com.tencent.mm.opensdk.modelmsg.SendMessageToWX;
 import com.tencent.mm.opensdk.modelmsg.WXImageObject;
@@ -18,8 +13,6 @@ import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.net.URL;
 import java.util.concurrent.ExecutionException;
 
 public class WechatManager {
@@ -37,7 +30,7 @@ public class WechatManager {
         mediaMessage.title = title;
 
         try {
-            Bitmap bitmap = Glide.with(context).load(thumbnailImageUrl).asBitmap().into(Target.SIZE_ORIGINAL,Target.SIZE_ORIGINAL).get();
+            Bitmap bitmap = Glide.with(context).load(thumbnailImageUrl).asBitmap().into(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL).get();
             Bitmap thumbnail = createThumbnailFromBitmap(bitmap);
             mediaMessage.thumbData = Util.bmpToByteArray(thumbnail, true);
             share(context, mediaMessage, TransactionTypeWebpage, mTargetScene);

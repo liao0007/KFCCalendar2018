@@ -26,6 +26,8 @@ import com.youbohudong.kfccalendar2018.view.CameraSurfaceView;
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class CameraActivity extends BaseActivity implements SurfaceHolder.Callback {
@@ -125,83 +127,46 @@ public class CameraActivity extends BaseActivity implements SurfaceHolder.Callba
             Uri uri = data.getData();
             if (uri != null) {
                 try {
-
                     //根据图片的filepath获取到一个ExifInterface的对象
-
-                    ExifInterface exif = null;
-
+                    ExifInterface exif;
                     try {
-
                         exif = new ExifInterface(uri.getPath());
-
                     } catch (IOException e) {
-
                         e.printStackTrace();
-
                         exif = null;
-
                     }
                     int degree = 0;
-
                     if (exif != null) {
-
                         // 读取图片中相机方向信息
-
                         int ori = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION,
-
                                 ExifInterface.ORIENTATION_UNDEFINED);
-
                         // 计算旋转角度
-
                         switch (ori) {
-
                             case ExifInterface.ORIENTATION_ROTATE_90:
-
                                 degree = 90;
-
                                 break;
-
                             case ExifInterface.ORIENTATION_ROTATE_180:
-
                                 degree = 180;
-
                                 break;
-
                             case ExifInterface.ORIENTATION_ROTATE_270:
-
                                 degree = 270;
-
                                 break;
-
                             default:
-
                                 degree = 0;
-
                                 break;
-
                         }
 
                         if (degree != 0) {
-
                             // 旋转图片
-
                             Matrix m = new Matrix();
-
                             m.postRotate(degree);
-//
-//                            bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),
-//
-//                                    bitmap.getHeight(), m, true);
-
                         }
                     }
-
-//                    compressAndCacheImage(MediaStore.Images.Media.getBitmap(contentResolver, uri));
 
                     Intent intent = new Intent(CameraActivity.this, StampActivity.class);
                     intent.putExtra("URI", uri.toString());
                     startActivity(intent);
-                } catch (Exception e) {
+                } catch (Exception ignored) {
                 }
             }
         }
@@ -320,32 +285,39 @@ public class CameraActivity extends BaseActivity implements SurfaceHolder.Callba
         }
     }
 
-    private void configCamera(Camera camera) {
+    private void configCamera(final Camera camera) {
         camera.setDisplayOrientation(90);
 
         Camera.Parameters cameraParameters = camera.getParameters();
-//        setDispaly(cameraParameters, camera);
-
         cameraParameters.setPictureFormat(PixelFormat.JPEG); // 设置图片格式
-        cameraParameters.setJpegQuality(80); // 设置照片质量
-
+        cameraParameters.setJpegQuality(100); // 设置照片质量
 
         int maxSize = Math.max(display.getWidth(), display.getHeight());
         double ratio = display.getWidth() * 1.0 / display.getHeight();
 
-        //获得相机支持的照片尺寸,选择合适的尺寸
+        //获得相机支持的照片尺寸,选择合适的尺寸, sort from largest -> smallest resolution
         List<Camera.Size> supportedPictureSizes = cameraParameters.getSupportedPictureSizes();
+        Collections.sort(supportedPictureSizes, new Comparator<Camera.Size>() {
+            @Override
+            public int compare(Camera.Size size, Camera.Size t1) {
+                if (size.height > t1.height) {
+                    return -1;
+                } else {
+                    return 0;
+                }
+            }
+        });
+
         for (Camera.Size size : supportedPictureSizes) {
             double sizeRatio = size.height * 1.0 / size.width;
-            if (maxSize <= Math.max(size.width, size.height) && Math.abs(sizeRatio - ratio) <= 0.01) {
+            if (Math.abs(sizeRatio - ratio) <= 0.05) {
+                System.out.println("selected size: " + size.width + "/" + size.height);
                 cameraParameters.setPictureSize(size.width, size.height);
                 break;
             }
         }
 
-        List<Camera.Size> supportedPreviewSizes = cameraParameters.getSupportedPreviewSizes();
-        cameraSurfaceView.mSupportedPreviewSizes = supportedPreviewSizes;
-
+        cameraSurfaceView.mSupportedPreviewSizes = cameraParameters.getSupportedPreviewSizes();
         if (cameraSurfaceView.mPreviewSize != null) {
             cameraParameters.setPreviewSize(cameraSurfaceView.mPreviewSize.width, cameraSurfaceView.mPreviewSize.height);
         }

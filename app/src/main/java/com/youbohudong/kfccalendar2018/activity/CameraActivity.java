@@ -17,11 +17,24 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.target.ImageViewTarget;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.youbohudong.kfccalendar2018.R;
+import com.youbohudong.kfccalendar2018.adapter.LeftAdapter;
+import com.youbohudong.kfccalendar2018.adapter.RightAdapter;
 import com.youbohudong.kfccalendar2018.base.BaseActivity;
+import com.youbohudong.kfccalendar2018.bean.LeftBean;
+import com.youbohudong.kfccalendar2018.bean.TaskBean;
 import com.youbohudong.kfccalendar2018.utils.SharedPreferencesUtils;
 import com.youbohudong.kfccalendar2018.utils.Util;
 import com.youbohudong.kfccalendar2018.view.CameraSurfaceView;
+import com.zhy.http.okhttp.OkHttpUtils;
+import com.zhy.http.okhttp.callback.StringCallback;
+import okhttp3.Call;
+import okhttp3.Request;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
@@ -31,10 +44,13 @@ import java.util.Comparator;
 import java.util.List;
 
 public class CameraActivity extends BaseActivity implements SurfaceHolder.Callback {
+    private static List<TaskBean> tasks;
+
     private Camera camera;
     private CameraSurfaceView cameraSurfaceView;
     private SurfaceHolder cameraSurfaceHolder;
     private ProgressBar savingProgressBar;
+    private ImageButton promotionImageButton;
 
     private int currentCameraId = Camera.CameraInfo.CAMERA_FACING_BACK;//0代表前置摄像头，1代表后置摄像头
     private static final int REQUEST_XC_CODE = 101;
@@ -102,6 +118,11 @@ public class CameraActivity extends BaseActivity implements SurfaceHolder.Callba
             }
         });
 
+        promotionImageButton = findViewById(R.id.promotionImageButton);
+
+        if (tasks == null) {
+            requestTasks();
+        }
 
         initView();
         initListening();
@@ -119,6 +140,63 @@ public class CameraActivity extends BaseActivity implements SurfaceHolder.Callba
     @Override
     public void initData() {
     }
+
+    /**
+     * 从服务器获取数据
+     */
+    private void requestTasks() {
+        String url = "https://www.youbohudong.com/api/biz/vip/kfc/calendar-2018/tasks";
+        OkHttpUtils
+                .get()
+                .url(url)
+                .id(10)
+                .build()
+                .execute(new TasksCallback());
+    }
+
+
+    public class TasksCallback extends StringCallback {
+        @Override
+        public void onError(Call call, Exception e, int id) {
+            e.printStackTrace();
+        }
+
+        @Override
+        public void onResponse(String response, int id) {
+            Gson gson = new Gson();
+            // json转为带泛型的list
+
+            tasks = gson.fromJson(response, new TypeToken<List<TaskBean>>() {
+            }.getType());
+
+            for (final TaskBean task :
+                    tasks) {
+                if (task.getOnPromotion()) {
+                    System.out.println(task.getName() + "/" + task.getPromotionUrl());
+                    promotionImageButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent intent = new Intent(CameraActivity.this, WebViewActivity.class);
+                            intent.putExtra("URL", task.getPromotionUrl());
+                            startActivity(intent);
+                        }
+                    });
+
+                    Glide.with(CameraActivity.this).load(task.getThumbnail()).asBitmap().into(new ImageViewTarget<Bitmap>(promotionImageButton) {
+                        @Override
+                        protected void setResource(Bitmap bitmap) {
+                            promotionImageButton.setImageBitmap(bitmap);
+                            promotionImageButton.setVisibility(View.VISIBLE
+                            );
+                        }
+                    });
+                    break;
+                }
+            }
+
+        }
+    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -311,7 +389,6 @@ public class CameraActivity extends BaseActivity implements SurfaceHolder.Callba
         for (Camera.Size size : supportedPictureSizes) {
             double sizeRatio = size.height * 1.0 / size.width;
             if (Math.abs(sizeRatio - ratio) <= 0.05) {
-                System.out.println("selected size: " + size.width + "/" + size.height);
                 cameraParameters.setPictureSize(size.width, size.height);
                 break;
             }

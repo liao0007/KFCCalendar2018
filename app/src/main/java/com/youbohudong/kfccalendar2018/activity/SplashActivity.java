@@ -85,16 +85,15 @@ public class SplashActivity extends BaseActivity {
         SharedPreferencesUtils sharedPreferencesUtils = new SharedPreferencesUtils(SplashActivity.this);
         boolean isInitialLaunch = sharedPreferencesUtils.getBoolean(IsInitialLaunchKey, true);
 
+        SplashActivity.this.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+        startActivity(new Intent(SplashActivity.this, CameraActivity.class));
+
         if (isInitialLaunch) {
             sharedPreferencesUtils.setBoolean(IsInitialLaunchKey, false);
             startActivity(new Intent(SplashActivity.this, GuideActivity.class));
-            SplashActivity.this.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-            finish();
-        } else {
-            startActivity(new Intent(SplashActivity.this, CameraActivity.class));
-            SplashActivity.this.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-            finish();
         }
+        finish();
+
     }
 
 

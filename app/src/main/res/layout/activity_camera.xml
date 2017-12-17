@@ -80,6 +80,7 @@
             android:id="@+id/promotionImageButton"
             android:layout_width="60sp"
             android:layout_height="60sp"
+            android:alpha="0.9"
             android:background="@android:color/transparent"
             android:visibility="gone"
             android:layout_above="@+id/takePhotoImageButton" android:layout_alignStart="@+id/arImageButton"

@@ -110,10 +110,11 @@ public class WebViewActivity extends BaseActivity {
 
                 if (instruction.startsWith(SchemaScanAction)) {
                     /* scan */
-                    if (callingActivity.equals(ArActivity)) {
+                    if (callingActivity!= null && callingActivity.equals(ArActivity)) {
                         finish();
                     } else {
                         startActivity(new Intent(WebViewActivity.this, ArActivity.class));
+                        finish();
                     }
 
                 } else if (instruction.startsWith(SchemaShareAction)) {

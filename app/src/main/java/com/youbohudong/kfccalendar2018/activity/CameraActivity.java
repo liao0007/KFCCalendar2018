@@ -122,6 +122,8 @@ public class CameraActivity extends BaseActivity implements SurfaceHolder.Callba
 
         if (tasks == null) {
             requestTasks();
+        } else {
+            setPromotion();
         }
 
         initView();
@@ -139,6 +141,33 @@ public class CameraActivity extends BaseActivity implements SurfaceHolder.Callba
 
     @Override
     public void initData() {
+    }
+
+    private void setPromotion() {
+        for (final TaskBean task :
+                tasks) {
+            if (task.getOnPromotion()) {
+                System.out.println(task.getName() + "/" + task.getPromotionUrl());
+                promotionImageButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(CameraActivity.this, WebViewActivity.class);
+                        intent.putExtra("URL", task.getPromotionUrl());
+                        startActivity(intent);
+                    }
+                });
+
+                Glide.with(CameraActivity.this).load(task.getThumbnail()).asBitmap().into(new ImageViewTarget<Bitmap>(promotionImageButton) {
+                    @Override
+                    protected void setResource(Bitmap bitmap) {
+                        promotionImageButton.setImageBitmap(bitmap);
+                        promotionImageButton.setVisibility(View.VISIBLE
+                        );
+                    }
+                });
+                break;
+            }
+        }
     }
 
     /**
@@ -169,30 +198,7 @@ public class CameraActivity extends BaseActivity implements SurfaceHolder.Callba
             tasks = gson.fromJson(response, new TypeToken<List<TaskBean>>() {
             }.getType());
 
-            for (final TaskBean task :
-                    tasks) {
-                if (task.getOnPromotion()) {
-                    System.out.println(task.getName() + "/" + task.getPromotionUrl());
-                    promotionImageButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Intent intent = new Intent(CameraActivity.this, WebViewActivity.class);
-                            intent.putExtra("URL", task.getPromotionUrl());
-                            startActivity(intent);
-                        }
-                    });
-
-                    Glide.with(CameraActivity.this).load(task.getThumbnail()).asBitmap().into(new ImageViewTarget<Bitmap>(promotionImageButton) {
-                        @Override
-                        protected void setResource(Bitmap bitmap) {
-                            promotionImageButton.setImageBitmap(bitmap);
-                            promotionImageButton.setVisibility(View.VISIBLE
-                            );
-                        }
-                    });
-                    break;
-                }
-            }
+           setPromotion();
 
         }
     }
@@ -317,7 +323,6 @@ public class CameraActivity extends BaseActivity implements SurfaceHolder.Callba
                             try {// 获得图片
                                 compressAndCacheImage(bitmap);
                                 startActivity(new Intent(CameraActivity.this, StampActivity.class));
-                                finish();
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }

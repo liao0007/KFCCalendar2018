@@ -247,7 +247,6 @@ public class StampActivity extends BaseActivity implements View.OnClickListener,
                 drawer_layout.openDrawer(Gravity.END);
                 break;
             case R.id.returnImageButton:
-                startActivity(new Intent(StampActivity.this, CameraActivity.class));
                 finish();
                 break;
 

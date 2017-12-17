@@ -188,6 +188,7 @@ public class ArActivity extends BaseActivity {
         glView.stopTracker();
         scanAnimationLinearLayout.setVisibility(View.GONE);
         scanSuccessRelativeLayout.setVisibility(View.VISIBLE);
+        scanSuccessImageView.setImageResource(android.R.color.transparent);
 
         if (isLoading) {
             scanSuccessProgressBar.setVisibility(View.VISIBLE);
@@ -235,7 +236,6 @@ public class ArActivity extends BaseActivity {
             taskCompletionBean = gson.fromJson(response, TaskCompletionBean.class);
 
             if (!TextUtils.isEmpty(taskCompletionBean.getCompletionResource())) {
-                scanSuccessImageView.setImageResource(android.R.color.transparent);
                 scanSuccessImageView.setVisibility(View.VISIBLE);
                 scanSuccessRelativeLayout.setVisibility(View.VISIBLE);
 

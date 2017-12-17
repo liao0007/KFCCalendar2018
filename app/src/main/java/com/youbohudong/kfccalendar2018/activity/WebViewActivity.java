@@ -104,7 +104,6 @@ public class WebViewActivity extends BaseActivity {
 
         @JavascriptInterface
         public void postMessage(String location) {
-            location = location.toLowerCase();
             if (location.startsWith(Schema)) {
                 String instruction = location.substring(Schema.length());
 

@@ -31,8 +31,8 @@ public class WechatManager {
 
         try {
             Bitmap bitmap = Glide.with(context).load(thumbnailImageUrl).asBitmap().into(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL).get();
-            Bitmap thumbnail = createThumbnailFromBitmap(bitmap);
-            mediaMessage.thumbData = Util.bmpToByteArray(thumbnail, true);
+            Bitmap thumbnail = createThumbnailFromBitmap(bitmap, 30f, 30f);
+            mediaMessage.thumbData = Util.bmpToByteArray(thumbnail, false);
             share(context, mediaMessage, TransactionTypeWebpage, mTargetScene);
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
@@ -40,22 +40,18 @@ public class WechatManager {
     }
 
     public static void shareImage(Context context, Bitmap bitmap, int mTargetScene) {
-        WXImageObject mediaObject = new WXImageObject(createThumbnailFromBitmap(bitmap));
+        WXImageObject mediaObject = new WXImageObject(createThumbnailFromBitmap(bitmap, 1920f, 10180f));
 
         WXMediaMessage mediaMessage = new WXMediaMessage();
         mediaMessage.mediaObject = mediaObject;
         share(context, mediaMessage, TransactionTypeImage, mTargetScene);
     }
 
-    private static Bitmap createThumbnailFromBitmap(Bitmap bitmap) {
+    private static Bitmap createThumbnailFromBitmap(Bitmap bitmap, float hh, float ww) {
         BitmapFactory.Options newOpts = new BitmapFactory.Options();
         newOpts.inJustDecodeBounds = false;
         int w = newOpts.outWidth;
         int h = newOpts.outHeight;
-
-        // 现在主流手机比较多是800*480分辨率，所以高和宽我们设置为
-        float hh = 1920f;// 这里设置高度为800f
-        float ww = 1080f;// 这里设置宽度为480f
 
         // 缩放比。由于是固定比例缩放，只用高或者宽其中一个数据进行计算即可
         int be = 1;// be=1表示不缩放

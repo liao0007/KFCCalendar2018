@@ -81,13 +81,4 @@
         android:textColor="@color/red"
         android:textSize="24sp"
         android:text=""/>
-    <ImageView
-        android:id="@+id/img_icon"
-        android:layout_width="120dp"
-        android:layout_height="146dp"
-        android:background="@mipmap/icon"
-        android:layout_centerInParent="true"
-        android:layout_above="@id/txt_title"
-        android:scaleType="fitXY"
-        android:visibility="invisible"/>
 </RelativeLayout>

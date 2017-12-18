@@ -102,7 +102,6 @@ public class GuideActivity extends BaseActivity {
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
             View v = LayoutInflater.from(GuideActivity.this).inflate(R.layout.item_guide, null);
-            ImageView img_icon = (ImageView) v.findViewById(R.id.img_icon);
             ImageView img_dot1 = v.findViewById(R.id.img_dot1);
             ImageView img_dot2 = v.findViewById(R.id.img_dot2);
             ImageView img_dot3 = v.findViewById(R.id.img_dot3);
@@ -113,11 +112,6 @@ public class GuideActivity extends BaseActivity {
             ImageView img_next = (ImageView) v.findViewById(R.id.img_next);
             TextView txt_skip = (TextView) v.findViewById(R.id.txt_skip);
 
-            if (position == 0) {
-                img_icon.setVisibility(View.VISIBLE);
-            } else {
-                img_icon.setVisibility(View.INVISIBLE);
-            }
             if (position == 0) {
                 img_dot1.setBackgroundResource(R.mipmap.dot_red);
                 img_dot2.setBackgroundResource(R.mipmap.dot_light);

@@ -296,6 +296,10 @@ public class CameraActivity extends BaseActivity implements SurfaceHolder.Callba
     private boolean safeToTakePicture = false;
 
     private void takePhoto() {
+        if(null == camera) {
+            this.startCamera();
+            return;
+        }
         camera.autoFocus(new Camera.AutoFocusCallback() {
             @Override
             public void onAutoFocus(boolean success, Camera camera) {

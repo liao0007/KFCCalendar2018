@@ -147,7 +147,7 @@ public class RightAdapter extends BaseAdapter {
 
                     switch (motionEvent.getAction()) {
                         case MotionEvent.ACTION_DOWN:
-                            if (isAvailable && !TextUtils.isEmpty(taskKey) && !checkTaskKeyCompeleted(taskKey) && !TextUtils.isEmpty(note)) {
+                            if (isAvailable && !TextUtils.isEmpty(taskKey) && !checkTaskKeyCompleted(taskKey) && !TextUtils.isEmpty(note)) {
                                 toastUtils.show(context, bean.getNote());
                             }
                             break;
@@ -159,7 +159,7 @@ public class RightAdapter extends BaseAdapter {
                                     holder.sprogrss.setVisibility(View.GONE);
                                     mUpdateItemListening.onItemClick(parentIndex, i, bean.getImage().substring(bean.getImage().lastIndexOf("/")));
                                 } else {
-                                    if (isAvailable && (TextUtils.isEmpty(taskKey) || (!TextUtils.isEmpty(taskKey) && checkTaskKeyCompeleted(taskKey)))) {
+                                    if (TextUtils.isEmpty(taskKey) || !TextUtils.isEmpty(taskKey) && checkTaskKeyCompleted(taskKey)) {
                                         holder.sprogrss.setVisibility(View.VISIBLE);
                                         mUpdateItemListening.onDownloadItem(parentIndex, i, holder.sprogrss, holder.txt_down);
                                     }
@@ -177,7 +177,7 @@ public class RightAdapter extends BaseAdapter {
         return view;
     }
 
-    private boolean checkTaskKeyCompeleted(String taskKey) {
+    private boolean checkTaskKeyCompleted(String taskKey) {
         for (UserDataBean userData :
                 userDataList) {
             if (userData.getTaskKey().equals(taskKey) && userData.isCompleted()) {
@@ -188,7 +188,7 @@ public class RightAdapter extends BaseAdapter {
     }
 
     public class ViewHolder {
-        public ImageView img_pic;
+        ImageView img_pic;
         RelativeLayout rl_bg;
         public StampDownloadProgress sprogrss;
         RelativeLayout fl_shade;
@@ -197,23 +197,12 @@ public class RightAdapter extends BaseAdapter {
 
     UpdateItemListening mUpdateItemListening;
 
-    public UpdateItemListening getmUpdateItemListening() {
-        return mUpdateItemListening;
-    }
-
     public void setmUpdateItemListening(UpdateItemListening mUpdateItemListening) {
         this.mUpdateItemListening = mUpdateItemListening;
     }
 
-
-    public void Update() {
-        notifyDataSetChanged();
-    }
-
     public interface UpdateItemListening {
         void onItemClick(int parentIndex, int pos, String fileName);
-
         void onDownloadItem(int parentIndex, int pos, StampDownloadProgress v, TextView view);
-
     }
 }

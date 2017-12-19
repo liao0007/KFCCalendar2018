@@ -59,7 +59,6 @@ public class SingleTouchView extends View {
     public static final int DEFAULT_OTHER_DRAWABLE_WIDTH = 50;
     public static final int DEFAULT_OTHER_DRAWABLE_HEIGHT = 50;
 
-
     /**
      * 用于旋转缩放的Bitmap
      */
@@ -279,13 +278,15 @@ public class SingleTouchView extends View {
     }
 
 
+    private boolean initialized = false;
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
         //获取SingleTouchView所在父布局的中心点
         ViewGroup mViewGroup = (ViewGroup) getParent();
-        if (null != mViewGroup) {
+        if (null != mViewGroup && !initialized) {
+            initialized = true;
             int parentWidth = mViewGroup.getWidth();
             int parentHeight = mViewGroup.getHeight();
             mCenterPoint.set(parentWidth / 2, parentHeight / 2);
@@ -993,10 +994,6 @@ public class SingleTouchView extends View {
 
     DeleteUIListening mDeleteUIListening;
 
-    public DeleteUIListening getmDeleteUIListening() {
-        return mDeleteUIListening;
-    }
-
     public void setmDeleteUIListening(DeleteUIListening mDeleteUIListening) {
         this.mDeleteUIListening = mDeleteUIListening;
     }
@@ -1006,10 +1003,6 @@ public class SingleTouchView extends View {
     }
 
     EditViewListening mEditViewListening;
-
-    public EditViewListening getmEditViewListening() {
-        return mEditViewListening;
-    }
 
     public void setmEditViewListening(EditViewListening mEditViewListening) {
         this.mEditViewListening = mEditViewListening;

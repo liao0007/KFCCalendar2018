@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.target.ImageViewTarget;
@@ -109,6 +110,14 @@ public class CameraActivity extends BaseActivity implements SurfaceHolder.Callba
             }
         });
 
+        ImageButton cameraPasterImageButton = findViewById(R.id.cameraPasterImageButton);
+        cameraPasterImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(CameraActivity.this, "请先拍摄或从相册选取一张图片！", Toast.LENGTH_SHORT).show();
+            }
+        });
+
         ImageButton helpButton = findViewById(R.id.helpImageButton);
         helpButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -198,7 +207,7 @@ public class CameraActivity extends BaseActivity implements SurfaceHolder.Callba
             tasks = gson.fromJson(response, new TypeToken<List<TaskBean>>() {
             }.getType());
 
-           setPromotion();
+            setPromotion();
 
         }
     }
@@ -296,7 +305,7 @@ public class CameraActivity extends BaseActivity implements SurfaceHolder.Callba
     private boolean safeToTakePicture = false;
 
     private void takePhoto() {
-        if(null == camera) {
+        if (null == camera) {
             this.startCamera();
             return;
         }
@@ -312,7 +321,7 @@ public class CameraActivity extends BaseActivity implements SurfaceHolder.Callba
                         public void onPictureTaken(byte[] data, Camera camera) {
 
                             Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
-                             /* rotate */
+                            /* rotate */
                             Matrix matrix = new Matrix();
                             matrix.reset();
                             if (currentCameraId == Camera.CameraInfo.CAMERA_FACING_BACK) {

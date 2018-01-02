@@ -47,6 +47,17 @@
             android:layout_marginTop="15dp"/>
 
     <ImageButton
+            android:id="@+id/cameraPasterImageButton"
+            android:layout_width="40dp"
+            android:layout_height="50dp"
+            app:srcCompat="@mipmap/paster"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_below="@+id/importFromAlbumImageButton"
+            android:layout_alignLeft="@+id/importFromAlbumImageButton"
+            android:layout_alignStart="@+id/importFromAlbumImageButton"
+            android:layout_marginTop="15dp"/>
+
+    <ImageButton
             android:id="@+id/takePhotoImageButton"
             android:layout_width="80dp"
             android:layout_height="80dp"
@@ -63,10 +74,8 @@
             app:srcCompat="@mipmap/help"
             android:id="@+id/helpImageButton"
             style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_alignTop="@+id/takePhotoImageButton"
-            android:layout_alignEnd="@+id/importFromAlbumImageButton"
-            android:layout_alignStart="@+id/importFromAlbumImageButton"
-            android:layout_marginTop="20dp"/>
+            android:layout_marginTop="19dp" android:layout_alignTop="@+id/takePhotoImageButton"
+            android:layout_alignStart="@+id/cameraPasterImageButton"/>
 
     <ProgressBar
             style="?android:attr/progressBarStyle"

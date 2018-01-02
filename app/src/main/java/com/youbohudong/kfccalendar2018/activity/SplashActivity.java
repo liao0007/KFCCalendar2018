@@ -17,8 +17,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.widget.Toast;
+import com.allenliu.versionchecklib.core.AllenChecker;
+import com.allenliu.versionchecklib.core.VersionParams;
 import com.youbohudong.kfccalendar2018.R;
 import com.youbohudong.kfccalendar2018.base.BaseActivity;
+import com.youbohudong.kfccalendar2018.services.VersionCheckService;
 import com.youbohudong.kfccalendar2018.utils.SharedPreferencesUtils;
 
 import java.io.File;
@@ -34,6 +37,8 @@ import java.util.Properties;
  */
 
 public class SplashActivity extends BaseActivity {
+    public static SplashActivity activity;
+
     private static final String IsInitialLaunchKey = "IsInitialLaunchKey";
 
     private static final String MIUI = "miui";
@@ -55,6 +60,12 @@ public class SplashActivity extends BaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+
+        VersionParams.Builder builder = new VersionParams.Builder()
+                .setRequestUrl("https://www.youbohudong.com/api/biz/vip/kfc/calendar-2018/version/android")
+//                .setCustomDownloadActivityClass(CustomUpdateDialogActivity.class)
+                .setService(VersionCheckService.class);
+        AllenChecker.startVersionCheck(this, builder.build());
 
         sharedPreferencesUtils = new SharedPreferencesUtils(SplashActivity.this);
 
@@ -110,7 +121,7 @@ public class SplashActivity extends BaseActivity {
         } else {
             //有权限
             //如果是小米手机 则要判断系统设置中是否有允许。
-            if (checkAppOps(this, AppOpsManager.OPSTR_CAMERA) && checkAppOps(this, AppOpsManager.OPSTR_READ_EXTERNAL_STORAGE) && checkAppOps(this, AppOpsManager.OPSTR_WRITE_EXTERNAL_STORAGE) ) {
+            if (checkAppOps(this, AppOpsManager.OPSTR_CAMERA) && checkAppOps(this, AppOpsManager.OPSTR_READ_EXTERNAL_STORAGE) && checkAppOps(this, AppOpsManager.OPSTR_WRITE_EXTERNAL_STORAGE)) {
                 //通过权限
                 start();
             } else {
